@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:1234",
-  baseURL: process.env.baseURL
+  baseURL: import.meta.env.VITE_BASE_URL
   // baseURL: "https://turf-spot-be.vercel.app",
 });
 
