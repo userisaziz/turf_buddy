@@ -28,7 +28,7 @@ const Login = () => {
             />
             <div className="form-control mt-6">
               <Button type="submit" className="btn-primary" loading={loading}>
-                Sign Up
+                Login
               </Button>
             </div>
           </form>
