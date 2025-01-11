@@ -35,6 +35,8 @@ import ProtectedRoute from "@components/ProtectedRoute/ProtectedRoute";
 
 import { NotFound } from "@components/common";
 
+import Reservation from "./components/owner/Reservation";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -97,6 +99,7 @@ const router = createBrowserRouter([
       { path: "turfs", element: <TurfManagement /> },
       { path: "reviews", element: <OwnerReviews /> },
       { path: "bookings", element: <OwnerBookings /> },
+      { path: "reservations", element: <Reservation /> },
     ],
   },
 ]);
