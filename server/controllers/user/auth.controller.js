@@ -5,22 +5,26 @@ import { generateUserToken } from "../../utils/generateJwtToken.js";
 import { validationResult } from "express-validator";
 
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, phone, password } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ success: false, message: errors.array() });
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [{ email }, { phone }]
+    });
+
     if (user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "User with this email or phone number already exists",
+      });
     }
     const hashedPassword = await argon2.hash(password);
 
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, phone, password: hashedPassword });
     await newUser.save();
     const token = generateUserToken(newUser._id);
     return res
@@ -31,6 +35,7 @@ export const registerUser = async (req, res) => {
     return res.status(400).json({ success: false, message: err.message });
   }
 };
+
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
