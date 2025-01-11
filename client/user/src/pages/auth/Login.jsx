@@ -7,7 +7,7 @@ const Login = () => {
   const { register, handleSubmit, errors, onSubmit, loading } = useLoginForm();
 
   return (
-     <div className="flex items-center justify-center  min-h-screen max-md:p-4 bg-base-200 p-4 ">
+    <div className="flex items-center justify-center  min-h-screen max-md:p-4 bg-base-200 p-4 ">
       <div className="card w-full border md:w-96  bg-base-100 shadow-xl  ">
         <div className="card-body">
           <h2 className="card-title justify-center">Login</h2>
@@ -28,7 +28,7 @@ const Login = () => {
             />
             <div className="form-control mt-6">
               <Button type="submit" className="btn-primary" loading={loading}>
-                Sign Up
+                Login
               </Button>
             </div>
           </form>

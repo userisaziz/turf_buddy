@@ -1,0 +1,1 @@
+export const REGISTER_USER = "/api/user/auth/register"

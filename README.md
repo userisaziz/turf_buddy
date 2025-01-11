@@ -103,4 +103,4 @@ This project is licensed under the MIT License.
 
 ## Contact
 
-For any inquiries or questions, please contact us at [rijobdk@gmail.com](mailto:rijobdk@gmail.com).
+For any inquiries or questions, please contact us at [azizadnan370@gmail.com](mailto:azizadnan370@gmail.com).
