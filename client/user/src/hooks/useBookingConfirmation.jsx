@@ -4,6 +4,7 @@ import axiosInstance from "./useAxiosInstance";
 import { createOrder, handlePayment } from "../config/razorpay";
 import "https://checkout.razorpay.com/v1/checkout.js";
 import { useNavigate } from "react-router-dom";
+import { VERIFY_PAYMENT } from "../api/endpoint";
 
 const useBookingConfirmation = (
   id,
@@ -50,10 +51,7 @@ const useBookingConfirmation = (
         razorpay_signature: razorpayResponse.razorpay_signature,
       };
 
-      const response = await axiosInstance.post(
-        "/api/user/booking/verify-payment",
-        bookingData
-      );
+      const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);
       const result = await response.data;
       toast.success(result.message);
       navigate("/auth/booking-history");
