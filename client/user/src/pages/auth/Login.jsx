@@ -33,9 +33,17 @@ const Login = () => {
             </div>
           </form>
           <div className="text-center mt-4">
-            <Link to="/signup" className="link link-hover">
-              Don&#39;t have an account? Register
-            </Link>
+            <p className="link link-hover">
+              Don’t have an account?{" "}
+              <Link to="/signup" className="link link-hover">
+                Register
+              </Link>
+            </p>
+            <p className="link link-hover">
+              <Link to="/forgot-password" className="link link-hover">
+                Forgot Password?
+              </Link>
+            </p>
           </div>
         </div>
       </div>

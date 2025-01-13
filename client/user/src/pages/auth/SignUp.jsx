@@ -18,13 +18,7 @@ const SignUp = () => {
               register={register}
               error={errors.name}
             />
-            <FormField
-              label="Mobile Number"
-              name="mobile"
-              type="text"
-              register={register}
-              error={errors.mobile}
-            />
+
             <FormField
               label="Email"
               name="email"

@@ -36,6 +36,8 @@ import ProtectedRoute from "@components/ProtectedRoute/ProtectedRoute";
 import { NotFound } from "@components/common";
 
 import Reservation from "./components/owner/Reservation";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +56,14 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "reset-password/:token",
+        element: <ResetPassword />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
       },
     ],
   },

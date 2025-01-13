@@ -32,6 +32,9 @@ const Navbar = () => {
             <li>
               <Link to="/turfs">Turfs</Link>
             </li>
+            <li>
+              <Link to="/contact-us">Contact Us</Link>
+            </li>
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost normal-case text-xl">
@@ -50,6 +53,9 @@ const Navbar = () => {
           </li>
           <li>
             <Link to="/turfs">Turfs</Link>
+          </li>
+          <li>
+            <Link to="/contact-us">Contact Us</Link>
           </li>
         </ul>
       </div>
