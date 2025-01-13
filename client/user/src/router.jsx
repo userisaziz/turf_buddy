@@ -10,6 +10,9 @@ import ProtectedLayout from "./layouts/ProtectedLayout";
 import Reservation from "./components/Reservation";
 import TurfBookingHistory from "./components/turf/TurfBookingHistory";
 import NotFound from "./components/common/NotFound";
+import ResetPassword from "./pages/auth/ResetPassword";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ContactUs from "./pages/ContactUs";
 
 const router = createBrowserRouter([
   {
@@ -30,12 +33,24 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
+        path: "reset-password/:token",
+        element: <ResetPassword />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
         path: "turfs",
         element: <Turf />,
       },
       {
         path: "turf/:id",
         element: <TurfDetails />,
+      },
+      {
+        path: "contact-us",
+        element: <ContactUs />,
       },
     ],
   },

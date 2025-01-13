@@ -3,8 +3,9 @@ import BookingsSkeleton from "./BookingsSkeleton";
 import { format, subHours, subMinutes } from "date-fns";
 import { ArrowUpDown, Calendar, Clock, User, IndianRupee } from "lucide-react";
 import Avatar from "react-avatar";
-
+import { Link, useNavigate } from "react-router-dom";
 const OwnerBookings = () => {
+  const navigate = useNavigate();
   const {
     bookings,
     loading,

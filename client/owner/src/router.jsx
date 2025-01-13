@@ -35,6 +35,10 @@ import ProtectedRoute from "@components/ProtectedRoute/ProtectedRoute";
 
 import { NotFound } from "@components/common";
 
+import Reservation from "./components/owner/Reservation";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -52,6 +56,14 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "reset-password/:token",
+        element: <ResetPassword />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
       },
     ],
   },
@@ -97,6 +109,7 @@ const router = createBrowserRouter([
       { path: "turfs", element: <TurfManagement /> },
       { path: "reviews", element: <OwnerReviews /> },
       { path: "bookings", element: <OwnerBookings /> },
+      { path: "reservations", element: <Reservation /> },
     ],
   },
 ]);

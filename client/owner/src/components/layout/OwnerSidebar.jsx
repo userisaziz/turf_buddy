@@ -1,16 +1,24 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { X, Home, MapPin, Star, Calendar, PlusCircle } from "lucide-react";
+import {
+  X,
+  Home,
+  MapPin,
+  Star,
+  Calendar,
+  PlusCircle,
+  Clock2,
+} from "lucide-react";
 
 const OwnerSidebar = ({ isOpen, toggleSidebar, className }) => {
   const location = useLocation();
-
   const navItems = [
     { to: "/owner", label: "Dashboard", icon: Home },
     { to: "/owner/turfs", label: "My Turfs", icon: MapPin },
     { to: "/owner/add-turf", label: "Add Turf", icon: PlusCircle },
     { to: "/owner/reviews", label: "Reviews", icon: Star },
     { to: "/owner/bookings", label: "Bookings", icon: Calendar },
+    { to: "/owner/reservations", label: "Reservations", icon: Clock2 },
   ];
 
   return (
