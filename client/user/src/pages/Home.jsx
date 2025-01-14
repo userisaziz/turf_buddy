@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
-
+import { Helmet } from "react-helmet";
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { turfs, loading } = useTurfData();
@@ -20,7 +20,7 @@ const Home = () => {
         <title>Klb TurfBuddy</title>
         <meta
           name="description"
-          content="Discover and book the best turf fields in your area with Klb TurfBuddy."
+          content="Discover and book the best turf fields in kalaburgi/gulbarga with Klb TurfBuddy."
         />
         <meta
           name="keywords"
