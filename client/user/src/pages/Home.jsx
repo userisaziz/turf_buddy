@@ -18,7 +18,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <Helmet>
-        <title>Welcome to Klb TurfBuddy</title>
+        <title>Klb TurfBuddy</title>
         <meta
           name="description"
           content="Discover and book the best turf fields in your area with Klb TurfBuddy."
