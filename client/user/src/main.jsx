@@ -7,7 +7,6 @@ import { PersistGate } from "redux-persist/integration/react";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { Toaster } from "react-hot-toast";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -15,7 +14,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <PersistGate loading={null} persistor={persistor}>
         <RouterProvider router={router} />
         <Toaster position="bottom-center" duration={500} />
-        <SpeedInsights />
       </PersistGate>
     </Provider>
   </React.StrictMode>
