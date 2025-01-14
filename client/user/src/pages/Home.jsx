@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
-import { Helmet } from "react-helmet";
 
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
