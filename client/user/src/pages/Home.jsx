@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -16,6 +17,18 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
+      <Helmet>
+        <title>Welcome to Klb TurfBuddy</title>
+        <meta
+          name="description"
+          content="Discover and book the best turf fields in your area with Klb TurfBuddy."
+        />
+        <meta
+          name="keywords"
+          content="Klb TurfBuddy, sports, turf booking, soccer, football, cricket, sports venues, Kalaburgi TurfBuddy, Gulbarga TurfBuddy,Kalaburgi Turf Buddy, Gulbarga Turf Buddy "
+        />
+        <link rel="canonical" href="https://www.example.com/home" />
+      </Helmet>
       <div className="hero min-h-[70vh] bg-base-200">
         <div className="hero-content flex-col lg:flex-row-reverse animate-slide-in-right">
           <div className="w-full lg:w-1/2">
