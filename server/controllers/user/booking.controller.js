@@ -52,6 +52,8 @@ export const verifyPayment = async (req, res) => {
     const formattedEndTime = format(parseISO(endTime), "hh:mm a");
     const formattedDate = format(parseISO(selectedTurfDate), "d MMM yyyy");
 
+
+
     // verify the Razorpay signature
     const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
     hmac.update(`${orderId}|${paymentId}`);
@@ -69,6 +71,19 @@ export const verifyPayment = async (req, res) => {
     // This time is storing in DB for the time slot that is created
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
+
+    const existingTimeSlot = await TimeSlot.findOne({
+      turf: turfId,
+      startTime: adjustedStartTime,
+      endTime: adjustedEndTime,
+    });
+
+    if (existingTimeSlot) {
+      return res.status(400).json({
+        success: false,
+        message: "Time slot already booked. Please choose a different slot.",
+      });
+    }
 
     const [user, turf] = await Promise.all([
       User.findById(userId),
