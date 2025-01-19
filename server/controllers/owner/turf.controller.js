@@ -3,6 +3,8 @@ import cloudinary from "../../utils/cloudinary.js";
 import Turf from "../../models/turf.model.js";
 import chalk from "chalk";
 import Review from "../../models/review.model.js"
+import Owner from "../../models/owner.model.js";
+
 
 export const turfRegister = async (req, res) => {
   const image = req.file.path;
@@ -16,9 +18,17 @@ export const turfRegister = async (req, res) => {
     const turfImage = await cloudinary.uploader.upload(image, {
       folder: "TurfSpot/turfs",
     });
+
+    if (!owner) {
+      return res.status(404).json({ success: false, message: "Owner not found" });
+    }
+    // Find the owner to get the phone number
+    const ownerData = await Owner.findById(turf.owner);
     const turf = new Turf({
       image: turfImage.secure_url,
       owner,
+      ownerEmail: ownerData.email,
+      ownerPhoneNumber: ownerData.phone,
       ...req.body,
     });
     await turf.save();
@@ -46,9 +56,9 @@ export const getTurfByOwner = async (req, res) => {
         const avgRating =
           reviewCount > 0
             ? await Review.aggregate([
-                { $match: { turf: turf._id } },
-                { $group: { _id: null, avgRating: { $avg: "$rating" } } },
-              ])
+              { $match: { turf: turf._id } },
+              { $group: { _id: null, avgRating: { $avg: "$rating" } } },
+            ])
             : 0;
         return {
           ...turf.toObject(),
@@ -56,7 +66,7 @@ export const getTurfByOwner = async (req, res) => {
         };
       })
     );
- 
+
     return res.status(200).json(turfsWithAvgRating);
   } catch (err) {
     console.error("Error getting turfs by ownerId", err);
@@ -74,7 +84,7 @@ export const editTurfById = async (req, res) => {
   if (req.body.sportsType) {
     sportTypes.push(sportsType);
   }
- 
+
 
   const updatedTurfData = {
     ...otherDetails,
