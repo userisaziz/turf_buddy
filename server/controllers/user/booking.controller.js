@@ -10,6 +10,7 @@ import generateEmail, {
 } from "../../utils/generateEmail.js";
 import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
+import nodemailer from "nodemailer";
 
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
@@ -52,6 +53,8 @@ export const verifyPayment = async (req, res) => {
     const formattedEndTime = format(parseISO(endTime), "hh:mm a");
     const formattedDate = format(parseISO(selectedTurfDate), "d MMM yyyy");
 
+
+
     // verify the Razorpay signature
     const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
     hmac.update(`${orderId}|${paymentId}`);
@@ -70,8 +73,22 @@ export const verifyPayment = async (req, res) => {
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
 
+    const existingTimeSlot = await TimeSlot.findOne({
+      turf: turfId,
+      startTime: adjustedStartTime,
+      endTime: adjustedEndTime,
+    });
+
+    if (existingTimeSlot) {
+      return res.status(400).json({
+        success: false,
+        message: "Time slot already booked. Please choose a different slot.",
+      });
+    }
+
     const [user, turf] = await Promise.all([
       User.findById(userId),
+
       Turf.findById(turfId),
     ]);
     if (!user) {
@@ -121,6 +138,7 @@ export const verifyPayment = async (req, res) => {
       User.findByIdAndUpdate(userId, { $push: { bookings: booking._id } }),
     ]);
 
+
     // Generate and send email
     const htmlContent = generateHTMLContent(
       turf.name,
@@ -133,6 +151,37 @@ export const verifyPayment = async (req, res) => {
     );
 
     await generateEmail(user.email, "Booking Confirmation", htmlContent);
+    // After booking is successfully created
+    const message = `Booking confirmed for ${turf.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime}. Total Price: ${totalPrice}.`;
+
+    // Send email notification
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: turf.ownerEmail,
+      subject: "Booking Confirmation",
+      text: `Hi ,
+
+ Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
+
+Date: ${formattedDate}
+Time: ${formattedStartTime} to ${formattedEndTime}
+Total Price: ${totalPrice}
+
+Thank you !
+
+Best regards,
+The Support Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
     return res.status(200).json({
       success: true,
       message: "Booking successful, Check your email for the receipt",
