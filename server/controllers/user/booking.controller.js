@@ -11,6 +11,7 @@ import generateEmail, {
 import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
 
+import { twilioClient } from "../../config/twillio.js";
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
   try {
@@ -148,6 +149,13 @@ export const verifyPayment = async (req, res) => {
     );
 
     await generateEmail(user.email, "Booking Confirmation", htmlContent);
+    const message = `Booking confirmed for ${turf.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime}. Total Price: ${totalPrice}.`;
+
+    await twilioClient.messages.create({
+      body: message,
+      from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+      to: turf.ownerPhoneNumber, // Venue owner's phone number
+    });
     return res.status(200).json({
       success: true,
       message: "Booking successful, Check your email for the receipt",
