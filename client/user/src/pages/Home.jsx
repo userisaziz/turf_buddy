@@ -17,16 +17,19 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <Helmet>
-        <title>Klb TurfBuddy</title>
+        <title>
+          Turf Buddy | Klb TurfBuddy | Turf Buddy Gulbarga / Kalaburgi |
+        </title>
+
         <meta
           name="description"
-          content="Discover and book the best turf fields in kalaburgi/gulbarga with Klb TurfBuddy."
+          content="Discover and book the best sports turfs in Kalaburgi/Gulbarga. Klb TurfBuddy makes it easy to find venues for soccer, cricket, and other sports. Book your turf today!"
         />
         <meta
           name="keywords"
-          content="Klb TurfBuddy, sports, turf booking, soccer, football, cricket, sports venues, Kalaburgi TurfBuddy, Gulbarga TurfBuddy,Kalaburgi Turf Buddy, Gulbarga Turf Buddy "
+          content="Klb TurfBuddy,Turf Buddy Gulbarga, Turf Buddy Kalaburgi, sports turf booking, soccer turfs Kalaburgi, cricket venues Gulbarga, football ground booking, sports facilities Kalaburgi"
         />
-        <link rel="canonical" href="https://www.example.com/home" />
+        <link rel="canonical" href="https://turf-buddy.vercel.app/" />
       </Helmet>
       <div className="hero min-h-[70vh] bg-base-200">
         <div className="hero-content flex-col lg:flex-row-reverse animate-slide-in-right">
