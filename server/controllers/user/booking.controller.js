@@ -11,7 +11,7 @@ import generateEmail, {
 import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
 import nodemailer from "nodemailer";
-import logger from "../../utils/logger.js";
+import logger from "../../config/logging.js";
 
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
