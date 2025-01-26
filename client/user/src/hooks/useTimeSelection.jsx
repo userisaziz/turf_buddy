@@ -1,4 +1,4 @@
-import {  useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   format,
   parse,
@@ -33,8 +33,8 @@ const useTimeSelection = (
 
     while (isBefore(currentTime, closeTime)) {
       times.push(format(currentTime, "hh:mm a"));
-      // currentTime = addMinutes(currentTime, 60);
-      currentTime = addHours(currentTime, 1);
+      currentTime = addMinutes(currentTime, 30);
+      // currentTime = addHours(currentTime, 1);
     }
 
     return times;

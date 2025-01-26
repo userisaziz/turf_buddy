@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import axiosInstance from "../useAxiosInstance";
+import toast from "react-hot-toast";
 
 const useOwnerBookings = () => {
   const [allBookings, setAllBookings] = useState([]);
@@ -7,6 +8,8 @@ const useOwnerBookings = () => {
   const [error, setError] = useState(null);
   const [filterDays, setFilterDays] = useState(30);
   const [sortConfig, setSortConfig] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -26,6 +29,28 @@ const useOwnerBookings = () => {
         setError("Failed to fetch bookings");
       }
       setLoading(false);
+    }
+  };
+
+  const deleteBooking = async () => {
+    try {
+      setLoading(true);
+      await axiosInstance.post("/api/owner/bookings/delete", {
+        bookingId: selectedBookingId,
+      });
+      setLoading(false);
+
+      toast.success("Booking deleted successfully");
+      setIsModalOpen(false);
+      fetchBookings(); // Refresh the bookings list after deletion
+    } catch (error) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Failed to fetch bookings");
+      }
+      setLoading(false);
+      toast.error("An error occurred while deleting the booking");
     }
   };
 
@@ -73,6 +98,12 @@ const useOwnerBookings = () => {
     setFilterDays,
     sortConfig,
     requestSort,
+    fetchBookings,
+    deleteBooking,
+    isModalOpen,
+    setIsModalOpen,
+    setSelectedBookingId,
+    selectedBookingId,
   };
 };
 
