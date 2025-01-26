@@ -7,11 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import axiosInstance from "../../../hooks/useAxiosInstance";
-const OwnerBookings = () => {
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState(null);
 
+const OwnerBookings = () => {
   const {
     bookings,
     loading,
@@ -19,6 +16,11 @@ const OwnerBookings = () => {
     filterDays,
     setFilterDays,
     sortConfig,
+    deleteBooking,
+    isModalOpen,
+    setIsModalOpen,
+    setSelectedBookingId,
+    selectedBookingId,
     requestSort,
   } = useOwnerBookings();
 
@@ -33,33 +35,14 @@ const OwnerBookings = () => {
   };
 
   const formatTime = (dateString) => {
-    // Subtract 5 hours and 30 minutes from the time
     const adjustedDate = subMinutes(subHours(new Date(dateString), 5), 30);
     return format(adjustedDate, "h:mm aa");
   };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
       toast.info("Phone number copied to clipboard!");
     });
-  };
-  //
-
-  const handleDeleteBooking = async () => {
-    try {
-      const response = await axiosInstance.post("/api/owner/bookings/delete", {
-        bookingId: selectedBookingId,
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete booking");
-      }
-
-      alert("Booking deleted successfully");
-      setIsModalOpen(false); // Close the modal after deletion
-      // Optionally, refresh the bookings list
-    } catch (error) {
-      console.error("Error deleting booking:", error);
-      alert("An error occurred while deleting the booking");
-    }
   };
 
   const openModal = (bookingId) => {
@@ -71,6 +54,7 @@ const OwnerBookings = () => {
     setIsModalOpen(false);
     setSelectedBookingId(null);
   };
+
   return (
     <div className="p-4 md:p-6 bg-base-200 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -112,7 +96,7 @@ const OwnerBookings = () => {
             </div>
           </div>
         </div>
-        {/* Modal */}
+
         {isModalOpen && (
           <div className="modal modal-open">
             <div className="modal-box">
@@ -121,7 +105,7 @@ const OwnerBookings = () => {
                 Are you sure you want to delete this booking?
               </p>
               <div className="modal-action">
-                <button className="btn btn-error" onClick={handleDeleteBooking}>
+                <button className="btn btn-error" onClick={deleteBooking}>
                   Delete
                 </button>
                 <button className="btn" onClick={closeModal}>
