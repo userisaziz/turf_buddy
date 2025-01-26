@@ -21,11 +21,15 @@ const verifyOwnerToken = async (req, res, next) => {
         });
     }
     req.owner = decoded;
-    if(req.owner.role !=="owner"){
-        return res.status(403).json({ success: false, message: "Unauthorized" });
+    if (req.owner.role !== "owner") {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
     }
     next();
   } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      // Token has expired
+      return res.status(401).json({ message: "Unauthorized: Token has expired" });
+    }
     return res.status(500).json(err.message);
   }
 };

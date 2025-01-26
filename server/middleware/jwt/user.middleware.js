@@ -25,6 +25,10 @@ const verifyUserToken = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      // Token has expired
+      return res.status(401).json({ message: "Unauthorized: Token has expired" });
+    }
     // Internal server error
     return res.status(500).json({ message: "Internal server error" });
   }
