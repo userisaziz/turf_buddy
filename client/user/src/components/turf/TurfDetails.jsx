@@ -51,6 +51,14 @@ const TurfDetails = () => {
     }
   };
 
+  const handleMapRedirect = () => {
+    const query = encodeURIComponent(turf.location);
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${query}`,
+      "_blank"
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-in-left">
@@ -65,7 +73,12 @@ const TurfDetails = () => {
               <h2 className="text-3xl font-bold text-white">{turf.name}</h2>
               <div className="flex items-center space-x-2 text-white">
                 <MapPin className="w-4 h-4" />
-                <p className="text-sm">{turf.location}</p>
+                <p
+                  className="text-sm cursor-pointer"
+                  onClick={handleMapRedirect}
+                >
+                  {turf.location} <span>(Get Directions on Google Maps)</span>
+                </p>
               </div>
             </div>
           </div>
@@ -127,7 +140,7 @@ const TurfDetails = () => {
         </div>
       </div>
       <div className="mt-12">
-         <Reviews turfId={id} />
+        <Reviews turfId={id} />
       </div>
     </div>
   );
