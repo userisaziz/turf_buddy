@@ -30,5 +30,15 @@ axiosInstance.interceptors.request.use((config) => {
 
   return config;
 });
-
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid, handle logout
+      localStorage.removeItem("persist:user");
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  }
+);
 export default axiosInstance;

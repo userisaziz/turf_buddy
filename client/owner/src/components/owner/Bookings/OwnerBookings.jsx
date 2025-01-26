@@ -4,8 +4,14 @@ import { format, subHours, subMinutes } from "date-fns";
 import { ArrowUpDown, Calendar, Clock, User, IndianRupee } from "lucide-react";
 import Avatar from "react-avatar";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import axiosInstance from "../../../hooks/useAxiosInstance";
 const OwnerBookings = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+
   const {
     bookings,
     loading,
@@ -31,7 +37,40 @@ const OwnerBookings = () => {
     const adjustedDate = subMinutes(subHours(new Date(dateString), 5), 30);
     return format(adjustedDate, "h:mm aa");
   };
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.info("Phone number copied to clipboard!");
+    });
+  };
+  //
 
+  const handleDeleteBooking = async () => {
+    try {
+      const response = await axiosInstance.post("/api/owner/bookings/delete", {
+        bookingId: selectedBookingId,
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete booking");
+      }
+
+      alert("Booking deleted successfully");
+      setIsModalOpen(false); // Close the modal after deletion
+      // Optionally, refresh the bookings list
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert("An error occurred while deleting the booking");
+    }
+  };
+
+  const openModal = (bookingId) => {
+    setSelectedBookingId(bookingId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedBookingId(null);
+  };
   return (
     <div className="p-4 md:p-6 bg-base-200 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -73,6 +112,25 @@ const OwnerBookings = () => {
             </div>
           </div>
         </div>
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Confirm Deletion</h3>
+              <p className="py-4">
+                Are you sure you want to delete this booking?
+              </p>
+              <div className="modal-action">
+                <button className="btn btn-error" onClick={handleDeleteBooking}>
+                  Delete
+                </button>
+                <button className="btn" onClick={closeModal}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto bg-base-100 rounded-lg shadow-xl">
           <table className="table w-full">
@@ -80,6 +138,7 @@ const OwnerBookings = () => {
               <tr>
                 <th>Turf</th>
                 <th>User</th>
+                <th>Phone</th>
                 <th
                   onClick={() => requestSort("startTime")}
                   className="cursor-pointer"
@@ -117,6 +176,7 @@ const OwnerBookings = () => {
                     <ArrowUpDown size={16} className="inline" />
                   )}
                 </th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -126,10 +186,16 @@ const OwnerBookings = () => {
                   <td>
                     <div className="flex items-center space-x-3">
                       <Avatar name={booking.userName} size="32" round={true} />
-                      <div className="hidden md:block font-bold">
+                      <div className="md:block font-semibold">
                         {booking.userName}
                       </div>
                     </div>
+                  </td>
+                  <td
+                    className="whitespace-nowrap cursor-pointer"
+                    onClick={() => copyToClipboard(booking.phone)}
+                  >
+                    {booking.phone}
                   </td>
                   <td className="whitespace-nowrap">
                     <Clock size={16} className="inline mr-1" />
@@ -149,6 +215,14 @@ const OwnerBookings = () => {
                       <IndianRupee size={16} className="inline mr-1" />
                       {booking.totalPrice}
                     </span>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-error relative"
+                      onClick={() => openModal(booking.id)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

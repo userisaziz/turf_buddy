@@ -25,7 +25,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
         >
           <img
             src="/logo.png"
-            alt="TurfSpot"
+            alt="TurfBuddy"
             className="h-10 w-10 mask mask-squircle"
           />
           TurfBuddy

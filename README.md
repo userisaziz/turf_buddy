@@ -35,12 +35,14 @@ Kalaburgu Turf Buddy (KTB) is a comprehensive turf booking application with thre
 ## Installation
 
 1. Clone the repository
+
    ```bash
-   git clone https://github.com/RijoKsd/TurfSpot.git
+
    ```
+
 2. Install dependencies for both client and server
    ```bash
-   cd TurfSpot
+   cd TurfBuddy
    npm install
    cd server
    npm install
