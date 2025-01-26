@@ -68,7 +68,7 @@ export const getOwnerBookings = async (req, res) => {
           phone: "$user.phone",
           totalPrice: 1,
           bookingDate: "$createdAt",
-          timeSlot: "$timeSlot._id",
+          timeSlotId: "$timeSlot._id",
           duration: {
             $divide: [
               { $subtract: ["$timeSlot.endTime", "$timeSlot.startTime"] },
@@ -399,7 +399,7 @@ export const deleteBooking = async (req, res) => {
 
     // Delete the associated time slot
     if (booking.timeSlot) {
-      await TimeSlot.findByIdAndDelete(booking.timeSlot);
+      await TimeSlot.findByIdAndDelete(booking.timeSlotId);
     }
 
     // Delete the booking
