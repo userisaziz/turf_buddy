@@ -68,6 +68,7 @@ export const getOwnerBookings = async (req, res) => {
           phone: "$user.phone",
           totalPrice: 1,
           bookingDate: "$createdAt",
+          timeSlot: "$timeSlot._id",
           duration: {
             $divide: [
               { $subtract: ["$timeSlot.endTime", "$timeSlot.startTime"] },
@@ -376,5 +377,40 @@ export const verifyPayment = async (req, res) => {
       success: false,
       message: "An error occurred while processing your booking",
     });
+  }
+};
+//DELETE A BOOKING
+export const deleteBooking = async (req, res) => {
+  const { bookingId } = req.body; // Extract bookingId from the request body
+
+  try {
+    // Find the booking by ID
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Optionally, verify that the booking belongs to the owner
+    const ownerId = req.owner.id;
+    const turf = await Turf.findById(booking.turf);
+    if (turf.owner.toString() !== ownerId) {
+      return res.status(403).json({ message: "You do not have permission to delete this booking" });
+    }
+
+    // Delete the associated time slot
+    if (booking.timeSlot) {
+      await TimeSlot.findByIdAndDelete(booking.timeSlot);
+    }
+
+    // Delete the booking
+    await Booking.findByIdAndDelete(bookingId);
+
+    // Optionally, remove the booking reference from the user
+    await User.findByIdAndUpdate(booking.user, { $pull: { bookings: bookingId } });
+
+    return res.status(200).json({ message: "Booking and associated time slot deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteBooking:", error);
+    return res.status(500).json({ message: "An error occurred while deleting the booking" });
   }
 };
