@@ -4,6 +4,7 @@ import { format, subHours, subMinutes } from "date-fns";
 import { ArrowUpDown, Calendar, Clock, User, IndianRupee } from "lucide-react";
 import Avatar from "react-avatar";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 const OwnerBookings = () => {
   const navigate = useNavigate();
   const {
@@ -31,7 +32,11 @@ const OwnerBookings = () => {
     const adjustedDate = subMinutes(subHours(new Date(dateString), 5), 30);
     return format(adjustedDate, "h:mm aa");
   };
-
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.info("Phone number copied to clipboard!");
+    });
+  };
   return (
     <div className="p-4 md:p-6 bg-base-200 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -80,6 +85,7 @@ const OwnerBookings = () => {
               <tr>
                 <th>Turf</th>
                 <th>User</th>
+                <th>Phone</th>
                 <th
                   onClick={() => requestSort("startTime")}
                   className="cursor-pointer"
@@ -126,10 +132,16 @@ const OwnerBookings = () => {
                   <td>
                     <div className="flex items-center space-x-3">
                       <Avatar name={booking.userName} size="32" round={true} />
-                      <div className="hidden md:block font-bold">
+                      <div className="md:block font-semibold">
                         {booking.userName}
                       </div>
                     </div>
+                  </td>
+                  <td
+                    className="whitespace-nowrap cursor-pointer"
+                    onClick={() => copyToClipboard(booking.phone)}
+                  >
+                    {booking.phone}
                   </td>
                   <td className="whitespace-nowrap">
                     <Clock size={16} className="inline mr-1" />

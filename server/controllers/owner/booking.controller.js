@@ -65,6 +65,7 @@ export const getOwnerBookings = async (req, res) => {
           id: "$_id",
           turfName: "$turf.name",
           userName: "$user.name",
+          phone: "$user.phone",
           totalPrice: 1,
           bookingDate: "$createdAt",
           duration: {
