@@ -17,10 +17,10 @@ const Home = () => {
             <Carousel slides={slides} />
           </div>
           <div className="w-full lg:w-1/2">
-            <h1 className="text-5xl font-bold">Welcome to TurfSpot</h1>
+            <h1 className="text-5xl font-bold">Welcome to TurfBuddy</h1>
             <p className="py-6">
               Discover and book the best turf fields in your area. Whether
-              you&#39;re planning a casual game or a tournament, TurfSpot has
+              you&#39;re planning a casual game or a tournament, TurfBuddy has
               got you covered.
             </p>
             <Link to="/login" className="btn btn-accent">
