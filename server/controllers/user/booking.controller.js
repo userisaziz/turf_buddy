@@ -12,6 +12,7 @@ import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
 import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
+import { sendWhatsAppMessage } from "../../utils/sendWhatsappMsg.js";
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
   try {
@@ -171,7 +172,18 @@ export const verifyPayment = async (req, res) => {
     );
 
     await generateEmail(user.email, "Booking Confirmation", htmlContent);
+    const ownerMessage = `Hi ${turf.owner},
 
+Booking confirmed for ${user.name} (${user.phone}) at ${turf.name}.
+
+Details:
+- Date: ${formattedDate}
+- Time: ${formattedStartTime} to ${formattedEndTime}
+- Total Price: ₹${totalPrice}
+- Owners Number ${turf.ownerPhoneNumber}
+
+Thank you!`;
+    await sendWhatsAppMessage('+917204977240', ownerMessage)
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -184,19 +196,8 @@ export const verifyPayment = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: turf.ownerEmail,
       subject: "Booking Confirmation",
-      text: `Hi ,
-
- Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
-
-Date: ${formattedDate}
-Time: ${formattedStartTime} to ${formattedEndTime}
-Total Price: ${totalPrice}
-
-Thank you !
-
-Best regards,
-The Support Team`,
-    };
+      text: ownerMessage
+    }
 
     await transporter.sendMail(mailOptions);
     logger.info('Booking successful', { userId, turfId, bookingId: booking._id });
