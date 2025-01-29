@@ -12,12 +12,35 @@ import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
 import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
-
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
   try {
-    const { totalPrice } = req.body;
+    const { totalPrice, turfId, startTime, endTime, selectedTurfDate } = req.body;
     logger.info('createOrder request body', { body: req.body });
+
+    // Check if the user already has a booking for the same turf and time slot
+    const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
+    const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
+
+    const existingBooking = await Booking.findOne({
+      user: userId,
+      turf: turfId,
+      timeSlot: {
+        $in: await TimeSlot.find({
+          turf: turfId,
+          startTime: adjustedStartTime,
+          endTime: adjustedEndTime,
+        }).distinct('_id'),
+      },
+    });
+
+    if (existingBooking) {
+      logger.warn('User already has a booking for the same turf and time slot', { userId, turfId, startTime, endTime });
+      return res.status(400).json({
+        success: false,
+        message: "You already have a booking for this turf and time slot.",
+      });
+    }
 
     const user = await User.findById(userId).select("name email");
     if (!user) {
