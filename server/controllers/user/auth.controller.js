@@ -129,7 +129,7 @@ export const resetPassword = async (req, res) => {
     }
 
     // Find the user associated with the token
-    const user = await User.findById(resetToken.id);
+    const user = await User.findById(resetToken.userId);
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }

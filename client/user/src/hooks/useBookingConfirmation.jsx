@@ -34,13 +34,7 @@ const useBookingConfirmation = (
     try {
       setLoading(true);
 
-      const order = await createOrder({
-        totalPrice: pricePerHour * duration,
-        turfId,
-        startTimeISO,
-        endTimeISO,
-        selectedTurfDate,
-      });
+      const order = await createOrder(pricePerHour * duration);
       setLoading(false);
 
       const razorpayResponse = await handlePayment(order.order, order.user);

@@ -12,36 +12,12 @@ import User from "../../models/user.model.js";
 import { format, parseISO } from "date-fns";
 import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
-import { sendWhatsAppMessage } from "../../utils/sendWhatsappMsg.js";
+
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
   try {
-    const { totalPrice, turfId, startTime, endTime, selectedTurfDate } = req.body;
+    const { totalPrice } = req.body;
     logger.info('createOrder request body', { body: req.body });
-
-    // Check if the user already has a booking for the same turf and time slot
-    const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
-    const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
-
-    const existingBooking = await Booking.findOne({
-      user: userId,
-      turf: turfId,
-      timeSlot: {
-        $in: await TimeSlot.find({
-          turf: turfId,
-          startTime: adjustedStartTime,
-          endTime: adjustedEndTime,
-        }).distinct('_id'),
-      },
-    });
-
-    if (existingBooking) {
-      logger.warn('User already has a booking for the same turf and time slot', { userId, turfId, startTime, endTime });
-      return res.status(400).json({
-        success: false,
-        message: "You already have a booking for this turf and time slot.",
-      });
-    }
 
     const user = await User.findById(userId).select("name email");
     if (!user) {
@@ -172,18 +148,7 @@ export const verifyPayment = async (req, res) => {
     );
 
     await generateEmail(user.email, "Booking Confirmation", htmlContent);
-    const ownerMessage = `Hi ${turf.owner},
 
-Booking confirmed for ${user.name} (${user.phone}) at ${turf.name}.
-
-Details:
-- Date: ${formattedDate}
-- Time: ${formattedStartTime} to ${formattedEndTime}
-- Total Price: ₹${totalPrice}
-- Owners Number ${turf.ownerPhoneNumber}
-
-Thank you!`;
-    await sendWhatsAppMessage('+917204977240', ownerMessage)
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -196,8 +161,19 @@ Thank you!`;
       from: process.env.EMAIL_USER,
       to: turf.ownerEmail,
       subject: "Booking Confirmation",
-      text: ownerMessage
-    }
+      text: `Hi ,
+
+ Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
+
+Date: ${formattedDate}
+Time: ${formattedStartTime} to ${formattedEndTime}
+Total Price: ${totalPrice}
+
+Thank you !
+
+Best regards,
+The Support Team`,
+    };
 
     await transporter.sendMail(mailOptions);
     logger.info('Booking successful', { userId, turfId, bookingId: booking._id });
