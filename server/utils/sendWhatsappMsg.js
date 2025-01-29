@@ -1,20 +1,20 @@
-const axios = require('axios');
-require('dotenv').config();
+import axios from "axios";
+import dotenv from "dotenv";
 
+dotenv.config();
 export const sendWhatsAppMessage = async (phoneNumber, message) => {
-   const url = `https://api.green-api.com/waInstance${process.env.ID_INSTANCE}/sendMessage/${process.env.API_TOKEN_INSTANCE}`;
+   const url = "https://7105.api.greenapi.com/waInstance7105183147/sendMessage/8df5da7c53b649f28af6381fca688b467f5ecee575eb41a99b"
 
    const payload = {
       chatId: `${phoneNumber}@c.us`,
-      message: message
+      message: message,
+
    };
 
    try {
       const response = await axios.post(url, payload);
       console.log('Message sent:', response.data);
    } catch (error) {
-      console.error('Error sending message:', error.response.data);
+      console.error('Error sending message:', error);
    }
 };
-
-sendWhatsAppMessage('919876543210', 'Your booking has been confirmed!');
