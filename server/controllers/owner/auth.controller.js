@@ -152,7 +152,7 @@ export const forgotOwnerPassword = async (req, res) => {
       },
     });
 
-    const resetUrl = `${process.env.CLIENT_OWNER_URL}/reset-password/${token}`;
+    const resetUrl = `${process.env.CLIENT_OWNER_URL}/owner/reset-password/${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -180,7 +180,7 @@ export const resetOwnerPassword = async (req, res) => {
     }
 
     // Find the owner associated with the token
-    const owner = await Owner.findById(resetToken.id);
+    const owner = await Owner.findById(resetToken.ownerId);
     if (!owner) {
       return res.status(400).json({ message: "Owner not found" });
     }
