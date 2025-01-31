@@ -144,38 +144,40 @@ export const verifyPayment = async (req, res) => {
       formattedStartTime,
       formattedEndTime,
       totalPrice,
-      QRcode
+      QRcode,
+      turf.ownerPhoneNumber,
+      user.phone
     );
 
-    await generateEmail(user.email, "Booking Confirmation", htmlContent);
+    await generateEmail(user.email, "Booking Confirmation User", htmlContent);
+await generateEmail(turf.ownerEmail, "Booking Confirmation Owner", htmlContent);
+    // const transporter = nodemailer.createTransport({
+    //   service: "Gmail",
+    //   auth: {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_PASS,
+    //   },
+    // });
 
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: turf.ownerEmail,
+//       subject: "Booking Confirmation",
+//       text: `Hi ,
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: turf.ownerEmail,
-      subject: "Booking Confirmation",
-      text: `Hi ,
+//  Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
 
- Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
+// Date: ${formattedDate}
+// Time: ${formattedStartTime} to ${formattedEndTime}
+// Total Price: ${totalPrice}
 
-Date: ${formattedDate}
-Time: ${formattedStartTime} to ${formattedEndTime}
-Total Price: ${totalPrice}
+// Thank you !
 
-Thank you !
+// Best regards,
+// The Support Team`,
+//     };
 
-Best regards,
-The Support Team`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
     logger.info('Booking successful', { userId, turfId, bookingId: booking._id });
     return res.status(200).json({
       success: true,
