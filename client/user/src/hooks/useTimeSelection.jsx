@@ -19,7 +19,8 @@ const useTimeSelection = (
   setPricePerHour,
   bookedTime,
   timeSlots,
-  setDuration
+  setDuration,
+  setAdvanceAmount,
 ) => {
   const [priceAtMorning, setPriceAtMorning] = useState(0); 
 
@@ -91,7 +92,7 @@ const useTimeSelection = (
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
       setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
-
+      setAdvanceAmount(result.timeSlots.advancePayment)
       const formattedBookedTime = result.bookedTime.map((booking) => ({
         ...booking,
         startTime: format(
