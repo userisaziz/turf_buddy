@@ -110,8 +110,8 @@ const TurfDetails = () => {
           <div className="grid grid-cols-2 gap-6 mb-6">
             <InfoItem
               icon={<IndianRupee />}
-              label="Price per Hour"
-              value={`₹ ${turf.pricePerHour}`}
+              label="Price per Hour  D/N"
+              value={`₹ ${turf.priceAtMorning} / ₹ ${turf.pricePerHour}`}
             />
             <InfoItem
               icon={<Activity />}

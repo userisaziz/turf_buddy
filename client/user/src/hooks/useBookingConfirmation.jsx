@@ -12,7 +12,8 @@ const useBookingConfirmation = (
   selectedStartTime,
   duration,
   pricePerHour,
-  setLoading
+  setLoading,
+  advanceAmount,
 ) => {
   const navigate = useNavigate();
   const confirmReservation = async () => {
@@ -34,7 +35,8 @@ const useBookingConfirmation = (
     try {
       setLoading(true);
 
-      const order = await createOrder(pricePerHour * duration);
+      // const order = await createOrder(pricePerHour * duration);
+      const order = await createOrder(advanceAmount);
       setLoading(false);
 
       const razorpayResponse = await handlePayment(order.order, order.user);

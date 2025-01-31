@@ -6,13 +6,13 @@ export default async function generateEmail(to, subject, html) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL,
+      from: process.env.EMAIL_USER,
       to: to,
       subject: subject,
       html: html,
@@ -23,7 +23,7 @@ export default async function generateEmail(to, subject, html) {
   }
 }
 
-export const generateHTMLContent = (turfName, location,date,startTime,endTime,totalPrice, QRcode) => {
+export const generateHTMLContent = (turfName, location,date,startTime,endTime,totalPrice, QRcode,ownerPhone,userPhone) => {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -85,11 +85,13 @@ export const generateHTMLContent = (turfName, location,date,startTime,endTime,to
         <p>Your booking has been successful.</p>
         <div class="info">
             <p><strong>Turf Name:</strong> ${turfName}</p>
+               <p><strong>Turf Owner Number:</strong> ${ownerPhone}</p>
             <p><strong>Location:</strong> ${location}</p>
             <p><strong>Date:</strong> ${date}</p>
             <p><strong>Start Time:</strong> ${startTime}</p>
             <p><strong>End Time:</strong> ${endTime}</p>
             <p><strong>Total Price:</strong> ${totalPrice}</p>
+                <p><strong>Total Phone:</strong> ${userPhone}</p>
         </div>
         <div class="qr-code">
             <img src="${QRcode}" alt="QR Code">

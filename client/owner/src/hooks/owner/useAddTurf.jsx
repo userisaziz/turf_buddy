@@ -25,6 +25,18 @@ const addTurfSchema = yup.object().shape({
     .required("Enter the price per hour of the turf")
     .min(500, "Price per hour must be at least 500 rupees")
     .max(3000, "Price per hour must be at most 3000 rupees"),
+  priceAtMorning: yup
+    .number()
+    .required("Enter the price for morning")
+    .min(100, "Price in the morning must be at least 100 rupees"),
+  advancePayment: yup
+    .number()
+    .required("Enter the advance payment")
+    .min(25, "Advance payment must be at least 100 rupees"),
+  region: yup
+    .string()
+    .required("Select a region")
+    .oneOf(["Hagarga", "Saidapuri", "Nagnahalli", "Kbn", "Other"], "Invalid region"),
   image: yup
     .mixed()
     .test(
@@ -47,6 +59,7 @@ const addTurfSchema = yup.object().shape({
     .of(yup.string())
     .min(1, "At least one sport type is required"),
 });
+
 
 export default function useAddTurf() {
   const [loading, setLoading] = useState(false);

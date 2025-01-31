@@ -20,6 +20,7 @@ const Reservation = () => {
     isDurationAvailable,
     confirmReservation,
     loading,
+    advanceAmount,
   } = useReservation();
 
 if( loading) return <ReservationSkeleton />;
@@ -55,6 +56,7 @@ if( loading) return <ReservationSkeleton />;
               selectedStartTime={selectedStartTime}
               duration={duration}
               pricePerHour={pricePerHour}
+              advanceAmount={advanceAmount}
             />
           )}
           <div className="mt-6">

@@ -21,7 +21,7 @@ export const createOrder = async (req, res) => {
 
     const user = await User.findById(userId).select("name email");
     if (!user) {
-      logger.warn('User not found', { userId });
+      logger.error('User not found', { userId });
       return res.status(400).json({ message: "User not found" });
     }
 
@@ -81,7 +81,7 @@ export const verifyPayment = async (req, res) => {
     });
 
     if (existingTimeSlot) {
-      logger.warn('Time slot already booked', { turfId, adjustedStartTime, adjustedEndTime });
+      logger.error('Time slot already booked', { turfId, adjustedStartTime, adjustedEndTime });
       return res.status(400).json({
         success: false,
         message: "Time slot already booked. Please choose a different slot.",
@@ -94,12 +94,12 @@ export const verifyPayment = async (req, res) => {
     ]);
 
     if (!user) {
-      logger.warn('User not found', { userId });
+      logger.error('User not found', { userId });
       return res.status(400).json({ message: "User not found" });
     }
 
     if (!turf) {
-      logger.warn('Turf not found', { turfId });
+      logger.error('Turf not found', { turfId });
       return res
         .status(404)
         .json({ success: false, message: "Turf not found" });
@@ -144,38 +144,40 @@ export const verifyPayment = async (req, res) => {
       formattedStartTime,
       formattedEndTime,
       totalPrice,
-      QRcode
+      QRcode,
+      turf.ownerPhoneNumber,
+      user.phone
     );
 
-    await generateEmail(user.email, "Booking Confirmation", htmlContent);
+    await generateEmail(user.email, "Booking Confirmation User", htmlContent);
+await generateEmail(turf.ownerEmail, "Booking Confirmation Owner", htmlContent);
+    // const transporter = nodemailer.createTransport({
+    //   service: "Gmail",
+    //   auth: {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_PASS,
+    //   },
+    // });
 
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: turf.ownerEmail,
+//       subject: "Booking Confirmation",
+//       text: `Hi ,
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: turf.ownerEmail,
-      subject: "Booking Confirmation",
-      text: `Hi ,
+//  Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
 
- Booking for ${user.name} with ${user.phone} at ${turf.name} has been confirmed. Here are the details:
+// Date: ${formattedDate}
+// Time: ${formattedStartTime} to ${formattedEndTime}
+// Total Price: ${totalPrice}
 
-Date: ${formattedDate}
-Time: ${formattedStartTime} to ${formattedEndTime}
-Total Price: ${totalPrice}
+// Thank you !
 
-Thank you !
+// Best regards,
+// The Support Team`,
+//     };
 
-Best regards,
-The Support Team`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
     logger.info('Booking successful', { userId, turfId, bookingId: booking._id });
     return res.status(200).json({
       success: true,

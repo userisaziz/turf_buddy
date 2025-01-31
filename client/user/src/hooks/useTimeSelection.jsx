@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   format,
   parse,
@@ -7,7 +7,6 @@ import {
   parseISO,
   addMinutes,
   addDays,
-  addHours,
 } from "date-fns";
 import axiosInstance from "./useAxiosInstance";
 
@@ -20,8 +19,11 @@ const useTimeSelection = (
   setPricePerHour,
   bookedTime,
   timeSlots,
-  setDuration
+  setDuration,
+  setAdvanceAmount,
 ) => {
+  const [priceAtMorning, setPriceAtMorning] = useState(0); 
+
   const availableTimes = useMemo(() => {
     if (!timeSlots.openTime || !timeSlots.closeTime) return [];
 
@@ -34,7 +36,6 @@ const useTimeSelection = (
     while (isBefore(currentTime, closeTime)) {
       times.push(format(currentTime, "hh:mm a"));
       currentTime = addMinutes(currentTime, 30);
-      // currentTime = addHours(currentTime, 1);
     }
 
     return times;
@@ -43,6 +44,16 @@ const useTimeSelection = (
   const handleTimeSelection = (time) => {
     setSelectedStartTime(time);
     setDuration(1);
+
+    // Calculate the price based on the selected start time
+    const selectedTime = parse(time, "hh:mm a", new Date());
+    const eveningStartTime = parse("05:00 PM", "hh:mm a", new Date());
+
+    if (isAfter(selectedTime, eveningStartTime) || isSameTime(selectedTime, eveningStartTime)) {
+      setPricePerHour(timeSlots.pricePerHour); // Use pricePerHour for evening/night
+    } else {
+      setPricePerHour(priceAtMorning); // Use priceAtMorning for morning/day
+    }
   };
 
   const isTimeSlotBooked = (time) => {
@@ -80,7 +91,8 @@ const useTimeSelection = (
       const result = await response.data;
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
-
+      setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
+      setAdvanceAmount(result.timeSlots.advancePayment)
       const formattedBookedTime = result.bookedTime.map((booking) => ({
         ...booking,
         startTime: format(
