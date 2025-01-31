@@ -6,6 +6,7 @@ import { setHours, setMinutes } from "date-fns";
 import { FormField } from "@components/common";
 import useAddTurf from "@hooks/owner/useAddTurf";
 import { Button } from "@components/common";
+
 const AddTurf = () => {
   const {
     register,
@@ -67,7 +68,42 @@ const AddTurf = () => {
             register={register}
             error={errors.pricePerHour}
           />
+          
+          {/* New Fields */}
+          <FormField
+            label="Price at Morning"
+            name="priceAtMorning"
+            type="number"
+            register={register}
+            error={errors.priceAtMorning}
+          />
+          <FormField
+            label="Advance Payment"
+            name="advancePayment"
+            type="number"
+            register={register}
+            error={errors.advancePayment}
+          />
+          
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Region</span>
+            </label>
+            <select {...register("region")} className="select select-bordered w-full">
+              <option value="Hagarga">Hagarga</option>
+              <option value="Saidapuri">Saidapuri</option>
+              <option value="Nagnahalli">Nagnahalli</option>
+              <option value="Kbn">Kbn</option>
+              <option value="Other">Other</option>
+            </select>
+            {errors.region && (
+              <span className="text-error text-xs">
+                {errors.region.message}
+              </span>
+            )}
+          </div>
         </div>
+
         <div className="space-y-4">
           <div className="form-control">
             <label className="label">
@@ -187,8 +223,9 @@ const AddTurf = () => {
             )}
           </div>
         </div>
+
         <div className="md:col-span-2">
-          <Button type="submit" className=" btn-primary w-full" loading={loading}>
+          <Button type="submit" className="btn-primary w-full" loading={loading}>
             Add Turf
           </Button>
         </div>
