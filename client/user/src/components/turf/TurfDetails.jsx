@@ -107,26 +107,34 @@ const TurfDetails = () => {
             )}
           </div>
           <p className="text-lg mb-6">{turf.description}</p>
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 py-2 mb-4">
             <InfoItem
-              icon={<IndianRupee />}
-              label="Price per Hour  D/N"
-              value={`₹ ${turf.priceAtMorning} / ₹ ${turf.pricePerHour}`}
+              icon={<IndianRupee className="w-6 h-6" />}
+              label="PRICE PER HOUR"
+              value={
+                <p className="text-gray-700 flex items-center gap-2">
+                <span className="flex items-center gap-1">
+                  <span className="text-sm text-gray-500">Day:</span>
+                  <span className="font-semibold text-green-600">₹{turf?.priceAtMorning}</span>
+                  <span className="text-sm text-gray-400 line-through">₹{turf?.pricePerHour}</span>
+                </span>
+                <span className="text-gray-300">|</span> {/* Divider */}
+                <span className="flex items-center gap-1">
+                  <span className="text-sm text-gray-500">Night:</span>
+                  <span className="font-semibold">₹{turf?.pricePerHour}</span>
+                </span>
+              </p>
+              }
             />
             <InfoItem
-              icon={<Activity />}
-              label="Sports"
+              icon={<Activity className="w-6 h-6" />}
+              label="SPORTS AVAILABLE"
               value={turf.sportTypes.join(", ")}
             />
             <InfoItem
-              icon={<Clock />}
-              label="Open Time"
-              value={turf.openTime}
-            />
-            <InfoItem
-              icon={<Clock />}
-              label="Close Time"
-              value={turf.closeTime}
+              icon={<Clock className="w-6 h-6" />}
+              label="OPENING HOURS"
+              value={`${turf.openTime} - ${turf.closeTime}`}
             />
           </div>
           <div className="card-actions">
