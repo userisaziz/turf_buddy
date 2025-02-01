@@ -126,6 +126,7 @@ const useTimeSelection = (
     availableTimes,
     handleTimeSelection,
     isTimeSlotBooked,
+    fetchByDate
   };
 };
 

@@ -4,7 +4,7 @@ import axiosInstance from "./useAxiosInstance";
 import { createOrder, handlePayment } from "../config/razorpay";
 import "https://checkout.razorpay.com/v1/checkout.js";
 import { useNavigate } from "react-router-dom";
-import { VERIFY_PAYMENT } from "../api/endpoint";
+import { VERIFY_PAYMENT, VERIFY_TIMESLOT } from "../api/endpoint";
 
 const useBookingConfirmation = (
   id,
@@ -14,6 +14,7 @@ const useBookingConfirmation = (
   pricePerHour,
   setLoading,
   advanceAmount,
+  fetchByDate
 ) => {
   const navigate = useNavigate();
   const confirmReservation = async () => {
@@ -36,6 +37,25 @@ const useBookingConfirmation = (
       setLoading(true);
 
       // const order = await createOrder(pricePerHour * duration);
+
+      // Step 1: Verify if the timeslot is available
+      const timeslotData = {
+        turfId: id, // Assuming `id` is the turfId
+        startTime: startTimeISO,
+        endTime: endTimeISO,
+        selectedTurfDate,
+      };
+
+      const timeslotResponse = await axiosInstance.post(VERIFY_TIMESLOT, timeslotData);
+
+      if (!timeslotResponse.data.success) {
+
+        toast.error(timeslotResponse.data.message);
+        setLoading(false);
+        window.location.reload(); 
+        return;
+      }
+      
       const order = await createOrder(advanceAmount);
       setLoading(false);
 
