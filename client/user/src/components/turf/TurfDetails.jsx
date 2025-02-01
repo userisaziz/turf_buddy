@@ -112,13 +112,13 @@ const TurfDetails = () => {
               icon={<IndianRupee className="w-6 h-6" />}
               label="PRICE PER HOUR"
               value={
-                <p className="text-gray-700 flex items-center gap-2">
+                <p className="text-gray-700 grid grid-rows-2">
                 <span className="flex items-center gap-1">
                   <span className="text-sm text-gray-500">Day:</span>
                   <span className="font-semibold text-green-600">₹{turf?.priceAtMorning}</span>
                   <span className="text-sm text-gray-400 line-through">₹{turf?.pricePerHour}</span>
                 </span>
-                <span className="text-gray-300">|</span> {/* Divider */}
+                {/* <span className="text-gray-300">|</span> Divider */}
                 <span className="flex items-center gap-1">
                   <span className="text-sm text-gray-500">Night:</span>
                   <span className="font-semibold">₹{turf?.pricePerHour}</span>
