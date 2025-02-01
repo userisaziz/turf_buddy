@@ -10,14 +10,14 @@ dotenv.config();
 const app = express();
 
 // Middleware to log requests
-app.use((req, res, next) => {
-  logger.info("HTTP Request", {
-    method: req.method,
-    url: req.url,
-    headers: req.headers,
-  });
-  next();
-});
+// app.use((req, res, next) => {
+//   logger.info("HTTP Request", {
+//     method: req.method,
+//     url: req.url,
+//     headers: req.headers,
+//   });
+//   next();
+// });
 
 app.use(express.json());
 app.use(cors());

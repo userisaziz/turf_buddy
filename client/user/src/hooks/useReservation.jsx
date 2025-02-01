@@ -23,7 +23,7 @@ const [advanceAmount, setAdvanceAmount] = useState(0);
     setDuration
   );
 
-  const { availableTimes, handleTimeSelection, isTimeSlotBooked } =
+  const { availableTimes, handleTimeSelection, isTimeSlotBooked ,fetchByDate} =
     useTimeSelection(
       selectedDate,
       id,
@@ -52,6 +52,7 @@ const [advanceAmount, setAdvanceAmount] = useState(0);
     pricePerHour,
     setLoading,
     advanceAmount,
+    fetchByDate,
   );
 
   return {
