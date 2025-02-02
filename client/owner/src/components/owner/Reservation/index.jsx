@@ -50,7 +50,7 @@ const Reservation = () => {
     isDurationAvailable,
     confirmReservation,
     loading,
-  } = useReservation(formData.turfId);
+  } = useReservation(formData.turfId,formData.userEmail);
 
   if (loading) return <ReservationSkeleton />;
 

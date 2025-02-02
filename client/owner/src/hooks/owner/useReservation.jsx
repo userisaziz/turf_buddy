@@ -5,7 +5,7 @@ import useDurationSelection from "./useDurationSelection";
 import useBookingConfirmation from "./useBookingConfirmation.jsx";
 import { useState } from "react";
 
-const useReservation = (id) => {
+const useReservation = (id,email) => {
   // const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -47,7 +47,8 @@ const useReservation = (id) => {
     selectedStartTime,
     duration,
     pricePerHour,
-    setLoading
+    setLoading,
+    email
   );
 
   return {
