@@ -7,6 +7,7 @@ import {
   parseISO,
   addMinutes,
   addDays,
+  isEqual,
   addHours,
 } from "date-fns";
 import axiosInstance from "../useAxiosInstance";
@@ -58,24 +59,41 @@ const useTimeSelection = (
     }
   };
 
+  // const isTimeSlotBooked = (time) => {
+  //   const timeToCheck = parse(time, "hh:mm a", new Date());
+  //   return bookedTime.some((booking) => {
+  //     const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
+  //     let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
+
+  //     if (isBefore(bookingEnd, bookingStart)) {
+  //       bookingEnd = addDays(bookingEnd, 1);
+  //     }
+
+  //     return (
+  //       (isAfter(timeToCheck, bookingStart) ||
+  //         isSameTime(timeToCheck, bookingStart)) &&
+  //       isBefore(timeToCheck, bookingEnd)
+  //     );
+  //   });
+  // };
   const isTimeSlotBooked = (time) => {
     const timeToCheck = parse(time, "hh:mm a", new Date());
+  
     return bookedTime.some((booking) => {
       const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
       let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
-
+  
       if (isBefore(bookingEnd, bookingStart)) {
         bookingEnd = addDays(bookingEnd, 1);
       }
-
+  
       return (
-        (isAfter(timeToCheck, bookingStart) ||
-          isSameTime(timeToCheck, bookingStart)) &&
+        (isAfter(timeToCheck, bookingStart) || isEqual(timeToCheck, bookingStart)) &&
         isBefore(timeToCheck, bookingEnd)
       );
     });
   };
-
+  
   const isSameTime = (time1, time2) => {
     return (
       time1.getHours() === time2.getHours() &&
