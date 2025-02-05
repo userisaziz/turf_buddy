@@ -45,17 +45,20 @@ const useTimeSelection = (
   const handleTimeSelection = (time) => {
     setSelectedStartTime(time);
     setDuration(1);
-
+  
     // Calculate the price based on the selected start time
     const selectedTime = parse(time, "hh:mm a", new Date());
-    const eveningStartTime = parse("05:00 PM", "hh:mm a", new Date());
-
-    if (isAfter(selectedTime, eveningStartTime) || isSameTime(selectedTime, eveningStartTime)) {
-      setPricePerHour(timeSlots.pricePerHour); // Use pricePerHour for evening/night
-    } else {
+    const morningStart = parse("5:00 AM", "hh:mm a", new Date());
+    const eveningStartTime = parse("5:00 PM", "hh:mm a", new Date());
+  
+    // Check if the selected time is between 5:00 AM and 5:00 PM (morning/day)
+    if (isAfter(selectedTime, morningStart) && isBefore(selectedTime, eveningStartTime)) {
       setPricePerHour(priceAtMorning); // Use priceAtMorning for morning/day
+    } else {
+      setPricePerHour(timeSlots.pricePerHour); // Use pricePerHour for evening/night
     }
   };
+  
 
   // const isTimeSlotBooked = (time) => {
   //   const timeToCheck = parse(time, "hh:mm a", new Date());

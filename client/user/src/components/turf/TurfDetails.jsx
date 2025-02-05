@@ -5,7 +5,7 @@ import useTurfData from "../../hooks/useTurfData";
 import useReviews from "../../hooks/useReviews";
 import Reviews from "../reviews/Reviews";
 import TurfDetailsSkeleton from "../ui/TurfDetailsSkeleton";
-import { MapPin, Clock, Activity, IndianRupee } from "lucide-react";
+import { MapPin, Clock, Activity, IndianRupee, ArrowRight } from "lucide-react";
 
 const TurfDetails = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -74,10 +74,12 @@ const TurfDetails = () => {
               <div className="flex items-center space-x-2 text-white">
                 <MapPin className="w-4 h-4" />
                 <p
-                  className="text-sm cursor-pointer"
+                  className="text-sm cursor-pointer flex items-center justify-center gap-2"
                   onClick={handleMapRedirect}
                 >
-                  {turf.location} <span>(Get Directions on Google Maps)</span>
+                  {turf.location} <span>
+                  <ArrowRight/>
+                    </span> 
                 </p>
               </div>
             </div>
