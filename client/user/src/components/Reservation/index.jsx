@@ -35,7 +35,12 @@ if( loading) return <ReservationSkeleton />;
         <div>
           <p className="font-medium">Pricing Information</p>
           <p className="text-sm">
-            Prices vary when booked befor 5pm and post that
+           Discount Price apply when booked in between 
+            <strong>
+{' '}
+            5:00 AM to  5:00 PM  {' '}
+            </strong>
+    
             {/* <span className="block mt-1 text-blue-700/90">
               Price calculation is based on your selected time slot.
             </span> */}
