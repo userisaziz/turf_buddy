@@ -4,11 +4,12 @@ import connectDB from "./config/database.js";
 import dotenv from "dotenv";
 import rootRouter from "./routes/index.js";
 import logger from "./config/logging.js"; // Import the logger
+import { startTelegramBot } from "./config/telegramBot.js";
 
 dotenv.config();
 
 const app = express();
-
+startTelegramBot();
 // Middleware to log requests
 // app.use((req, res, next) => {
 //   logger.info("HTTP Request", {
