@@ -50,7 +50,8 @@ const Reservation = () => {
     isDurationAvailable,
     confirmReservation,
     loading,
-  } = useReservation(formData.turfId,formData.userEmail);
+    advanceAmount,
+  } = useReservation(formData.turfId, formData.userEmail);
 
   if (loading) return <ReservationSkeleton />;
 
@@ -59,7 +60,7 @@ const Reservation = () => {
       <h2 className="text-2xl font-bold mb-2">Reserve Turf</h2>
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-4 sm:p-6">
-          <div>
+          {/* <div>
             <label className="label">
               <span className="label-text">User Email</span>
             </label>
@@ -71,7 +72,7 @@ const Reservation = () => {
               className="input input-bordered w-full"
               required
             />
-          </div>
+          </div> */}
           <div>
             <label className="label">
               <span className="label-text">Select Turf</span>
@@ -119,6 +120,7 @@ const Reservation = () => {
               selectedStartTime={selectedStartTime}
               duration={duration}
               pricePerHour={pricePerHour}
+              advanceAmount={advanceAmount}
             />
           )}
           <div className="mt-6">

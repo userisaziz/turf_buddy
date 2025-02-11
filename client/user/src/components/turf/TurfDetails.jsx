@@ -73,14 +73,7 @@ const TurfDetails = () => {
               <h2 className="text-3xl font-bold text-white">{turf.name}</h2>
               <div className="flex items-center space-x-2 text-white">
                 <MapPin className="w-4 h-4" />
-                <p
-                  className="text-sm cursor-pointer flex items-center justify-center gap-2"
-                  onClick={handleMapRedirect}
-                >
-                  {turf.location} <span>
-                  <ArrowRight/>
-                    </span> 
-                </p>
+                <p className="text-sm">{turf.location}</p>
               </div>
             </div>
           </div>
@@ -108,24 +101,35 @@ const TurfDetails = () => {
               <span className="text-lg">({averageRating.toFixed(1)})</span>
             )}
           </div>
+          <p
+            className="link w-full p-[4px,4px,4px,0] "
+            onClick={handleMapRedirect}
+          >
+            View Location on Google Map
+          </p>
           <p className="text-lg mb-6">{turf.description}</p>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 py-2 mb-4">
             <InfoItem
               icon={<IndianRupee className="w-6 h-6" />}
               label="PRICE PER HOUR"
               value={
                 <p className="text-gray-700 grid grid-rows-2">
-                <span className="flex items-center gap-1">
-                  <span className="text-sm text-gray-500">Day:</span>
-                  <span className="font-semibold text-green-600">₹{turf?.priceAtMorning}</span>
-                  <span className="text-sm text-gray-400 line-through">₹{turf?.pricePerHour}</span>
-                </span>
-                {/* <span className="text-gray-300">|</span> Divider */}
-                <span className="flex items-center gap-1">
-                  <span className="text-sm text-gray-500">Night:</span>
-                  <span className="font-semibold">₹{turf?.pricePerHour}</span>
-                </span>
-              </p>
+                  <span className="flex items-center gap-1">
+                    <span className="text-sm text-gray-500">Day:</span>
+                    <span className="font-semibold text-green-600">
+                      ₹{turf?.priceAtMorning}
+                    </span>
+                    <span className="text-sm text-gray-400 line-through">
+                      ₹{turf?.pricePerHour}
+                    </span>
+                  </span>
+                  {/* <span className="text-gray-300">|</span> Divider */}
+                  <span className="flex items-center gap-1">
+                    <span className="text-sm text-gray-500">Night:</span>
+                    <span className="font-semibold">₹{turf?.pricePerHour}</span>
+                  </span>
+                </p>
               }
             />
             <InfoItem

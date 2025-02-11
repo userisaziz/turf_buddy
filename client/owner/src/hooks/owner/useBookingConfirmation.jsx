@@ -14,7 +14,9 @@ const useBookingConfirmation = (
   duration,
   pricePerHour,
   setLoading,
-  email
+  email,
+  advanceAmount,
+  fetchByDate
 ) => {
   const navigate = useNavigate();
   const confirmReservation = async () => {
@@ -32,18 +34,19 @@ const useBookingConfirmation = (
 
     const startTimeISO = formatISO(combinedStartDateTime);
     const endTimeISO = formatISO(combinedEndDateTime);
-
+    const adminEmail = "turfbuddy1@gmail.com";
     try {
       setLoading(true);
 
-      const order = await createOrder(pricePerHour * duration,email);
+      // const order = await createOrder(pricePerHour * duration, email);
+      const order = await createOrder(advanceAmount, adminEmail);
       setLoading(false);
 
       const razorpayResponse = await handlePayment(order.order, order.user);
       setLoading(true);
       const bookingData = {
         id,
-        userEmail: email,
+        userEmail: adminEmail,
         duration,
         startTime: startTimeISO,
         endTime: endTimeISO,
