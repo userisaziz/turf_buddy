@@ -22,14 +22,14 @@ export default defineConfig({
         theme_color: '#22c55e',
         icons: [
           {
-            src: 'icon-192x192.png',
+            src: 'logo192.png',
             sizes: '192x192',
-            type: 'logo192.png',
+            type: 'image/png',
           },
           {
-            src: 'icon-512x512.png',
+            src: 'logo512.png',
             sizes: '512x512',
-            type: 'logo512.png',
+            type: 'image/png',
           },
         ],
       },
