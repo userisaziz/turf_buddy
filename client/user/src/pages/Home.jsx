@@ -9,6 +9,7 @@ import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
 import { Helmet } from "react-helmet";
+import InstallButton from "../components/common/InstallButton";
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { turfs, loading } = useTurfData();
@@ -36,6 +37,7 @@ const Home = () => {
           <div className="w-full lg:w-1/2">
             <Carousel slides={slides} />
           </div>
+       
           <div className="w-full lg:w-1/2 animate-zoom-in">
             <h1 className="text-5xl font-bold ">Welcome to TurfBuddy</h1>
             <p className="py-6">
@@ -49,6 +51,7 @@ const Home = () => {
             >
               Get Started
             </Link>
+              
           </div>
         </div>
       </div>
@@ -72,7 +75,9 @@ const Home = () => {
           </Link>
         </div>
       </div>
+
       <Footer />
+      <InstallButton/>
     </div>
   );
 };
