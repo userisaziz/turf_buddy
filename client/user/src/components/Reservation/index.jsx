@@ -4,6 +4,7 @@ import DurationSelection from "./DurationSelection";
 import ReservationSummary from "./ReservationSummary";
 import useReservation from "../../hooks/useReservation";
 import ReservationSkeleton from "../ui/ReservationSkeleton";
+import { Info } from "lucide-react";
 
 const Reservation = () => {
   const {
@@ -20,6 +21,7 @@ const Reservation = () => {
     isDurationAvailable,
     confirmReservation,
     loading,
+    advanceAmount,
   } = useReservation();
 
 if( loading) return <ReservationSkeleton />;
@@ -27,6 +29,24 @@ if( loading) return <ReservationSkeleton />;
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Reserve Turf</h2>
+           {/* Pricing Info Banner */}
+           <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 flex items-start gap-3">
+        <Info className="w-5 h-5 mt-0.5 flex-shrink-0 text-blue-500" />
+        <div>
+          <p className="font-medium">Pricing Information</p>
+          <p className="text-sm">
+           Discount Price apply when booked in between 
+            <strong>
+{' '}
+            5:00 AM to  5:00 PM  {' '}
+            </strong>
+    
+            {/* <span className="block mt-1 text-blue-700/90">
+              Price calculation is based on your selected time slot.
+            </span> */}
+          </p>
+        </div>
+        </div>
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-4 sm:p-6">
           <DateSelection
@@ -55,6 +75,7 @@ if( loading) return <ReservationSkeleton />;
               selectedStartTime={selectedStartTime}
               duration={duration}
               pricePerHour={pricePerHour}
+              advanceAmount={advanceAmount}
             />
           )}
           <div className="mt-6">

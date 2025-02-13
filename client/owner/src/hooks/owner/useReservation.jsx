@@ -2,10 +2,10 @@ import { useParams } from "react-router-dom";
 import useDateSelection from "./useDateSelection";
 import useTimeSelection from "./useTimeSelection";
 import useDurationSelection from "./useDurationSelection";
-import useBookingConfirmation from "./useBookingConfirmation.jsx";
+import useBookingConfirmation from "./useBookingConfirmation";
 import { useState } from "react";
 
-const useReservation = (id) => {
+const useReservation = (id, email) => {
   // const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -14,6 +14,7 @@ const useReservation = (id) => {
   const [timeSlots, setTimeSlots] = useState({ openTime: "", closeTime: "" });
   const [pricePerHour, setPricePerHour] = useState(0);
   const [duration, setDuration] = useState(1);
+  const [advanceAmount, setAdvanceAmount] = useState(0);
 
   const { handleDateChange } = useDateSelection(
     setSelectedDate,
@@ -21,7 +22,7 @@ const useReservation = (id) => {
     setDuration
   );
 
-  const { availableTimes, handleTimeSelection, isTimeSlotBooked } =
+  const { availableTimes, handleTimeSelection, isTimeSlotBooked, fetchByDate } =
     useTimeSelection(
       selectedDate,
       id,
@@ -31,7 +32,8 @@ const useReservation = (id) => {
       setPricePerHour,
       bookedTime,
       timeSlots,
-      setDuration
+      setDuration,
+      setAdvanceAmount
     );
 
   const { handleDurationChange, isDurationAvailable } = useDurationSelection(
@@ -47,7 +49,10 @@ const useReservation = (id) => {
     selectedStartTime,
     duration,
     pricePerHour,
-    setLoading
+    setLoading,
+    email,
+    advanceAmount,
+    fetchByDate
   );
 
   return {
@@ -64,6 +69,7 @@ const useReservation = (id) => {
     confirmReservation,
     pricePerHour,
     loading,
+    advanceAmount,
   };
 };
 

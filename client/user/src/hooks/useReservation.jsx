@@ -14,7 +14,7 @@ const useReservation = () => {
   const [timeSlots, setTimeSlots] = useState({ openTime: "", closeTime: "" });
   const [pricePerHour, setPricePerHour] = useState(0);
   const [duration, setDuration] = useState(1);
-
+const [advanceAmount, setAdvanceAmount] = useState(0);
 
 
   const { handleDateChange } = useDateSelection(
@@ -23,7 +23,7 @@ const useReservation = () => {
     setDuration
   );
 
-  const { availableTimes, handleTimeSelection, isTimeSlotBooked } =
+  const { availableTimes, handleTimeSelection, isTimeSlotBooked ,fetchByDate} =
     useTimeSelection(
       selectedDate,
       id,
@@ -33,7 +33,8 @@ const useReservation = () => {
       setPricePerHour,
       bookedTime,
       timeSlots,
-      setDuration
+      setDuration,
+      setAdvanceAmount
     );
 
   const { handleDurationChange, isDurationAvailable } = useDurationSelection(
@@ -49,7 +50,9 @@ const useReservation = () => {
     selectedStartTime,
     duration,
     pricePerHour,
-    setLoading
+    setLoading,
+    advanceAmount,
+    fetchByDate,
   );
 
   return {
@@ -66,6 +69,7 @@ const useReservation = () => {
     confirmReservation,
     pricePerHour,
     loading,
+    advanceAmount,
   };
 };
 

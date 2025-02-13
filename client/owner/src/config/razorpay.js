@@ -2,9 +2,10 @@ import toast from "react-hot-toast";
 import axiosInstance from "../hooks/useAxiosInstance";
 import { CREATE_ORDER } from "../../../owner/src/api/endpoint";
 
-export const createOrder = async (totalPrice) => {
+export const createOrder = async (totalPrice,userEmail) => {
   const response = await axiosInstance.post(CREATE_ORDER, {
     totalPrice,
+userEmail
   });
   return response.data;
 };

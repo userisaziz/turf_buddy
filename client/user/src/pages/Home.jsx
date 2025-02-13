@@ -13,7 +13,7 @@ import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
 import { Helmet } from "react-helmet";
-
+import InstallButton from "../components/common/InstallButton";
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { turfs, loading: turfLoading } = useTurfData();
@@ -42,6 +42,7 @@ const Home = () => {
           <div className="w-full lg:w-1/2">
             <Carousel slides={slides} />
           </div>
+
           <div className="w-full lg:w-1/2 animate-zoom-in">
             <h1 className="text-5xl font-bold ">Welcome to TurfBuddy</h1>
             <p className="py-6">
@@ -79,31 +80,8 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-6">Upcoming Tournaments</h2>
-        <Swiper
-          spaceBetween={30}
-          slidesPerView={3}
-          pagination={{ clickable: true }}
-          className="mySwiper"
-        >
-          {tournamentLoading
-            ? Array.from({ length: 3 }).map((_, index) => (
-                <SwiperSlide key={index}>
-                  <div className="card bg-base-100 shadow-xl p-4 animate-pulse">
-                    <div className="h-32 bg-gray-200 rounded"></div>
-                  </div>
-                </SwiperSlide>
-              ))
-            : tournaments.map((tournament) => (
-                <SwiperSlide key={tournament._id}>
-                  <TournamentCard tournament={tournament} />
-                </SwiperSlide>
-              ))}
-        </Swiper>
-      </div>
-
       <Footer />
+      <InstallButton />
     </div>
   );
 };

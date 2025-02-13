@@ -1,7 +1,7 @@
 import { format, parse, set, formatISO, addHours, parseISO } from "date-fns";
 import toast from "react-hot-toast";
 
-// import { createOrder, handlePayment } from "../config/razorpay.js";
+import { createOrder, handlePayment } from "../../config/razorpay.js";
 import "https://checkout.razorpay.com/v1/checkout.js";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../useAxiosInstance.js";
@@ -13,7 +13,10 @@ const useBookingConfirmation = (
   selectedStartTime,
   duration,
   pricePerHour,
-  setLoading
+  setLoading,
+  email,
+  advanceAmount,
+  fetchByDate
 ) => {
   const navigate = useNavigate();
   const confirmReservation = async () => {
@@ -31,18 +34,19 @@ const useBookingConfirmation = (
 
     const startTimeISO = formatISO(combinedStartDateTime);
     const endTimeISO = formatISO(combinedEndDateTime);
-
+    const adminEmail = "turfbuddy1@gmail.com";
     try {
       setLoading(true);
 
-      const order = await createOrder(pricePerHour * duration);
+      // const order = await createOrder(pricePerHour * duration, email);
+      const order = await createOrder(advanceAmount, adminEmail);
       setLoading(false);
 
       const razorpayResponse = await handlePayment(order.order, order.user);
       setLoading(true);
       const bookingData = {
         id,
-        userEmail: "Ahmed1@gmail.com",
+        userEmail: adminEmail,
         duration,
         startTime: startTimeISO,
         endTime: endTimeISO,
@@ -56,7 +60,7 @@ const useBookingConfirmation = (
       const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);
       const result = await response.data;
       toast.success(result.message);
-      navigate("/auth/booking-history");
+      navigate("/owner/bookings");
     } catch (err) {
       if (err.response) {
         toast.error(err.response?.data?.message);

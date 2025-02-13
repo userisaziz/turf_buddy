@@ -14,5 +14,8 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// Ensure a user cannot book the same time slot for the same turf twice
+bookingSchema.index({ user: 1, turf: 1, timeSlot: 1 }, { unique: true });
+
 
 export default mongoose.model("Booking", bookingSchema);
