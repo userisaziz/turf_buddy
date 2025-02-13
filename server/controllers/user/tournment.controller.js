@@ -59,7 +59,12 @@ export const registerTeam = async (req, res) => {
 };
 export const getTournaments = async (req, res) => {
   try {
-    const tournaments = await Tournament.find().populate("teams");
+    const tournaments = await Tournament.find()
+      .populate({
+        path: "turf", // Populate the turf field
+        select: "name image", // Select only the name field from the Turf model
+      })
+      .populate("teams");
     res.status(200).json(tournaments);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -70,9 +75,12 @@ export const getTournamentById = async (req, res) => {
   const { tournamentId } = req.params;
 
   try {
-    const tournament = await Tournament.findById(tournamentId).populate(
-      "teams"
-    );
+    const tournament = await Tournament.findById(tournamentId)
+      .populate({
+        path: "turf", // Populate the turf field
+        select: "name image", // Select only the name field from the Turf model
+      })
+      .populate("teams");
     if (!tournament) {
       return res.status(404).json({ message: "Tournament not found" });
     }

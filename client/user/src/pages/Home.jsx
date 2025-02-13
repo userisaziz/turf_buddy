@@ -13,13 +13,13 @@ import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
 import { Helmet } from "react-helmet";
-import InstallButton from "../components/common/InstallButton";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { turfs, loading: turfLoading } = useTurfData();
   const { tournaments, loading: tournamentLoading } = useTournamentData();
   const slides = [banner1, banner2, banner3];
-
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <Helmet>
@@ -80,8 +80,31 @@ const Home = () => {
         </div>
       </div>
 
+      <div className="container mx-auto p-4">
+        <h2 className="text-3xl font-bold mb-6">Events</h2>
+
+        {tournamentLoading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <SwiperSlide key={index}>
+                <TurfCardSkeleton key={`skeleton-${index}`} />
+              </SwiperSlide>
+            ))
+          : tournaments.map((tournament) => (
+              <TournamentCard
+                tournament={tournament}
+                image={banner3}
+                onClick={() =>
+                  navigate(`/auth/tournaments/${tournament._id}`, {
+                    state: {
+                      tournament,
+                    },
+                  })
+                }
+              />
+            ))}
+      </div>
+
       <Footer />
-      <InstallButton />
     </div>
   );
 };

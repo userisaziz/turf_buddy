@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ContactUs from "./pages/ContactUs";
 import TournamentList from "./pages/Tournament";
 import TournamentRegistration from "./components/Tournment/TournamentRegistration";
+import TournamentDetails from "./components/tournament/TournmentDetails";
 
 const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: "tournaments/register/:tournamentId",
         element: <TournamentRegistration />,
+      },
+      {
+        path: "tournaments/:tournamentId",
+        element: <TournamentDetails />,
       },
     ],
   },

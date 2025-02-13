@@ -100,7 +100,7 @@ const TournamentRegistration = () => {
           />
         ))}
         <button type="submit" className="btn btn-primary w-full">
-          Register Team
+          Registration Request
         </button>
       </form>
       <p className="mt-2 text-gray-600">
