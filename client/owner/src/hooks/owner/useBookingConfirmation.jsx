@@ -34,16 +34,16 @@ const useBookingConfirmation = (
 
     const startTimeISO = formatISO(combinedStartDateTime);
     const endTimeISO = formatISO(combinedEndDateTime);
-    const adminEmail = "turfbuddy1@gmail.com";
+    const adminEmail = "azizadnan370@gmail.com";
     try {
       setLoading(true);
 
       // const order = await createOrder(pricePerHour * duration, email);
-      const order = await createOrder(advanceAmount, adminEmail);
-      setLoading(false);
+      // const order = await createOrder(advanceAmount, adminEmail);
+      // setLoading(false);
 
-      const razorpayResponse = await handlePayment(order.order, order.user);
-      setLoading(true);
+      // const razorpayResponse = await handlePayment(order.order, order.user);
+      // setLoading(true);
       const bookingData = {
         id,
         userEmail: adminEmail,
@@ -52,9 +52,10 @@ const useBookingConfirmation = (
         endTime: endTimeISO,
         totalPrice: pricePerHour * duration,
         selectedTurfDate,
-        paymentId: razorpayResponse.razorpay_payment_id,
-        orderId: razorpayResponse.razorpay_order_id,
-        razorpay_signature: razorpayResponse.razorpay_signature,
+        // paymentId: razorpayResponse.razorpay_payment_id,
+        // orderId: razorpayResponse.razorpay_order_id,
+        // razorpay_signature: razorpayResponse.razorpay_signature,
+        paymentMethod: "cash",
       };
 
       const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);

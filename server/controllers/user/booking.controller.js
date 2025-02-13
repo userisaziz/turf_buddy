@@ -14,7 +14,6 @@ import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
 import mongoose from "mongoose";
 
-
 export const verifyTimeSlotAvailability = async (req, res) => {
   const userId = req.user.user;
   const { turfId, startTime, endTime, selectedTurfDate } = req.body;
@@ -32,20 +31,30 @@ export const verifyTimeSlotAvailability = async (req, res) => {
     });
 
     if (existingTimeSlot) {
-      logger.info('Time slot unavailable', { turfId, adjustedStartTime, adjustedEndTime });
+      logger.info("Time slot unavailable", {
+        turfId,
+        adjustedStartTime,
+        adjustedEndTime,
+      });
       return res.status(400).json({
         success: false,
         message: "Time slot already booked. Please choose another time.",
       });
     }
 
-    logger.info('Time slot available', { turfId, adjustedStartTime, adjustedEndTime });
+    logger.info("Time slot available", {
+      turfId,
+      adjustedStartTime,
+      adjustedEndTime,
+    });
     return res.status(200).json({
       success: true,
       message: "Time slot is available for booking.",
     });
   } catch (error) {
-    logger.error('Error in verifyTimeSlotAvailability', { error: error.message });
+    logger.error("Error in verifyTimeSlotAvailability", {
+      error: error.message,
+    });
     return res.status(500).json({
       success: false,
       message: "An error occurred while checking the time slot.",
@@ -53,16 +62,15 @@ export const verifyTimeSlotAvailability = async (req, res) => {
   }
 };
 
-
 export const createOrder = async (req, res) => {
   const userId = req.user.user;
   try {
     const { totalPrice } = req.body;
-    logger.info('createOrder request body', { body: req.body });
+    logger.info("createOrder request body", { body: req.body });
 
     const user = await User.findById(userId).select("name email");
     if (!user) {
-      logger.error('User not found', { userId });
+      logger.error("User not found", { userId });
       return res.status(400).json({ message: "User not found" });
     }
 
@@ -72,19 +80,18 @@ export const createOrder = async (req, res) => {
       receipt: `receipt${Date.now()}`,
     };
     const order = await razorpay.orders.create(options);
-    logger.info('Order created', { orderId: order.id, userId });
+    logger.info("Order created", { orderId: order.id, userId });
 
     return res.status(200).json({ order, user });
   } catch (error) {
-    logger.error('Error in createOrder', { error: error.message });
+    logger.error("Error in createOrder", { error: error.message });
     return res.status(400).json({ message: error.message });
   }
 };
 
-
 export const verifyPayment = async (req, res) => {
   const userId = req.user.user;
-  logger.info('verifyPayment request body', { body: req.body });
+  logger.info("verifyPayment request body", { body: req.body });
 
   const {
     id: turfId,
@@ -110,10 +117,12 @@ export const verifyPayment = async (req, res) => {
     hmac.update(`${orderId}|${paymentId}`);
     const generatedSignature = hmac.digest("hex");
     if (generatedSignature !== razorpay_signature) {
-      logger.error('Payment Verification Failed', { orderId, paymentId });
+      logger.error("Payment Verification Failed", { orderId, paymentId });
       await session.abortTransaction();
       session.endSession();
-      return res.status(400).json({ success: false, message: "Payment Verification Failed" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment Verification Failed" });
     }
 
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
@@ -126,13 +135,17 @@ export const verifyPayment = async (req, res) => {
     }).session(session);
 
     if (existingTimeSlot) {
-      logger.error('Time slot already booked', { turfId, adjustedStartTime, adjustedEndTime });
-      
+      logger.error("Time slot already booked", {
+        turfId,
+        adjustedStartTime,
+        adjustedEndTime,
+      });
+
       // Initiating refund
       await razorpay.payments.refund(paymentId, {
         amount: totalPrice * 100,
       });
-      logger.info('Refund initiated', { paymentId, amount: totalPrice });
+      logger.info("Refund initiated", { paymentId, amount: totalPrice });
 
       await session.abortTransaction();
       session.endSession();
@@ -148,17 +161,19 @@ export const verifyPayment = async (req, res) => {
     ]);
 
     if (!user) {
-      logger.error('User not found', { userId });
+      logger.error("User not found", { userId });
       await session.abortTransaction();
       session.endSession();
       return res.status(400).json({ message: "User not found" });
     }
 
     if (!turf) {
-      logger.error('Turf not found', { turfId });
+      logger.error("Turf not found", { turfId });
       await session.abortTransaction();
       session.endSession();
-      return res.status(404).json({ success: false, message: "Turf not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Turf not found" });
     }
 
     const QRcode = await generateQRCode(
@@ -171,30 +186,40 @@ export const verifyPayment = async (req, res) => {
     );
 
     const [timeSlot, booking] = await Promise.all([
-      TimeSlot.create([
-        {
-          turf: turfId,
-          startTime: adjustedStartTime,
-          endTime: adjustedEndTime,
-        }
-      ], { session }),
-      Booking.create([
-        {
-          user: userId,
-          turf: turfId,
-          timeSlot: null,
-          totalPrice,
-          qrCode: QRcode,
-          payment: { orderId, paymentId },
-        }
-      ], { session }),
+      TimeSlot.create(
+        [
+          {
+            turf: turfId,
+            startTime: adjustedStartTime,
+            endTime: adjustedEndTime,
+          },
+        ],
+        { session }
+      ),
+      Booking.create(
+        [
+          {
+            user: userId,
+            turf: turfId,
+            timeSlot: null,
+            totalPrice,
+            qrCode: QRcode,
+            payment: { method: "online", orderId, paymentId },
+          },
+        ],
+        { session }
+      ),
     ]);
 
     booking[0].timeSlot = timeSlot[0]._id;
 
     await Promise.all([
       booking[0].save({ session }),
-      User.findByIdAndUpdate(userId, { $push: { bookings: booking[0]._id } }, { session }),
+      User.findByIdAndUpdate(
+        userId,
+        { $push: { bookings: booking[0]._id } },
+        { session }
+      ),
     ]);
 
     await session.commitTransaction();
@@ -213,9 +238,17 @@ export const verifyPayment = async (req, res) => {
     );
 
     await generateEmail(user.email, "Booking Confirmation User", htmlContent);
-    await generateEmail(turf.ownerEmail, "Booking Confirmation Owner", htmlContent);
+    await generateEmail(
+      turf.ownerEmail,
+      "Booking Confirmation Owner",
+      htmlContent
+    );
 
-    logger.info('Booking successful', { userId, turfId, bookingId: booking[0]._id });
+    logger.info("Booking successful", {
+      userId,
+      turfId,
+      bookingId: booking[0]._id,
+    });
     return res.status(200).json({
       success: true,
       message: "Booking successful, Check your email for the receipt",
@@ -223,15 +256,13 @@ export const verifyPayment = async (req, res) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    logger.error('Error in verifyPayment', { error: error.message });
+    logger.error("Error in verifyPayment", { error: error.message });
     return res.status(500).json({
       success: false,
       message: "An error occurred while processing your booking",
     });
   }
 };
-
-
 
 export const getBookings = async (req, res) => {
   const userId = req.user.user;
@@ -241,10 +272,10 @@ export const getBookings = async (req, res) => {
       .select("qrCode totalPrice")
       .populate("timeSlot", "startTime endTime")
       .populate("turf", "name location");
-    logger.info('Fetched bookings', { userId, bookingsCount: bookings.length });
+    logger.info("Fetched bookings", { userId, bookingsCount: bookings.length });
     return res.status(200).json(bookings);
   } catch (error) {
-    logger.error('Error in getBookings', { error: error.message });
+    logger.error("Error in getBookings", { error: error.message });
     return res.status(500).json({ message: error.message });
   }
 };

@@ -29,6 +29,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, className }) => {
     { to: "/admin/users", label: "Users", icon: Users },
     { to: "/admin/owners", label: "Owners", icon: Building },
     { to: "/admin/turfs", label: "Turfs", icon: MapPin },
+    { to: "/admin/tournaments", label: "Tournaments", icon: MapPin },
     { to: "/admin/transactions", label: "Transactions", icon: DollarSign },
   ];
 
