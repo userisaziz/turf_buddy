@@ -10,8 +10,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "Turf Buddy",
-        short_name: "TurfBuddy",
+        name: "Owner TurfBuddy",
+        short_name: "Owner TurfBuddy",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
