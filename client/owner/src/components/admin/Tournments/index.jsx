@@ -1,35 +1,44 @@
 import React, { useState } from "react";
 import CreateTournament from "./CreateTournment";
-import TournamentList from "./TournamentList"; // Adjust the import path as necessary
+import TournamentList from "./TournamentList";
 
 const Tournament = () => {
   const [activeTab, setActiveTab] = useState("create");
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4 text-center">
+    <div className="container mx-auto p-6 max-w-7xl">
+      <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
         Tournament Management
       </h1>
-      <div className="tabs">
-        <a
-          className={`tab tab-bordered ${
-            activeTab === "create" ? "tab-active" : ""
-          }`}
-          onClick={() => setActiveTab("create")}
-        >
-          Create Tournament
-        </a>
-        <a
-          className={`tab tab-bordered ${
-            activeTab === "all" ? "tab-active" : ""
-          }`}
-          onClick={() => setActiveTab("all")}
-        >
-          All Tournaments
-        </a>
+
+      {/* Tabs Navigation */}
+      <div className="flex justify-center mb-1">
+        <div className="tabs tabs-boxed bg-gray-100 p-2 rounded-lg">
+          <button
+            className={`tab text-lg font-semibold ${
+              activeTab === "create"
+                ? "tab-active bg-blue-600 text-white"
+                : "text-gray-700 hover:bg-gray-200"
+            } px-6 py-2 rounded-md transition-colors`}
+            onClick={() => setActiveTab("create")}
+          >
+            Create Tournament
+          </button>
+          <button
+            className={`tab text-lg font-semibold ${
+              activeTab === "all"
+                ? "tab-active bg-blue-600 text-white"
+                : "text-gray-700 hover:bg-gray-200"
+            } px-6 py-2 rounded-md transition-colors`}
+            onClick={() => setActiveTab("all")}
+          >
+            All Tournaments
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4">
+      {/* Tab Content */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
         {activeTab === "create" && <CreateTournament />}
         {activeTab === "all" && <TournamentList />}
       </div>

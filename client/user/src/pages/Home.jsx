@@ -2,16 +2,22 @@ import { Link } from "react-router-dom";
 import Carousel from "../components/common/Carousel";
 import Footer from "../components/layout/Footer";
 import useTurfData from "../hooks/useTurfData";
+import useTournamentData from "../hooks/useTournamentData";
+import TournamentCard from "../components/tournament/TournamentCard";
 import TurfCard from "../components/turf/TurfCard";
 import TurfCardSkeleton from "../components/ui/TurfCardSkeleton";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
 import { useSelector } from "react-redux";
 import banner1 from "/banner-1.png";
 import banner2 from "/banner-2.jpeg";
 import banner3 from "/banner-3.jpeg";
 import { Helmet } from "react-helmet";
+
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const { turfs, loading } = useTurfData();
+  const { turfs, loading: turfLoading } = useTurfData();
+  const { tournaments, loading: tournamentLoading } = useTournamentData();
   const slides = [banner1, banner2, banner3];
 
   return (
@@ -55,7 +61,7 @@ const Home = () => {
       <div className="container mx-auto  p-4 animate-slide-in-left">
         <h2 className="text-3xl font-bold mb-6">Featured Turfs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading
+          {turfLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <TurfCardSkeleton key={`skeleton-${index}`} />
               ))
@@ -72,6 +78,31 @@ const Home = () => {
           </Link>
         </div>
       </div>
+
+      <div className="container mx-auto p-4">
+        <h2 className="text-3xl font-bold mb-6">Upcoming Tournaments</h2>
+        <Swiper
+          spaceBetween={30}
+          slidesPerView={3}
+          pagination={{ clickable: true }}
+          className="mySwiper"
+        >
+          {tournamentLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div className="card bg-base-100 shadow-xl p-4 animate-pulse">
+                    <div className="h-32 bg-gray-200 rounded"></div>
+                  </div>
+                </SwiperSlide>
+              ))
+            : tournaments.map((tournament) => (
+                <SwiperSlide key={tournament._id}>
+                  <TournamentCard tournament={tournament} />
+                </SwiperSlide>
+              ))}
+        </Swiper>
+      </div>
+
       <Footer />
     </div>
   );

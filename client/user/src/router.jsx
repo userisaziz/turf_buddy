@@ -91,7 +91,7 @@ const router = createBrowserRouter([
         element: <TournamentList />,
       },
       {
-        path: "tournaments/register",
+        path: "tournaments/register/:tournamentId",
         element: <TournamentRegistration />,
       },
     ],

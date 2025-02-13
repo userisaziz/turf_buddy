@@ -38,6 +38,17 @@ const tournamentSchema = new mongoose.Schema(
       second: { type: Number, required: true },
       third: { type: Number, required: true },
     },
+    pendingRegistrations: [
+      {
+        teamId: { type: mongoose.Schema.Types.ObjectId, ref: "Team" },
+        requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Track who requested the registration
+        status: {
+          type: String,
+          enum: ["pending", "approved", "rejected"],
+          default: "pending",
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

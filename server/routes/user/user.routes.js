@@ -13,6 +13,6 @@ userRouter.use("/turf", turfRouter);
 userRouter.use("/booking", bookingRouter);
 userRouter.use("/review", reviewRouter);
 userRouter.use("/contact", contactRouter);
-userRouter.use("/tournament", tournamentRouter);
+userRouter.use("/tournaments", tournamentRouter);
 
 export default userRouter;

@@ -39,6 +39,7 @@ import Reservation from "./components/owner/Reservation";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Tournament from "./components/admin/Tournments/index";
+import TournamentRequests from "./components/admin/Tournments/TournmentRequests";
 
 const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       { path: "turfs", element: <AllTurf /> },
       { path: "transactions", element: <TransactionSection /> },
       { path: "tournaments", element: <Tournament /> },
+      {
+        path: "tournaments/:tournamentId/requests",
+        element: <TournamentRequests />,
+      },
     ],
   },
   {
