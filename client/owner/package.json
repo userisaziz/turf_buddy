@@ -30,6 +30,7 @@
     "react-time-picker": "^7.0.0",
     "recharts": "^2.12.7",
     "redux-persist": "^6.0.0",
+    "vite-plugin-pwa": "^0.21.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {
