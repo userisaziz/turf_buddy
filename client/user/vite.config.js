@@ -33,22 +33,6 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/turf-buddy\.vercel\.app\/.*$/,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "turf-buddy-cache",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-              },
-            },
-          },
-        ],
-      },
     }),
   ],
   build: {
