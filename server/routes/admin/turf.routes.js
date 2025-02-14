@@ -4,6 +4,6 @@ import verifyAdminToken from "../../middleware/jwt/admin.middleware.js";
 
 const turfRouter = Router();
 
-turfRouter.get("/all", verifyAdminToken,getAllTurfs);
+turfRouter.get("/all", verifyAdminToken, getAllTurfs);
 
 export default turfRouter;

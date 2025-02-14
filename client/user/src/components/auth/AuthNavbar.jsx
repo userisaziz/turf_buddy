@@ -41,6 +41,9 @@ export default function AuthNavbar() {
               <Link to="/auth/turfs">Turfs</Link>
             </li>
             <li>
+              <Link to="/auth/tournaments">Tournaments</Link>
+            </li>
+            <li>
               <Link to="/auth/booking-history">My Bookings</Link>
             </li>
             <li>
@@ -69,6 +72,9 @@ export default function AuthNavbar() {
           </li>
           <li>
             <Link to="/auth/turfs">Turfs</Link>
+          </li>
+          <li>
+            <Link to="/auth/tournaments">Tournaments</Link>
           </li>
           <li>
             <Link to="/auth/booking-history">My Bookings</Link>
