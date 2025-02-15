@@ -143,7 +143,7 @@ const useTimeSelection = (
   };
 
   useEffect(() => {
-    fetchByDate(selectedDate, turfId);
+    turfId&&   fetchByDate(selectedDate, turfId);
   }, [selectedDate, turfId]);
 
   return {

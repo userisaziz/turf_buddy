@@ -2,7 +2,6 @@ import DateSelection from "./DateSelection";
 import TimeSelection from "./TimeSelection";
 import DurationSelection from "./DurationSelection";
 import ReservationSummary from "./ReservationSummary";
-
 import ReservationSkeleton from "../ui/ReservationSkeleton.jsx";
 import useReservation from "../../../hooks/owner/useReservation.jsx";
 import React, { useState, useEffect } from "react";
@@ -19,9 +18,22 @@ const Reservation = () => {
   });
 
   const { turfs, fetchTurfs } = useTurfManagement();
+
+  // Set first turf as default when turfs are loaded
   useEffect(() => {
     fetchTurfs();
   }, []);
+
+  useEffect(() => {
+    if (turfs.length > 0 && !formData.turfId) {
+      const defaultTurf = turfs[0];
+      setFormData(prev => ({
+        ...prev,
+        turfId: defaultTurf._id,
+        totalPrice: defaultTurf.pricePerHour * prev.duration,
+      }));
+    }
+  }, [turfs]);
 
   const handleTurfChange = (e) => {
     const turf = turfs.find((t) => t._id === e.target.value);
@@ -60,19 +72,6 @@ const Reservation = () => {
       <h2 className="text-2xl font-bold mb-2">Reserve Turf</h2>
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-4 sm:p-6">
-          {/* <div>
-            <label className="label">
-              <span className="label-text">User Email</span>
-            </label>
-            <input
-              type="email"
-              name="userEmail"
-              value={formData.userEmail}
-              onChange={handleChange}
-              className="input input-bordered w-full"
-              required
-            />
-          </div> */}
           <div>
             <label className="label">
               <span className="label-text">Select Turf</span>
@@ -84,9 +83,6 @@ const Reservation = () => {
               className="select select-bordered w-full"
               required
             >
-              <option value="" disabled>
-                Select a Turf
-              </option>
               {turfs.map((turf) => (
                 <option key={turf._id} value={turf._id}>
                   {turf.name} - {turf.location}
