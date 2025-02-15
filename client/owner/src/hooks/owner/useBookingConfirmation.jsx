@@ -5,7 +5,7 @@ import { createOrder, handlePayment } from "../../config/razorpay.js";
 import "https://checkout.razorpay.com/v1/checkout.js";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../useAxiosInstance.js";
-import { VERIFY_PAYMENT } from "../../api/endpoint.js";
+import { VERIFY_PAYMENT, VERIFY_TIMESLOT } from "../../api/endpoint.js";
 
 const useBookingConfirmation = (
   id,
@@ -44,6 +44,22 @@ const useBookingConfirmation = (
 
       // const razorpayResponse = await handlePayment(order.order, order.user);
       // setLoading(true);
+      const timeslotData = {
+        turfId: id, // Assuming `id` is the turfId
+        startTime: startTimeISO,
+        endTime: endTimeISO,
+        selectedTurfDate,
+      };
+      const timeslotResponse = await axiosInstance.post(VERIFY_TIMESLOT, timeslotData);
+
+      if (!timeslotResponse.data.success) {
+
+        toast.error(timeslotResponse.data.message);
+        setLoading(false);
+        window.location.reload(); 
+        return;
+      }
+
       const bookingData = {
         id,
         userEmail: adminEmail,
