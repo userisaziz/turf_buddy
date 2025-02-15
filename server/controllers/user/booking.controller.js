@@ -85,6 +85,7 @@ export const createOrder = async (req, res) => {
     return res.status(200).json({ order, user });
   } catch (error) {
     logger.error("Error in createOrder", { error: error.message });
+    console.log(error);
     return res.status(400).json({ message: error.message });
   }
 };

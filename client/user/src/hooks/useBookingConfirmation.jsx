@@ -71,6 +71,7 @@ const useBookingConfirmation = (
         paymentId: razorpayResponse.razorpay_payment_id,
         orderId: razorpayResponse.razorpay_order_id,
         razorpay_signature: razorpayResponse.razorpay_signature,
+        paymentMethod: "cash",
       };
 
       const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);
