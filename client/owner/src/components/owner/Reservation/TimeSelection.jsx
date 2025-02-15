@@ -51,12 +51,27 @@ const TimeSelection = ({
 
     return isMorning
       ? "btn-ghost" // Morning background (light)
-      : "bg-primary hover:bg-green-800 text-white"; // Night background (darker)
+      : "bg-[#005F56] hover:bg-[#005F56] text-white"; // Night background (darker)
   };
 
   return (
     <div>
       <h3 className="text-xl font-bold mb-4">Select Timeslots (30-minutes)</h3>
+
+      <div className="flex gap-4 mb-4 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-base-100 border border-gray-300"></div>
+          <span>Morning Slots (5 AM - 5 PM)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-[#005F56]"></div>
+          <span>Night Slots (5 PM - Close)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-blue-500"></div>
+          <span>Selected Time</span>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-4 ">
         {availableTimes.map((time) => {
