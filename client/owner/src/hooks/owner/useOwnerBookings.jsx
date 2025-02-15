@@ -10,17 +10,21 @@ const useOwnerBookings = () => {
   const [sortConfig, setSortConfig] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [currentPage]);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/owner/bookings");
-      const result = response.data;
-      setAllBookings(result);
+      const response = await axiosInstance.get(`/api/owner/bookings?page=${currentPage}&limit=${itemsPerPage}`);
+      const { bookings, pagination } = response.data;
+      setAllBookings(bookings);
+      setTotalPages(pagination.totalPages);
       setLoading(false);
     } catch (err) {
       if (err.response?.data?.message) {
@@ -90,6 +94,19 @@ const useOwnerBookings = () => {
     setSortConfig({ key, direction });
   };
 
+  // Add pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
   return {
     bookings: sortedBookings,
     loading,
@@ -104,6 +121,10 @@ const useOwnerBookings = () => {
     setIsModalOpen,
     setSelectedBookingId,
     selectedBookingId,
+    currentPage,
+    totalPages,
+    handleNextPage,
+    handlePrevPage,
   };
 };
 

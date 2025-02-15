@@ -65,17 +65,23 @@ export const verifyTimeSlotAvailability = async (req, res) => {
 export const getOwnerBookings = async (req, res) => {
   try {
     const ownerId = req.owner.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
     // Find turfs owned by this owner
     const ownedTurfs = await Turf.find({ owner: ownerId }).select("_id");
-    console.log(ownedTurfs.length, "ownedTurfs");
 
     if (ownedTurfs.length === 0) {
-      console.log("No bookings found for this owner's turfs");
       return res.status(404).json({ message: "No turfs found for this owner" });
     }
 
     const turfIds = ownedTurfs.map((turf) => turf._id);
+
+    // Get total count for pagination
+    const totalCount = await Booking.countDocuments({
+      turf: { $in: turfIds }
+    });
 
     const bookings = await Booking.aggregate([
       {
@@ -130,20 +136,22 @@ export const getOwnerBookings = async (req, res) => {
         },
       },
       { $sort: { bookingDate: -1 } },
+      { $skip: skip },
+      { $limit: limit }
     ]);
 
-    if (bookings.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this owner's turfs" });
-    }
-
-    return res.status(200).json(bookings);
+    return res.status(200).json({
+      bookings,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        totalItems: totalCount,
+        itemsPerPage: limit
+      }
+    });
   } catch (error) {
     console.error("Error in getOwnerBookings:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching bookings", error: error.message });
+    res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 };
 
