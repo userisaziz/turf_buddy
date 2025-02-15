@@ -116,7 +116,8 @@ const useTimeSelection = (
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
       setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
-      setAdvanceAmount(result.timeSlots.advancePayment);
+      // setAdvanceAmount(result.timeSlots.advancePayment);
+      setAdvanceAmount(0);
       const formattedBookedTime = result.bookedTime.map((booking) => ({
         ...booking,
         startTime: format(
@@ -143,7 +144,7 @@ const useTimeSelection = (
   };
 
   useEffect(() => {
-    fetchByDate(selectedDate, turfId);
+    turfId&&   fetchByDate(selectedDate, turfId);
   }, [selectedDate, turfId]);
 
   return {
