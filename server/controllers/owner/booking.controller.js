@@ -13,6 +13,54 @@ import generateEmail, {
 } from "../../utils/generateEmail.js";
 import adjustTime from "../../utils/adjustTime.js";
 
+export const verifyTimeSlotAvailability = async (req, res) => {
+  const ownerId = req.owner.id;
+  const { turfId, startTime, endTime, selectedTurfDate } = req.body;
+
+  try {
+    // Adjust the start and end times as per the selected turf date
+    const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
+    const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
+
+    // Check if the time slot is already booked
+    const existingTimeSlot = await TimeSlot.findOne({
+      turf: turfId,
+      startTime: adjustedStartTime,
+      endTime: adjustedEndTime,
+    });
+
+    if (existingTimeSlot) {
+      logger.info("Time slot unavailable", {
+        turfId,
+        adjustedStartTime,
+        adjustedEndTime,
+      });
+      return res.status(400).json({
+        success: false,
+        message: "Time slot already booked. Please choose another time.",
+      });
+    }
+
+    logger.info("Time slot available", {
+      turfId,
+      adjustedStartTime,
+      adjustedEndTime,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Time slot is available for booking.",
+    });
+  } catch (error) {
+    logger.error("Error in verifyTimeSlotAvailability", {
+      error: error.message,
+    });
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while checking the time slot.",
+    });
+  }
+};
+
 export const getOwnerBookings = async (req, res) => {
   try {
     const ownerId = req.owner.id;
