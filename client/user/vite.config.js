@@ -33,6 +33,8 @@ export default defineConfig({
           },
         ],
       },
+      srcDir: 'src', // Specify the directory where your service worker is located
+      filename: 'service-worker.js', 
     }),
   ],
   build: {
