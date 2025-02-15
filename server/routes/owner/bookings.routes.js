@@ -4,7 +4,7 @@ import verifyOwnerToken from "../../middleware/jwt/owner.middleware.js";
 
 const bookingsRouter = express.Router();
 bookingsRouter.get("/", verifyOwnerToken, getOwnerBookings);
-bookingsRouter.get("/verify-timeSlots", verifyOwnerToken, verifyTimeSlotAvailability);
+bookingsRouter.post("/verify-timeSlots", verifyOwnerToken, verifyTimeSlotAvailability);
 bookingsRouter.post("/create-order", verifyOwnerToken, createOrder);
 bookingsRouter.post("/verify-payment", verifyOwnerToken, verifyPayment);
 

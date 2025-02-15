@@ -12,6 +12,7 @@ import generateEmail, {
   generateHTMLContent,
 } from "../../utils/generateEmail.js";
 import adjustTime from "../../utils/adjustTime.js";
+import logger from "../../config/logging.js";
 
 export const verifyTimeSlotAvailability = async (req, res) => {
   const ownerId = req.owner.id;
