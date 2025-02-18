@@ -22,6 +22,10 @@ const OwnerBookings = () => {
     setSelectedBookingId,
     selectedBookingId,
     requestSort,
+    currentPage,
+    totalPages,
+    handleNextPage,
+    handlePrevPage,
   } = useOwnerBookings();
 
   if (loading) return <BookingsSkeleton />;
@@ -214,8 +218,30 @@ const OwnerBookings = () => {
           </table>
         </div>
 
-        <div className="mt-4 md:mt-6 text-sm text-base-content opacity-70">
-          Showing {bookings.length} bookings from the last {filterDays} days
+        <div className="flex justify-between items-center mt-4">
+          <div className="text-sm text-base-content opacity-70">
+            Showing {bookings.length} bookings from the last {filterDays} days
+          </div>
+          
+          <div className="join">
+            <button 
+              className="join-item btn btn-sm"
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+            <button className="join-item btn btn-sm">
+              Page {currentPage} of {totalPages}
+            </button>
+            <button 
+              className="join-item btn btn-sm"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
+          </div>
         </div>
       </div>
     </div>

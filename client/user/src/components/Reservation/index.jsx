@@ -27,7 +27,7 @@ const Reservation = () => {
 if( loading) return <ReservationSkeleton />;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 py-8">
       <h2 className="text-2xl font-bold mb-6">Reserve Turf</h2>
            {/* Pricing Info Banner */}
            <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 flex items-start gap-3">

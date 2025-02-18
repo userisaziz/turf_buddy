@@ -5,7 +5,7 @@ import { createOrder, handlePayment } from "../../config/razorpay.js";
 import "https://checkout.razorpay.com/v1/checkout.js";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../useAxiosInstance.js";
-import { VERIFY_PAYMENT } from "../../api/endpoint.js";
+import { VERIFY_PAYMENT, VERIFY_TIMESLOT } from "../../api/endpoint.js";
 
 const useBookingConfirmation = (
   id,
@@ -34,16 +34,32 @@ const useBookingConfirmation = (
 
     const startTimeISO = formatISO(combinedStartDateTime);
     const endTimeISO = formatISO(combinedEndDateTime);
-    const adminEmail = "turfbuddy1@gmail.com";
+    const adminEmail = "azizadnan370@gmail.com";
     try {
       setLoading(true);
 
       // const order = await createOrder(pricePerHour * duration, email);
-      const order = await createOrder(advanceAmount, adminEmail);
-      setLoading(false);
+      // const order = await createOrder(advanceAmount, adminEmail);
+      // setLoading(false);
 
-      const razorpayResponse = await handlePayment(order.order, order.user);
-      setLoading(true);
+      // const razorpayResponse = await handlePayment(order.order, order.user);
+      // setLoading(true);
+      const timeslotData = {
+        turfId: id, // Assuming `id` is the turfId
+        startTime: startTimeISO,
+        endTime: endTimeISO,
+        selectedTurfDate,
+      };
+      const timeslotResponse = await axiosInstance.post(VERIFY_TIMESLOT, timeslotData);
+
+      if (!timeslotResponse.data.success) {
+
+        toast.error(timeslotResponse.data.message);
+        setLoading(false);
+        window.location.reload(); 
+        return;
+      }
+
       const bookingData = {
         id,
         userEmail: adminEmail,
@@ -52,9 +68,10 @@ const useBookingConfirmation = (
         endTime: endTimeISO,
         totalPrice: pricePerHour * duration,
         selectedTurfDate,
-        paymentId: razorpayResponse.razorpay_payment_id,
-        orderId: razorpayResponse.razorpay_order_id,
-        razorpay_signature: razorpayResponse.razorpay_signature,
+        // paymentId: razorpayResponse.razorpay_payment_id,
+        // orderId: razorpayResponse.razorpay_order_id,
+        // razorpay_signature: razorpayResponse.razorpay_signature,
+        paymentMethod: "cash",
       };
 
       const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);

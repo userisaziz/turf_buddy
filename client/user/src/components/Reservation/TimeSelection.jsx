@@ -1,4 +1,11 @@
-import { parse, isAfter, addHours, addMinutes, format, isBefore } from "date-fns";
+import {
+  parse,
+  isAfter,
+  addHours,
+  addMinutes,
+  format,
+  isBefore,
+} from "date-fns";
 
 const TimeSelection = ({
   availableTimes,
@@ -26,7 +33,10 @@ const TimeSelection = ({
     const morningStart = parse("5:00 AM", "hh:mm a", new Date());
     const eveningStartTime = parse("5:00 PM", "hh:mm a", new Date());
     const selectedTime = parse(time, "hh:mm a", new Date());
-    return isAfter(selectedTime, morningStart) && isBefore(selectedTime, eveningStartTime);
+    return (
+      isAfter(selectedTime, morningStart) &&
+      isBefore(selectedTime, eveningStartTime)
+    );
   };
   const getButtonClassName = (time) => {
     const isMorning = isMorningTime(time);
@@ -41,35 +51,53 @@ const TimeSelection = ({
 
     return isMorning
       ? "btn-ghost" // Morning background (light)
-      :"bg-primary hover:bg-green-800 text-white"; // Night background (darker)
+      : "bg-[#005F56] hover:bg-[#005F56] text-white"; // Night background (darker)
   };
 
   return (
     <div>
-   <h3 className="text-xl font-bold mb-4">Select Timeslots (30-minutes)</h3>
+      <h3 className="text-xl font-bold mb-4">Select Timeslots (30-minutes)</h3>
+
+      <div className="flex gap-4 mb-4 text-sm">
+        <div className=" flex items-center justify-center gap-2">
+          <div className="w-4 h-4 bg-base-100 border border-gray-300"></div>
+          <div>Day Slots 
+            {/* <div>5 AM - 5 PM</div> */}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-[#005F56]"></div>
+          <div>Night Slots 
+            {/* <div>5 PM - Close</div> */}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-blue-500"></div>
+          <div>Selected Time</div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-4 ">
-      {availableTimes.map((time) => {
-  const startTime = parse(time, "hh:mm a", new Date());
-  const endTime = addMinutes(startTime, 30);
-  const formattedStartTime = format(startTime, "hh:mm");
+        {availableTimes.map((time) => {
+          const startTime = parse(time, "hh:mm a", new Date());
+          const endTime = addMinutes(startTime, 30);
+          const formattedStartTime = format(startTime, "hh:mm");
 
-  const formattedEndTime = format(endTime, "hh:mm a");
+          const formattedEndTime = format(endTime, "hh:mm a");
 
-  return (
-    <button
-      key={time}
-     
-      className={`btn btn-sm border-gray-300 font-medium  ${getButtonClassName(time)}`}
-      onClick={() => handleTimeSelection(time)}
-      disabled={isTimeSlotDisabled(time)}
-    >
-      
-      {`${formattedStartTime} - ${formattedEndTime}`}
-    </button>
-  );
-})}
-
+          return (
+            <button
+              key={time}
+              className={`btn btn-sm border-gray-300 font-medium  ${getButtonClassName(
+                time
+              )}`}
+              onClick={() => handleTimeSelection(time)}
+              disabled={isTimeSlotDisabled(time)}
+            >
+              {`${formattedStartTime} - ${formattedEndTime}`}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

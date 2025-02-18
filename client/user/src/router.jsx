@@ -13,6 +13,9 @@ import NotFound from "./components/common/NotFound";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ContactUs from "./pages/ContactUs";
+import TournamentList from "./pages/Tournament";
+import TournamentRegistration from "./components/Tournment/TournamentRegistration";
+import TournamentDetails from "./components/tournament/TournmentDetails";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +86,18 @@ const router = createBrowserRouter([
       {
         path: "booking-history",
         element: <TurfBookingHistory />,
+      },
+      {
+        path: "tournaments",
+        element: <TournamentList />,
+      },
+      {
+        path: "tournaments/register/:tournamentId",
+        element: <TournamentRegistration />,
+      },
+      {
+        path: "tournaments/:tournamentId",
+        element: <TournamentDetails />,
       },
     ],
   },
