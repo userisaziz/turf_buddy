@@ -1,12 +1,9 @@
 import useOwnerBookings from "@hooks/owner/useOwnerBookings";
 import BookingsSkeleton from "./BookingsSkeleton";
-import { format, subHours, subMinutes } from "date-fns";
-import { ArrowUpDown, Calendar, Clock, User, IndianRupee } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowUpDown, Calendar, Clock, IndianRupee } from "lucide-react";
 import Avatar from "react-avatar";
-import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useState } from "react";
-import axiosInstance from "../../../hooks/useAxiosInstance";
 
 const OwnerBookings = () => {
   const {
@@ -20,7 +17,6 @@ const OwnerBookings = () => {
     isModalOpen,
     setIsModalOpen,
     setSelectedBookingId,
-    selectedBookingId,
     requestSort,
     currentPage,
     totalPages,
@@ -32,15 +28,23 @@ const OwnerBookings = () => {
   if (error) return <div className="alert alert-error shadow-lg">{error}</div>;
 
   const getSortDirection = (name) => {
-    if (!sortConfig) {
-      return;
-    }
+    if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
   const formatTime = (dateString) => {
-    const adjustedDate = subMinutes(subHours(new Date(dateString), 5), 30);
-    return format(adjustedDate, "h:mm aa");
+    const date = new Date(dateString);
+    return format(date, "h:mm aa");
+  };
+
+  const formatBookingDate = (startTimeString) => {
+    const date = new Date(startTimeString);
+    return format(date, "dd MMM yyyy");
+  };
+
+  const getWeekDay = (startTimeString) => {
+    const date = new Date(startTimeString);
+    return format(date, "EEEE");
   };
 
   const copyToClipboard = (text) => {
@@ -79,21 +83,6 @@ const OwnerBookings = () => {
 
           <div className="stats shadow w-full md:w-auto">
             <div className="stat">
-              <div className="stat-figure text-secondary">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  className="inline-block w-8 h-8 stroke-current"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-              </div>
               <div className="stat-title">Total Bookings</div>
               <div className="stat-value">{bookings.length}</div>
               <div className="stat-desc">From last {filterDays} days</div>
@@ -129,35 +118,20 @@ const OwnerBookings = () => {
                 <th>Phone</th>
                 <th
                   onClick={() => requestSort("startTime")}
-                  className="cursor-pointer"
-                >
-                  Start Time{" "}
-                  {getSortDirection("startTime") && (
-                    <ArrowUpDown size={16} className="inline" />
-                  )}
-                </th>
-                <th
-                  onClick={() => requestSort("endTime")}
-                  className="cursor-pointer"
-                >
-                  End Time{" "}
-                  {getSortDirection("endTime") && (
-                    <ArrowUpDown size={16} className="inline" />
-                  )}
-                </th>
-                <th
-                  onClick={() => requestSort("bookingDate")}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-base-200"
                 >
                   Date{" "}
-                  {getSortDirection("bookingDate") && (
+                  {getSortDirection("startTime") && (
                     <ArrowUpDown className="inline" size={16} />
                   )}
                 </th>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
                 <th>Duration</th>
                 <th
                   onClick={() => requestSort("totalPrice")}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-base-200"
                 >
                   Price{" "}
                   {getSortDirection("totalPrice") && (
@@ -186,16 +160,19 @@ const OwnerBookings = () => {
                     {booking.phone}
                   </td>
                   <td className="whitespace-nowrap">
+                    <Calendar size={16} className="inline mr-1" />
+                    {formatBookingDate(booking.startTime)}
+                  </td>
+                  <td className="whitespace-nowrap">
+                    {getWeekDay(booking.startTime)}
+                  </td>
+                  <td className="whitespace-nowrap">
                     <Clock size={16} className="inline mr-1" />
                     {formatTime(booking.startTime)}
                   </td>
                   <td className="whitespace-nowrap">
                     <Clock size={16} className="inline mr-1" />
                     {formatTime(booking.endTime)}
-                  </td>
-                  <td className="whitespace-nowrap">
-                    <Calendar size={16} className="inline mr-1" />
-                    {format(new Date(booking.bookingDate), "dd MMM yyyy")}
                   </td>
                   <td>{booking.duration.toFixed(2)} hrs</td>
                   <td>
@@ -206,7 +183,7 @@ const OwnerBookings = () => {
                   </td>
                   <td>
                     <button
-                      className="btn btn-sm btn-error relative"
+                      className="btn btn-sm btn-error"
                       onClick={() => openModal(booking.id)}
                     >
                       Delete
@@ -222,9 +199,9 @@ const OwnerBookings = () => {
           <div className="text-sm text-base-content opacity-70">
             Showing {bookings.length} bookings from the last {filterDays} days
           </div>
-          
+
           <div className="join">
-            <button 
+            <button
               className="join-item btn btn-sm"
               onClick={handlePrevPage}
               disabled={currentPage === 1}
@@ -234,7 +211,7 @@ const OwnerBookings = () => {
             <button className="join-item btn btn-sm">
               Page {currentPage} of {totalPages}
             </button>
-            <button 
+            <button
               className="join-item btn btn-sm"
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
