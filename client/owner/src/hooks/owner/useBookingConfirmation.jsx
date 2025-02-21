@@ -48,15 +48,18 @@ const useBookingConfirmation = (
         turfId: id, // Assuming `id` is the turfId
         startTime: startTimeISO,
         endTime: endTimeISO,
+        date: selectedTurfDate,
         selectedTurfDate,
       };
-      const timeslotResponse = await axiosInstance.post(VERIFY_TIMESLOT, timeslotData);
+      const timeslotResponse = await axiosInstance.post(
+        VERIFY_TIMESLOT,
+        timeslotData
+      );
 
       if (!timeslotResponse.data.success) {
-
         toast.error(timeslotResponse.data.message);
         setLoading(false);
-        window.location.reload(); 
+        window.location.reload();
         return;
       }
 
@@ -67,6 +70,7 @@ const useBookingConfirmation = (
         startTime: startTimeISO,
         endTime: endTimeISO,
         totalPrice: pricePerHour * duration,
+        date: selectedTurfDate,
         selectedTurfDate,
         // paymentId: razorpayResponse.razorpay_payment_id,
         // orderId: razorpayResponse.razorpay_order_id,
