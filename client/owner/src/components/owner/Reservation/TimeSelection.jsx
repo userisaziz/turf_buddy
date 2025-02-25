@@ -61,22 +61,21 @@ const TimeSelection = ({
       <div className="flex gap-4 mb-4 text-sm">
         <div className=" flex items-center  justify-center gap-2">
           <div className="w-4 h-4 bg-base-100 border border-gray-300"></div>
-          <div>Day Slots 
+          <div>
+            Day Slots
             {/* <div>5 AM - 5 PM</div> */}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-[#005F56]"></div>
-          <div>Night Slots 
+          <div>
+            Night Slots
             {/* <div>5 PM - Close</div> */}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-500"></div>
-          <div>Selected Time 
-      
-          </div>
-         
+          <div>Selected Time</div>
         </div>
       </div>
 

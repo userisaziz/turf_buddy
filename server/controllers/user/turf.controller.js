@@ -38,12 +38,13 @@ export const getTimeSlotByTurfId = async (req, res) => {
   const selectedDate = new Date(date);
   const startOfSelectedDate = startOfDay(selectedDate);
   const endOfSelectedDate = new Date(startOfSelectedDate);
+
   endOfSelectedDate.setDate(endOfSelectedDate.getDate() + 1);
 
   const query = {
     turf: turfId,
     startTime: { $gte: startOfSelectedDate },
-    endTime: { $lt: endOfSelectedDate },
+    endTime: { $lte: endOfSelectedDate },
   };
 
   try {
@@ -54,7 +55,7 @@ export const getTimeSlotByTurfId = async (req, res) => {
       "closeTime",
       "pricePerHour",
       "priceAtMorning",
-      "advancePayment"
+      "advancePayment",
     ]);
     return res.status(200).json({ timeSlots, bookedTime });
   } catch (error) {
