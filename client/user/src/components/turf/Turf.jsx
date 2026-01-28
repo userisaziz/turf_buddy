@@ -149,7 +149,7 @@ const Turf = () => {
               </Button>
               <Button
                 onClick={applyFilters}
-                className="btn btn-primary"
+                className="btn bg-primary"
               >
                 Apply Filters
               </Button>

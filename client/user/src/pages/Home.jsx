@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CalendarX, MapPinOff } from "lucide-react";
 import Carousel from "../components/common/Carousel";
 import Footer from "../components/layout/Footer";
 import useTurfData from "../hooks/useTurfData";
@@ -35,25 +36,32 @@ const Home = () => {
         />
         <link rel="canonical" href="https://turf-buddy.vercel.app/" />
       </Helmet>
-      <div className="hero min-h-[70vh] bg-base-200">
-        <Carousel />
 
-      </div>
+      <Carousel />
+
+
       <div className="container mx-auto  p-4 animate-slide-in-left">
         <h2 className="text-3xl font-bold mb-6">Featured Turfs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {turfLoading
-            ? Array.from({ length: 3 }).map((_, index) => (
+          {turfLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
               <TurfCardSkeleton key={`skeleton-${index}`} />
             ))
-            : turfs
+          ) : turfs.length > 0 ? (
+            turfs
               .slice(0, 3)
-              .map((turf) => <TurfCard key={turf._id} turf={turf} />)}
+              .map((turf) => <TurfCard key={turf._id} turf={turf} />)
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12 text-base-content/50">
+              <MapPinOff className="w-16 h-16 mb-4" />
+              <p className="text-xl font-medium">No turfs available at the moment</p>
+            </div>
+          )}
         </div>
         <div className="text-center mt-8">
           <Button
             onClick={() => navigate(isLoggedIn ? "/auth/turfs" : "/turfs")}
-            className="btn btn-primary"
+            className="btn bg-primary text-white"
           >
             View More Turfs
           </Button>
@@ -63,25 +71,33 @@ const Home = () => {
       <div className="container mx-auto p-4">
         <h2 className="text-3xl font-bold mb-6">Events</h2>
 
-        {tournamentLoading
-          ? Array.from({ length: 3 }).map((_, index) => (
-            <SwiperSlide key={index}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tournamentLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
               <TurfCardSkeleton key={`skeleton-${index}`} />
-            </SwiperSlide>
-          ))
-          : tournaments.map((tournament) => (
-            <TournamentCard
-              tournament={tournament}
-              image={banner3}
-              onClick={() =>
-                navigate(`/auth/tournaments/${tournament._id}`, {
-                  state: {
-                    tournament,
-                  },
-                })
-              }
-            />
-          ))}
+            ))
+          ) : tournaments.length > 0 ? (
+            tournaments.map((tournament) => (
+              <TournamentCard
+                key={tournament._id}
+                tournament={tournament}
+                image="/banner3.jpg"
+                onClick={() =>
+                  navigate(`/auth/tournaments/${tournament._id}`, {
+                    state: {
+                      tournament,
+                    },
+                  })
+                }
+              />
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12 text-base-content/50">
+              <CalendarX className="w-16 h-16 mb-4" />
+              <p className="text-xl font-medium">No ongoing events</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <Footer />

@@ -5,7 +5,8 @@ import useTurfData from "../../hooks/useTurfData";
 import useReviews from "../../hooks/useReviews";
 import Reviews from "../reviews/Reviews";
 import TurfDetailsSkeleton from "../ui/TurfDetailsSkeleton";
-import { MapPin, Clock, Activity, IndianRupee, ArrowRight, Star } from "lucide-react";
+import { MapPin, Clock, Activity, IndianRupee, ArrowRight, Star, Copy, MessageCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
 const TurfDetails = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -59,78 +60,111 @@ const TurfDetails = () => {
     );
   };
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-in-left">
+  function TurfCard({
+    turf,
+    handleMapRedirect,
+    handleReservation,
+    averageRating = 4.5,
+  }) {
+    const handleCopyAddress = (e) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(turf.location || "");
+      toast.success("Address copied to clipboard!");
+    };
 
-        <div className="w-full max-w-md mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+    const handleWhatsAppShare = (e) => {
+      e.stopPropagation();
+      const text = `Check out this turf: ${turf.name}\nLocation: ${turf.location}`;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    };
 
-          {/* Image Section */}
-          <div className="relative h-64 overflow-hidden group">
-            <img
-              src={turf.image || "/banner-1.png"}
-              alt={turf.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-green-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-              Available Today
-            </div>
+    return (
+      <div className="w-full bg-base-100 border border-base-200 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300">
+        {/* Image Section */}
+        <div className="relative h-64 overflow-hidden group">
+          <img
+            src={turf.image || "/banner-1.png"}
+            alt={turf.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
 
-            {/* Rating Floating on Image */}
-            <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-              <span className="text-white text-xs font-bold">{averageRating}</span>
-            </div>
+          {/* Availability Badge */}
+          <div className="absolute top-4 left-4 bg-base-100/90 backdrop-blur text-success text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+            Available Today
           </div>
 
-          {/* Content Section */}
-          <div className="p-5 space-y-5">
+          {/* Rating Floating on Image */}
+          <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1">
+            <Star className="w-3.5 h-3.5 text-warning fill-warning" />
+            <span className="text-white text-xs font-bold">{averageRating}</span>
+          </div>
+        </div>
 
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-1">
-                {turf.name}
-              </h2>
-              <p className="text-gray-500 text-sm flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-gray-400" />
-                {turf.location}
-              </p>
-            </div>
+        {/* Content Section */}
+        <div className="p-5 space-y-5">
+          <div>
+            <h2 className="text-2xl font-bold text-base-content leading-tight mb-1">
+              {turf.name}
+            </h2>
+            <p className="text-base-content/70 text-sm flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-base-content/50" />
+              {turf.location}
+            </p>
+          </div>
 
-            {/* The Two Actions Stacked */}
-            <div className="space-y-3">
-              {/* 1. Your Custom Map Button (Fits perfectly here) */}
-              <div
-                onClick={handleMapRedirect}
-                className="group cursor-pointer w-full p-3 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50 transition-all flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-full shadow-sm text-blue-600 ring-1 ring-blue-100">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-800">
-                      Navigate to Turf
-                    </span>
-                    <span className="text-[10px] text-gray-500 font-medium">
-                      View on Google Maps
-                    </span>
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-blue-400 group-hover:translate-x-1 transition-transform" />
-              </div>
-
-              {/* 2. Primary Book Button */}
+          {/* The Actions Stacked */}
+          <div className="space-y-3">
+            {/* 1. Address Actions Row */}
+            <div className="flex gap-2">
               <button
-                className="btn bg-primary text-white w-full"
-                onClick={handleReservation}
+                onClick={handleCopyAddress}
+                className="btn btn-sm flex-1 btn-outline btn-neutral gap-2"
+                title="Copy Address"
               >
-                Reserve Now
+                <Copy className="w-4 h-4" />
+                Copy
+              </button>
+              <button
+                onClick={handleWhatsAppShare}
+                className="btn btn-sm flex-1 btn-outline btn-success gap-2"
+                title="Share via WhatsApp"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Share
               </button>
             </div>
 
+            {/* 2. Custom Map Button */}
+            <div
+              onClick={handleMapRedirect}
+              className="group cursor-pointer w-full p-3 rounded-xl border border-base-200 bg-base-200/50 hover:bg-base-200 transition-all flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full shadow-sm bg-base-100 text-info ring-1 ring-base-200">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-base-content">
+                    Navigate to Turf
+                  </span>
+                  <span className="text-[10px] text-base-content/60 font-medium">
+                    View on Google Maps
+                  </span>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-info group-hover:translate-x-1 transition-transform" />
+            </div>
+
+            {/* 3. Primary Book Button */}
+            <button
+              className="btn w-full bg-primary text-white border-none shadow-[0_4px_14px_0_rgba(var(--p),0.39)] hover:shadow-[0_6px_20px_rgba(var(--p),0.23)] transition-all"
+              onClick={handleReservation}
+            >
+              Reserve Now
+            </button>
           </div>
-        </div>
-        <div className="bg-base-100 shadow-xl rounded-lg p-6">
+          {/* <div className="bg-base-100 shadow-xl rounded-lg p-6"> */}
           <div className="flex items-center space-x-2 mb-4">
             <h3 className="text-2xl font-bold">Rating</h3>
             <div className="rating rating-md">
@@ -190,19 +224,30 @@ const TurfDetails = () => {
               value={`${turf.openTime} - ${turf.closeTime}`}
             />
           </div>
-          <div className="card-actions">
-            <button
-              className="btn btn-primary btn-lg w-full"
-              onClick={handleReservation}
-            >
-              Reserve Now
-            </button>
-          </div>
+
         </div>
+        {/* </div> */}
+        <div className="mt-2">
+          <Reviews turfId={id} />
+        </div>
+
       </div>
-      <div className="mt-12">
-        <Reviews turfId={id} />
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-in-left">
+
+        <TurfCard
+          turf={turf}
+          handleMapRedirect={handleMapRedirect}
+          handleReservation={handleReservation}
+          averageRating={averageRating}
+        />
+
       </div>
+
     </div>
   );
 };

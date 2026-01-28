@@ -7,7 +7,7 @@ const Login = () => {
   const { register, handleSubmit, errors, onSubmit, loading } = useLoginForm();
 
   return (
-    <div className="flex items-center justify-center  min-h-screen max-md:p-4 bg-base-200 p-4 ">
+    <div className="flex items-center justify-center  max-md:p-4 bg-base-200 p-4 ">
       <Helmet>
         <title>Login Klb TurfBuddy</title>
         <meta
@@ -39,23 +39,30 @@ const Login = () => {
               error={errors.password}
             />
             <div className="form-control mt-6">
-              <Button type="submit" className="btn-primary" loading={loading}>
+              <Button type="submit" className="bg-primary text-white" loading={loading}>
                 Login
               </Button>
             </div>
           </form>
-          <div className="text-center mt-4">
-            <Link to="/signup" className="link link-hover">
-              <p className="link link-hover">
-                Don’t have an account?{" "}
+          <div className="mt-6 flex flex-col items-center gap-4">
+            {/* Primary Action: Sign Up */}
+            <div className="text-sm md:text-base text-gray-500 dark:text-gray-400">
+              Don’t have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-semibold text-primary hover:text-primary/80 hover:underline transition-all"
+              >
                 Register
-              </p>
-            </Link>
-            <p className="link link-hover">
-              <Link to="/forgot-password" className="link link-hover">
-                Forgot Password?
               </Link>
-            </p>
+            </div>
+
+            {/* Secondary Action: Forgot Password */}
+            <Link
+              to="/forgot-password"
+              className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            >
+              Forgot Password?
+            </Link>
           </div>
         </div>
       </div>
