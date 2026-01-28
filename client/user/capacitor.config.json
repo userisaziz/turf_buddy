@@ -1,0 +1,9 @@
+{
+  "appId": "com.turfbuddy.app",
+  "appName": "TurfBuddy",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true,
+    "resizeOnFullScreen": true
+  }
+}

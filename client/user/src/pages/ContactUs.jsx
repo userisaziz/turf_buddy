@@ -27,7 +27,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center p-4">
       <div className="card w-full md:w-96 bg-base-100 shadow-xl border">
         <div className="card-body">
           <h2 className="card-title justify-center">Contact Us</h2>
@@ -62,7 +62,7 @@ const ContactUs = () => {
               />
             </div>
             <div className="form-control mt-6">
-              <Button type="submit" className="btn-primary" loading={loading}>
+              <Button type="submit" className="bg-primary text-white" loading={loading}>
                 Send Message
               </Button>
             </div>

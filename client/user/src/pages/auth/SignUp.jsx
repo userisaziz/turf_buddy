@@ -48,7 +48,7 @@ const SignUp = () => {
               error={errors.confirmPassword}
             />
             <div className="form-control mt-6">
-              <Button type="submit" className="btn-primary" loading={loading}>
+              <Button type="submit" className="bg-primary text-white" loading={loading}>
                 Sign Up
               </Button>
             </div>

@@ -1,74 +1,27 @@
 import { Link } from "react-router-dom";
-import ThemeSwitcher from "../common/ThemeSwitcher";
+import { Home, LayoutGrid, MessageSquare, LogIn } from "lucide-react";
+import NavbarLayout from "./NavbarLayout";
 
 const Navbar = () => {
-  return (
-    <div className="navbar bg-base-100 fixed top-0 z-50 shadow-md animate-slide-in-top">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </label>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/turfs">Turfs</Link>
-            </li>
+  const items = [
+    { label: "Home", path: "/", icon: Home },
+    { label: "Turfs", path: "/turfs", icon: LayoutGrid },
+    {
+      label: "Contact Us",
+      path: "/contact-us",
+      icon: MessageSquare,
+      mobileLabel: "Contact",
+    },
+    { label: "Login", path: "/login", icon: LogIn, mobileOnly: true },
+  ];
 
-            <li>
-              <Link to="/contact-us">Contact Us</Link>
-            </li>
-          </ul>
-        </div>
-        <Link to="/" className="btn btn-ghost normal-case text-xl">
-          <img
-            src="/logo.png"
-            alt="TurfBuddy"
-            className="h-10 w-10 mask mask-squircle"
-          />
-          TurfBuddy
-        </Link>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/turfs">Turfs</Link>
-          </li>
-
-          <li>
-            <Link to="/contact-us">Contact Us</Link>
-          </li>
-        </ul>
-      </div>
-      <div className="navbar-end">
-        <ThemeSwitcher />
-        <Link to="/login" className="btn btn-ghost">
-          Login
-        </Link>
-      </div>
-    </div>
+  const endContent = (
+    <Link to="/login" className="btn btn-ghost ml-2">
+      Login
+    </Link>
   );
+
+  return <NavbarLayout homePath="/" items={items} endContent={endContent} />;
 };
 
 export default Navbar;

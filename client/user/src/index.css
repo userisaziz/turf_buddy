@@ -6,4 +6,5 @@
 
 body {
   font-family: "Poppins", sans-serif;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }

@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import useReviews from "../../hooks/useReviews";
 import { format } from "date-fns";
 import ReviewSkeleton from "../ui/ReviewSkeleton";
@@ -17,7 +17,7 @@ const Reviews = ({ turfId }) => {
   };
 
   return (
-    <div className="mt-8">
+    <div className="flex flex-col gap-4 p-4">
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
       {reviews.length === 0 ? (
         <p>No reviews yet.</p>

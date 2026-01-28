@@ -44,10 +44,10 @@ const Footer = () => {
           Install the TurfBuddy App
         </span>
       </p>
-      <InstallButton
+      {/* <InstallButton
         isInstallable={isInstallable}
         setIsInstallable={setIsInstallable}
-      />
+      /> */}
     </footer>
   );
 };
