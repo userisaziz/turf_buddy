@@ -120,8 +120,11 @@ const TurfDetails = () => {
               </div>
 
               {/* 2. Primary Book Button */}
-              <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-sm">
-                Book Now
+              <button
+                className="btn bg-primary text-white w-full"
+                onClick={handleReservation}
+              >
+                Reserve Now
               </button>
             </div>
 

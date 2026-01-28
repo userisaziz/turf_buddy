@@ -44,7 +44,7 @@ const TurfCard = ({ turf }) => {
             </span>
           </p>
           <div className="card-actions justify-end mt-4">
-            <span className="btn bg-primary">View Details</span>
+            <span className="btn bg-primary text-white">View Details</span>
           </div>
         </div>
       </div>

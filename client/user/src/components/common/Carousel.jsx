@@ -10,7 +10,7 @@ import {
   Parallax
 } from "swiper/modules";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 // Assets
 import banner1 from "/banner1.jpg";
 import banner2 from "/banner2.jpg";
@@ -21,6 +21,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import Button from "./Button";
 
 // Configuration
 const SWIPER_CONFIG = {
@@ -74,6 +75,7 @@ const SLIDES = [
 ];
 
 const HomeSlider = ({ isLoggedIn = false }) => {
+  const navigate = useNavigate();
   return (
     <section className="relative w-full group overflow-hidden bg-background">
       {/* Navigation Controls */}
@@ -136,12 +138,12 @@ const HomeSlider = ({ isLoggedIn = false }) => {
                   </p>
 
                   <div className="flex flex-wrap gap-6 items-center">
-                    <Link
-                      to={isLoggedIn ? "/auth/turfs" : "/signup"}
-                      className="btn btn-accent"
-                    >
+                    <Button className={'btn bg-primary text-white border-none'} onClick={() => navigate(isLoggedIn ? "/auth/turfs" : "/signup")}>
+
+
                       Get Started
-                    </Link>
+
+                    </Button>
 
                     <Link to="/turfs">
                       <button className="flex items-center gap-3 text-white/80 hover:text-white transition group">
