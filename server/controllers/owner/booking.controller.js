@@ -19,6 +19,23 @@ export const verifyTimeSlotAvailability = async (req, res) => {
   const { turfId, startTime, endTime, selectedTurfDate } = req.body;
 
   try {
+    // First validate that all required fields are present
+    if (!turfId || !startTime || !endTime || !selectedTurfDate) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Missing required fields: turfId, startTime, endTime, or selectedTurfDate",
+      });
+    }
+
+    // Log the received data for debugging
+    console.log("Received data:", {
+      turfId,
+      startTime,
+      endTime,
+      selectedTurfDate,
+    });
+
     // Adjust the start and end times as per the selected turf date
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
@@ -54,10 +71,12 @@ export const verifyTimeSlotAvailability = async (req, res) => {
   } catch (error) {
     logger.error("Error in verifyTimeSlotAvailability", {
       error: error.message,
+      requestBody: req.body,
     });
     return res.status(500).json({
       success: false,
       message: "An error occurred while checking the time slot.",
+      error: error.message,
     });
   }
 };
@@ -80,7 +99,7 @@ export const getOwnerBookings = async (req, res) => {
 
     // Get total count for pagination
     const totalCount = await Booking.countDocuments({
-      turf: { $in: turfIds }
+      turf: { $in: turfIds },
     });
 
     const bookings = await Booking.aggregate([
@@ -116,6 +135,7 @@ export const getOwnerBookings = async (req, res) => {
       { $unwind: "$user" },
       { $unwind: "$turf" },
       { $unwind: "$timeSlot" },
+
       {
         $project: {
           id: "$_id",
@@ -133,11 +153,12 @@ export const getOwnerBookings = async (req, res) => {
           },
           startTime: "$timeSlot.startTime",
           endTime: "$timeSlot.endTime",
+          date: "$timeSlot.date",
         },
       },
       { $sort: { bookingDate: -1 } },
       { $skip: skip },
-      { $limit: limit }
+      { $limit: limit },
     ]);
 
     return res.status(200).json({
@@ -146,12 +167,14 @@ export const getOwnerBookings = async (req, res) => {
         currentPage: page,
         totalPages: Math.ceil(totalCount / limit),
         totalItems: totalCount,
-        itemsPerPage: limit
-      }
+        itemsPerPage: limit,
+      },
     });
   } catch (error) {
     console.error("Error in getOwnerBookings:", error);
-    res.status(500).json({ message: "Error fetching bookings", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: error.message });
   }
 };
 
@@ -227,6 +250,7 @@ export const bookTurfForUser = async (req, res) => {
         turf: turfId,
         startTime: startTime,
         endTime: endTime,
+        date: selectedTurfDate,
       }),
       Booking.create({
         user: userId,
@@ -234,6 +258,7 @@ export const bookTurfForUser = async (req, res) => {
         timeSlot: null, // Will be updated after TimeSlot is created
         totalPrice,
         qrCode: QRcode,
+        date: selectedTurfDate,
         payment: {
           method: paymentMethod,
           orderId: paymentMethod === "online" ? `${uuidv4()}` : null,
@@ -376,6 +401,7 @@ export const verifyPayment = async (req, res) => {
           turf: turfId,
           startTime: startTime,
           endTime: endTime,
+          date: selectedTurfDate,
         }),
         Booking.create({
           user: userId,
@@ -383,6 +409,7 @@ export const verifyPayment = async (req, res) => {
           timeSlot: null, // Will be updated after TimeSlot is created
           totalPrice,
           qrCode: QRcode,
+          date: selectedTurfDate,
           payment: {
             method: paymentMethod,
             orderId: null,
@@ -440,46 +467,46 @@ export const verifyPayment = async (req, res) => {
 
 //DELETE A BOOKING
 export const deleteBooking = async (req, res) => {
-  const { bookingId } = req.body; // Extract bookingId from the request body
+  const { bookingId } = req.body;
 
   try {
-    // Find the booking by ID
-    const booking = await Booking.findById(bookingId);
+    // Find the booking and populate the timeSlot
+    const booking = await Booking.findById(bookingId).populate("timeSlot");
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    // Optionally, verify that the booking belongs to the owner
+    // Verify that the booking belongs to the owner
     const ownerId = req.owner.id;
     const turf = await Turf.findById(booking.turf);
-    if (turf.owner.toString() !== ownerId) {
-      return res
-        .status(403)
-        .json({ message: "You do not have permission to delete this booking" });
+    if (!turf || turf.owner.toString() !== ownerId) {
+      return res.status(403).json({
+        message: "You do not have permission to delete this booking",
+      });
     }
 
-    // Delete the associated time slot
+    // Delete the associated time slot if it exists
     if (booking.timeSlot) {
-      await TimeSlot.findByIdAndDelete(booking.timeSlotId);
+      await TimeSlot.findByIdAndDelete(booking.timeSlot._id);
     }
 
-    // Delete the booking
-    await Booking.findByIdAndDelete(bookingId);
-
-    // Optionally, remove the booking reference from the user
+    // Remove the booking reference from the user
     await User.findByIdAndUpdate(booking.user, {
       $pull: { bookings: bookingId },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Booking and associated time slot deleted successfully",
-      });
+    // Delete the booking
+    await booking.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully",
+    });
   } catch (error) {
     console.error("Error in deleteBooking:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while deleting the booking" });
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the booking",
+    });
   }
 };

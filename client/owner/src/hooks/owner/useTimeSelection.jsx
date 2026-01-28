@@ -30,7 +30,8 @@ const useTimeSelection = (
 
     const times = [];
     const openTime = parse(timeSlots.openTime, "hh:mm a", new Date());
-    const closeTime = parse(timeSlots.closeTime, "hh:mm a", new Date());
+    let closeTime = parse(timeSlots.closeTime, "hh:mm a", new Date());
+    // closeTime = addMinutes(closeTime, 30);
 
     let currentTime = openTime;
 
@@ -144,7 +145,7 @@ const useTimeSelection = (
   };
 
   useEffect(() => {
-    turfId&&   fetchByDate(selectedDate, turfId);
+    turfId && fetchByDate(selectedDate, turfId);
   }, [selectedDate, turfId]);
 
   return {
