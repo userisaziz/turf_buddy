@@ -46,7 +46,10 @@ const Login = () => {
           </form>
           <div className="text-center mt-4">
             <Link to="/signup" className="link link-hover">
-              <p className="link link-hover">Don’t have an account? Register</p>
+              <p className="link link-hover">
+                Don’t have an account?{" "}
+                Register
+              </p>
             </Link>
             <p className="link link-hover">
               <Link to="/forgot-password" className="link link-hover">

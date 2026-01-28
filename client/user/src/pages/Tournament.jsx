@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../hooks/useAxiosInstance";
 import { useNavigate } from "react-router-dom";
 import TournamentCard from "../components/tournament/TournamentCard";
-import banner3 from "/banner-3.jpeg";
+import banner3 from "/banner3.jpg";
 
 const TournamentList = () => {
   const [tournaments, setTournaments] = useState([]);

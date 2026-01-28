@@ -4,6 +4,7 @@ import TurfCardSkeleton from "../ui/TurfCardSkeleton.jsx";
 import useTurfData from "../../hooks/useTurfData.jsx";
 import SearchTurf from "../search/SearchTurf.jsx";
 import { Filter } from "lucide-react"; // Import Lucide React filter icon
+import Button from "../common/Button.jsx";
 
 const Turf = () => {
   const { turfs, loading, error } = useTurfData();
@@ -140,18 +141,18 @@ const Turf = () => {
 
             {/* Buttons */}
             <div className="flex gap-2 items-center justify-center">
-              <button
+              <Button
                 onClick={handleResetFilters}
                 className="btn btn-outline"
               >
                 Reset Filters
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={applyFilters}
                 className="btn btn-primary"
               >
                 Apply Filters
-              </button>
+              </Button>
             </div>
           </div>
         </div>
