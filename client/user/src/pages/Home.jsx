@@ -9,16 +9,14 @@ import TurfCardSkeleton from "../components/ui/TurfCardSkeleton";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { useSelector } from "react-redux";
-import banner1 from "/banner-1.png";
-import banner2 from "/banner-2.jpeg";
-import banner3 from "/banner-3.jpeg";
+
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/common/Button";
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { turfs, loading: turfLoading } = useTurfData();
   const { tournaments, loading: tournamentLoading } = useTournamentData();
-  const slides = [banner1, banner2, banner3];
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
@@ -38,45 +36,27 @@ const Home = () => {
         <link rel="canonical" href="https://turf-buddy.vercel.app/" />
       </Helmet>
       <div className="hero min-h-[70vh] bg-base-200">
-        <div className="hero-content flex-col lg:flex-row-reverse animate-slide-in-right">
-          <div className="w-full lg:w-1/2">
-            <Carousel slides={slides} />
-          </div>
+        <Carousel />
 
-          <div className="w-full lg:w-1/2 animate-zoom-in">
-            <h1 className="text-5xl font-bold ">Welcome to TurfBuddy</h1>
-            <p className="py-6">
-              Discover and book the best turf fields in your area. Whether
-              you&#39;re planning a casual game or a tournament, TurfBuddy has
-              got you covered.
-            </p>
-            <Link
-              to={isLoggedIn ? "/auth/turfs" : "/signup"}
-              className="btn btn-accent"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
       </div>
       <div className="container mx-auto  p-4 animate-slide-in-left">
         <h2 className="text-3xl font-bold mb-6">Featured Turfs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {turfLoading
             ? Array.from({ length: 3 }).map((_, index) => (
-                <TurfCardSkeleton key={`skeleton-${index}`} />
-              ))
+              <TurfCardSkeleton key={`skeleton-${index}`} />
+            ))
             : turfs
-                .slice(0, 3)
-                .map((turf) => <TurfCard key={turf._id} turf={turf} />)}
+              .slice(0, 3)
+              .map((turf) => <TurfCard key={turf._id} turf={turf} />)}
         </div>
         <div className="text-center mt-8">
-          <Link
-            to={isLoggedIn ? "/auth/turfs" : "/turfs"}
+          <Button
+            onClick={() => navigate(isLoggedIn ? "/auth/turfs" : "/turfs")}
             className="btn btn-primary"
           >
             View More Turfs
-          </Link>
+          </Button>
         </div>
       </div>
 
@@ -85,23 +65,23 @@ const Home = () => {
 
         {tournamentLoading
           ? Array.from({ length: 3 }).map((_, index) => (
-              <SwiperSlide key={index}>
-                <TurfCardSkeleton key={`skeleton-${index}`} />
-              </SwiperSlide>
-            ))
+            <SwiperSlide key={index}>
+              <TurfCardSkeleton key={`skeleton-${index}`} />
+            </SwiperSlide>
+          ))
           : tournaments.map((tournament) => (
-              <TournamentCard
-                tournament={tournament}
-                image={banner3}
-                onClick={() =>
-                  navigate(`/auth/tournaments/${tournament._id}`, {
-                    state: {
-                      tournament,
-                    },
-                  })
-                }
-              />
-            ))}
+            <TournamentCard
+              tournament={tournament}
+              image={banner3}
+              onClick={() =>
+                navigate(`/auth/tournaments/${tournament._id}`, {
+                  state: {
+                    tournament,
+                  },
+                })
+              }
+            />
+          ))}
       </div>
 
       <Footer />
