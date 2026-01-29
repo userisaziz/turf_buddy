@@ -13,6 +13,7 @@
     "@capacitor/android": "^8.0.2",
     "@capacitor/cli": "^8.0.2",
     "@capacitor/core": "^8.0.2",
+    "@capacitor/ios": "^8.0.2",
     "@capacitor/status-bar": "^8.0.0",
     "@hookform/resolvers": "^3.9.0",
     "@midudev/tailwind-animations": "^0.0.7",
@@ -47,7 +48,6 @@
     "postcss": "^8.4.40",
     "tailwindcss": "^3.4.6",
     "vite": "^5.3.4",
-    "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-sitemap": "^0.7.1"
   }
 }
