@@ -1,14 +1,9 @@
 import axios from "axios";
 
-import { Capacitor } from "@capacitor/core";
-
-const BASE_URL = Capacitor.isNativePlatform()
-  ? import.meta.env.VITE_BASE_URL   // MUST be IP / HTTPS
-  : "http://localhost:1234";
 
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:1234",
-  baseURL: BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL
   // baseURL: "https://turf-spot-be.vercel.app",
 });
 
