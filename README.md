@@ -8,8 +8,10 @@
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 
 
-**Turf Buddy Architecture**
-[View on Eraser![](https://app.eraser.io/workspace/NNFRYZdVpgc6ftVHDVB9/preview?elements=iaFrvw8a46rszq_PWpEN_A&type=embed)](https://app.eraser.io/workspace/NNFRYZdVpgc6ftVHDVB9?elements=iaFrvw8a46rszq_PWpEN_A)
+**Turf Buddy System Architecture**
+<img width="3361" height="1840" alt="image" src="https://github.com/user-attachments/assets/3ca210e6-009c-46e2-a50e-96b8e6565e4d" />
+
+
 **A comprehensive full-stack solution for sports turf booking and management**
 
 [Features](#-key-features) • [Architecture](#-system-architecture) • [Tech Stack](#-technology-stack) • [Getting Started](#-getting-started) • [API Documentation](#-api-documentation)
