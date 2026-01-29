@@ -10,6 +10,13 @@
 		"contentInset": "always",
 		"scrollEnabled": true
 	},
+	"server": {
+		"cleartext": true,
+		"allowNavigation": [
+			"checkout.razorpay.com",
+			"api.razorpay.com"
+		]
+	},
 	"packageClassList": [
 		"StatusBarPlugin"
 	]
