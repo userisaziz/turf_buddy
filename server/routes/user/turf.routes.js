@@ -8,7 +8,7 @@ import {
 const turfRouter = Router();
 
 // get all turfs
-turfRouter.get("/all", getAllTurfs);
+turfRouter.get("/all/:city?", getAllTurfs);
 // get single turf by id
 turfRouter.get("/details/:id", getTurfById);
 // get time slots by turf id pass with query

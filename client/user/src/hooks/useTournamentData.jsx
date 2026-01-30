@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "./useAxiosInstance"; // Adjust the import based on your project structure
+import { useParams } from "react-router-dom";
+import { useGetTournamentsQuery } from "../redux/api/apiSlice";
 
 const useTournamentData = () => {
-  const [tournaments, setTournaments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { city } = useParams();
 
-  useEffect(() => {
-    const fetchTournaments = async () => {
-      try {
-        const response = await axiosInstance.get("/api/user/tournaments/all"); // Adjust the endpoint as necessary
-        setTournaments(response.data);
-      } catch (error) {
-        console.error("Error fetching tournaments:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Normalize the city name to ensure consistent cache keys regardless of URL casing.
+  const normalizedCity = city?.toLowerCase() || "";
 
-    fetchTournaments();
-  }, []);
+  const { data, isLoading, isError, error, isFetching } = useGetTournamentsQuery(normalizedCity, {
+    skip: !normalizedCity,
+    refetchOnMountOrArgChange: false,
+  });
 
-  return { tournaments, loading };
+  return {
+    tournaments: data || [],
+    loading: isLoading,
+    fetching: isFetching,
+    error: isError ? error : null
+  };
 };
 
 export default useTournamentData;

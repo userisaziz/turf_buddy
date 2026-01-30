@@ -58,13 +58,26 @@ export const registerTeam = async (req, res) => {
   }
 };
 export const getTournaments = async (req, res) => {
+  const { city } = req.params;
   try {
-    const tournaments = await Tournament.find()
+    let query = {};
+
+    if (city) {
+      // 1. Find all turf IDs in the specified city
+      const Turf = (await import("../../models/turf.model.js")).default;
+      const turfsInCity = await Turf.find({ city: city.toLowerCase() }).select("_id");
+      const turfIds = turfsInCity.map((t) => t._id);
+      query = { turf: { $in: turfIds } };
+    }
+
+    // 2. Find tournaments
+    const tournaments = await Tournament.find(query)
       .populate({
-        path: "turf", // Populate the turf field
-        select: "name image", // Select only the name field from the Turf model
+        path: "turf",
+        select: "name image city",
       })
       .populate("teams");
+
     res.status(200).json(tournaments);
   } catch (error) {
     res.status(400).json({ message: error.message });

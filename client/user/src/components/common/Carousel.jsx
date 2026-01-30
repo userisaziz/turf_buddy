@@ -33,7 +33,8 @@ export default function HeroStatic({ isLoggedIn }) {
           relative z-10
           max-w-7xl mx-auto
           px-6
-          h-full
+          min-h-[50vh]
+        md:min-h-[70vh]
           flex
           items-start md:items-center
           pt-4

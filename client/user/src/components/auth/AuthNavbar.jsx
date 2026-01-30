@@ -1,18 +1,21 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { logout } from "../../redux/slices/authSlice.js";
 import { useDispatch } from "react-redux";
 import {
-  Home,
+  Home as HomeIcon,
   LayoutGrid,
   Trophy,
   CalendarCheck,
   LogOut,
 } from "lucide-react";
 import NavbarLayout from "../layout/NavbarLayout.jsx";
+import { PATHS } from "../../constants/constants.js";
 
 export default function AuthNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { city } = useParams();
+  const citySlug = city?.toLowerCase() || "";
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,28 +23,28 @@ export default function AuthNavbar() {
   };
 
   const items = [
-    { label: "Home", path: "/auth", icon: Home },
-    { label: "Turfs", path: "/auth/turfs", icon: LayoutGrid },
+    { label: "Home", path: `/auth/${citySlug}`, icon: HomeIcon },
+    { label: "Turfs", path: `/auth/${citySlug}/${PATHS.TURFS}`, icon: LayoutGrid },
     {
       label: "Tournaments",
-      path: "/auth/tournaments",
+      path: `/auth/${citySlug}/${PATHS.TOURNAMENTS}`,
       icon: Trophy,
       mobileLabel: "Events",
     },
     {
       label: "My Bookings",
-      path: "/auth/booking-history",
+      path: `/auth/${citySlug}/${PATHS.BOOKING_HISTORY}`,
       icon: CalendarCheck,
       mobileLabel: "Bookings",
     },
     {
       label: "Become an Owner",
-      path: "/auth/become-owner",
+      path: `/auth/${citySlug}/${PATHS.BECOME_OWNER}`,
       desktopOnly: true,
-      render: (isActive) => (
+      render: (active) => (
         <NavLink
-          to="/auth/become-owner"
-          className={isActive ? "text-accent" : ""}
+          to={`/auth/${citySlug}/${PATHS.BECOME_OWNER}`}
+          className={active ? "text-accent active" : ""}
         >
           Become an Owner
         </NavLink>
@@ -62,6 +65,6 @@ export default function AuthNavbar() {
   );
 
   return (
-    <NavbarLayout homePath="/auth" items={items} endContent={endContent} />
+    <NavbarLayout homePath={`/auth/${citySlug}`} items={items} endContent={endContent} />
   );
 }

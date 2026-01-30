@@ -1,30 +1,24 @@
-import { useSelector, useDispatch } from "react-redux";
-import { setTurfs, setLoading, setError } from "../redux/slices/turfSlice";
-import axiosInstance from "../hooks/useAxiosInstance";
-import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useGetTurfsQuery } from "../redux/api/apiSlice";
 
 const useTurfData = () => {
-  const dispatch = useDispatch();
-  const { turfs, loading } = useSelector((state) => state.turf);
+  const { city } = useParams();
 
-  useEffect(() => {
-    const fetchTurfData = async () => {
-      try {
-        dispatch(setLoading(true));
-        // Fetch your turf data here
-        const response = await axiosInstance.get("/api/user/turf/all");
-        const data = await response.data.turfs;
-        dispatch(setTurfs(data));
-      } catch (err) {
-        dispatch(setError(err.message));
-      } finally {
-        dispatch(setLoading(false));
-      }
-    };
-    fetchTurfData();
-  }, []);
+  // Normalize the city name to ensure consistent cache keys regardless of URL casing.
+  const normalizedCity = city?.toLowerCase() || "";
 
-  return { turfs, loading };
+  const { data, isLoading, isError, error, isFetching } = useGetTurfsQuery(normalizedCity, {
+    skip: !normalizedCity,
+    // Ensure we don't refetch on every mount if data is already in cache
+    refetchOnMountOrArgChange: false,
+  });
+
+  return {
+    turfs: data?.turfs || [],
+    loading: isLoading,
+    fetching: isFetching,
+    error: isError ? error : null
+  };
 };
 
 export default useTurfData;

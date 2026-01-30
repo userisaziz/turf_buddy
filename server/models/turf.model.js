@@ -8,13 +8,15 @@ const turfSchema = new mongoose.Schema(
     image: { type: String, required: true },
     sportTypes: [{ type: String, required: true }],
     pricePerHour: { type: Number, required: true },
-    priceAtMorning: { type: Number,  },
-    advancePayment: { type: Number,  },
-    region: { 
-      type: String, 
-      required: true, 
-      enum: ["Hagarga", "Saidapuri", "Nagnahalli", "Kbn", "Other"] 
-  },
+    priceAtMorning: { type: Number, },
+    advancePayment: { type: Number, },
+    city: {
+      type: String,
+      required: true,
+      lowercase: true,
+      index: true
+    },
+
     openTime: { type: String, required: true },
     ownerEmail: { type: String, },
     ownerPhoneNumber: { type: Number, },
