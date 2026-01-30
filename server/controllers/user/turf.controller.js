@@ -5,8 +5,10 @@ import { format, parseISO, startOfDay } from "date-fns";
 
 // get all turfs
 export const getAllTurfs = async (req, res) => {
+  const { city } = req.params;
   try {
-    const turfs = await Turf.find({});
+    const query = city ? { city: city.toLowerCase() } : {};
+    const turfs = await Turf.find(query);
     return res.status(200).json({ turfs });
   } catch (err) {
     console.log(chalk.red("Error in getAllTurfs"), err);

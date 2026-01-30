@@ -4,7 +4,7 @@ import * as yup from "yup";
 import axiosInstance from "./useAxiosInstance";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slices/authSlice";
 import { REGISTER_USER } from "../api/endpoints";
@@ -33,9 +33,12 @@ const registerSchema = yup.object().shape({
 });
 
 const useSignUpForm = () => {
+  const { city } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const citySlug = city?.toLowerCase() || "";
+
   const {
     register,
     handleSubmit,
@@ -51,7 +54,10 @@ const useSignUpForm = () => {
       const result = await response.data;
       toast.success(result.message);
       dispatch(login(result.token));
-      navigate("/auth", { replace: true });
+
+      // Redirect to the city-aware auth route
+      navigate(`/auth/${citySlug}`, { replace: true });
+
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${result.token}`;

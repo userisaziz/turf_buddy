@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Root from "./layouts/Root";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
@@ -16,6 +16,7 @@ import ContactUs from "./pages/ContactUs";
 import TournamentList from "./pages/Tournament";
 import TournamentRegistration from "./components/Tournment/TournamentRegistration";
 import TournamentDetails from "./components/tournament/TournmentDetails";
+import { PATHS } from "./constants/constants";
 
 const router = createBrowserRouter([
   {
@@ -28,75 +29,84 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "login",
-        element: <Login />,
+        path: ":city",
+        children: [
+          {
+            path: PATHS.HOME,
+            element: <Home />,
+          },
+          {
+            path: PATHS.LOGIN,
+            element: <Login />,
+          },
+          {
+            path: PATHS.SIGNUP,
+            element: <SignUp />,
+          },
+          {
+            path: PATHS.RESET_PASSWORD,
+            element: <ResetPassword />,
+          },
+          {
+            path: PATHS.FORGOT_PASSWORD,
+            element: <ForgotPassword />,
+          },
+          {
+            path: PATHS.TURFS,
+            element: <Turf />,
+          },
+          {
+            path: PATHS.TURF_DETAILS,
+            element: <TurfDetails />,
+          },
+          {
+            path: PATHS.CONTACT_US,
+            element: <ContactUs />,
+          },
+        ],
       },
-      {
-        path: "signup",
-        element: <SignUp />,
-      },
-      {
-        path: "reset-password/:token",
-        element: <ResetPassword />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPassword />,
-      },
-      {
-        path: "turfs",
-        element: <Turf />,
-      },
-      {
-        path: "turf/:id",
-        element: <TurfDetails />,
-      },
-      {
-        path: "contact-us",
-        element: <ContactUs />,
-      },
+      // Redirect root to a city selection logic managed in Root/Navbar
+      // or handle it by letting Root render and showing the popup.
     ],
   },
   {
-    path: "/auth",
+    path: "/auth/:city",
     element: <ProtectedLayout />,
-    // errorElement: <div>Error</div>,
     children: [
       {
-        path: "",
+        path: PATHS.HOME,
         element: <Home />,
       },
       {
-        path: "turfs",
+        path: PATHS.TURFS,
         element: <Turf />,
       },
       {
-        path: "turf/:id",
+        path: PATHS.TURF_DETAILS,
         element: <TurfDetails />,
       },
-
       {
-        path: "reserve/:id",
+        path: PATHS.RESERVE,
         element: <Reservation />,
       },
       {
-        path: "become-owner",
+        path: PATHS.BECOME_OWNER,
         element: <BecomeOwner />,
       },
       {
-        path: "booking-history",
+        path: PATHS.BOOKING_HISTORY,
         element: <TurfBookingHistory />,
       },
       {
-        path: "tournaments",
+        path: PATHS.TOURNAMENTS,
         element: <TournamentList />,
       },
       {
-        path: "tournaments/register/:tournamentId",
+        path: PATHS.TOURNAMENT_REGISTER,
         element: <TournamentRegistration />,
       },
       {
-        path: "tournaments/:tournamentId",
+        path: PATHS.TOURNAMENT_DETAILS,
         element: <TournamentDetails />,
       },
     ],

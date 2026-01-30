@@ -60,7 +60,7 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: "reset-password/:token",
+        path: "owner/reset-password/:token",
         element: <ResetPassword />,
       },
       {

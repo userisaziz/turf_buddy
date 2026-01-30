@@ -11,7 +11,7 @@ const tournamentRouter = Router();
 // Route for admin to create a tournament
 
 tournamentRouter.post("/register", verifyUserToken, registerTeam);
-tournamentRouter.get("/all", getTournaments);
+tournamentRouter.get("/all/:city?", getTournaments);
 tournamentRouter.get("/:tournamentId", getTournamentById); // New route for getting tournament by ID
 
 export default tournamentRouter;
