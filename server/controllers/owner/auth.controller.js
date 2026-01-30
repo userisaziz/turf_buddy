@@ -180,7 +180,7 @@ export const resetOwnerPassword = async (req, res) => {
     }
 
     // Find the owner associated with the token
-    const owner = await Owner.findById(resetToken.ownerId);
+    const owner = await Owner.findById(resetToken.id);
     if (!owner) {
       return res.status(400).json({ message: "Owner not found" });
     }
