@@ -14,7 +14,7 @@ export const getAllTransaction = async (req, res) => {
       {},
       { createdAt: 1, payment: 1, totalPrice: 1, timeSlot: 1 }
     )
-      .populate("user", { name: 1, _id: 0 })
+      .populate("user", { name: 1, phone: 1, _id: 0 })
       .populate("turf", { name: 1, _id: 0 })
       .populate("timeSlot", { startTime: 1, endTime: 1, _id: 0 })
       .sort({ createAt: -1 });

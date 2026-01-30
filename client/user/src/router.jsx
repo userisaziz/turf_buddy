@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Root from "./layouts/Root";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
@@ -24,91 +24,46 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <NotFound />,
     children: [
-      {
-        path: "",
-        element: <Home />,
-      },
+      // 1. Root-level routes (no city prefix)
+      { index: true, element: <Home /> },
+      { path: PATHS.LOGIN, element: <Login /> },
+      { path: PATHS.SIGNUP, element: <SignUp /> },
+      { path: PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
+      { path: PATHS.RESET_PASSWORD, element: <ResetPassword /> },
+      { path: PATHS.CONTACT_US, element: <ContactUs /> },
+
+      // 2. City-prefixed routes (public)
       {
         path: ":city",
         children: [
-          {
-            path: PATHS.HOME,
-            element: <Home />,
-          },
-          {
-            path: PATHS.LOGIN,
-            element: <Login />,
-          },
-          {
-            path: PATHS.SIGNUP,
-            element: <SignUp />,
-          },
-          {
-            path: PATHS.RESET_PASSWORD,
-            element: <ResetPassword />,
-          },
-          {
-            path: PATHS.FORGOT_PASSWORD,
-            element: <ForgotPassword />,
-          },
-          {
-            path: PATHS.TURFS,
-            element: <Turf />,
-          },
-          {
-            path: PATHS.TURF_DETAILS,
-            element: <TurfDetails />,
-          },
-          {
-            path: PATHS.CONTACT_US,
-            element: <ContactUs />,
-          },
+          { index: true, element: <Home /> },
+          { path: PATHS.TURFS, element: <Turf /> },
+          { path: PATHS.TURF_DETAILS, element: <TurfDetails /> },
+          { path: PATHS.TOURNAMENTS, element: <TournamentList /> },
+          { path: PATHS.TOURNAMENT_DETAILS, element: <TournamentDetails /> },
+          // Allow login/signup with city prefix to preserve context
+          { path: PATHS.LOGIN, element: <Login /> },
+          { path: PATHS.SIGNUP, element: <SignUp /> },
+          { path: PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
+          { path: PATHS.CONTACT_US, element: <ContactUs /> },
         ],
       },
-      // Redirect root to a city selection logic managed in Root/Navbar
-      // or handle it by letting Root render and showing the popup.
     ],
   },
   {
+    // 3. Authenticated city-prefixed routes
     path: "/auth/:city",
     element: <ProtectedLayout />,
     children: [
-      {
-        path: PATHS.HOME,
-        element: <Home />,
-      },
-      {
-        path: PATHS.TURFS,
-        element: <Turf />,
-      },
-      {
-        path: PATHS.TURF_DETAILS,
-        element: <TurfDetails />,
-      },
-      {
-        path: PATHS.RESERVE,
-        element: <Reservation />,
-      },
-      {
-        path: PATHS.BECOME_OWNER,
-        element: <BecomeOwner />,
-      },
-      {
-        path: PATHS.BOOKING_HISTORY,
-        element: <TurfBookingHistory />,
-      },
-      {
-        path: PATHS.TOURNAMENTS,
-        element: <TournamentList />,
-      },
-      {
-        path: PATHS.TOURNAMENT_REGISTER,
-        element: <TournamentRegistration />,
-      },
-      {
-        path: PATHS.TOURNAMENT_DETAILS,
-        element: <TournamentDetails />,
-      },
+      { index: true, element: <Home /> },
+      { path: PATHS.TURFS, element: <Turf /> },
+      { path: PATHS.TURF_DETAILS, element: <TurfDetails /> },
+      { path: PATHS.RESERVE, element: <Reservation /> },
+      { path: PATHS.BECOME_OWNER, element: <BecomeOwner /> },
+      { path: PATHS.BOOKING_HISTORY, element: <TurfBookingHistory /> },
+      { path: PATHS.TOURNAMENTS, element: <TournamentList /> },
+      { path: PATHS.TOURNAMENT_REGISTER, element: <TournamentRegistration /> },
+      { path: PATHS.TOURNAMENT_DETAILS, element: <TournamentDetails /> },
     ],
   },
 ]);
