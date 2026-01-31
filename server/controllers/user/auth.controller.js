@@ -91,7 +91,7 @@ export const forgotPassword = async (req, res) => {
       },
     });
 
-    const resetUrl = `${process.env.CLIENT_URL}reset-password/${token}`;
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,

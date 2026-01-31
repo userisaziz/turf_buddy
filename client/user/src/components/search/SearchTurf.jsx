@@ -1,7 +1,7 @@
 import { Filter } from "lucide-react";
 import { useState } from "react";
 
-const SearchTurf = ({ onSearch, openFiltersModal }) => {
+const SearchTurf = ({ onSearch, openFiltersModal, placeholder = "Search for turfs..." }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e) => {
@@ -15,7 +15,7 @@ const SearchTurf = ({ onSearch, openFiltersModal }) => {
       <form onSubmit={handleSearch} className="flex w-full max-w-xl ml-auto mb-4  ">
         <input
           type="text"
-          placeholder="Search for turfs..."
+          placeholder={placeholder}
           className="input input-bordered w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

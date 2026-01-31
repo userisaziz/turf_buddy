@@ -13,9 +13,10 @@ import NotFound from "./components/common/NotFound";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ContactUs from "./pages/ContactUs";
-import TournamentList from "./pages/Tournament";
+import Events from "./pages/Events";
 import TournamentRegistration from "./components/Tournment/TournamentRegistration";
 import TournamentDetails from "./components/tournament/TournmentDetails";
+import CoachingDetails from "./components/tournament/CoachingDetails";
 import { PATHS } from "./constants/constants";
 
 const router = createBrowserRouter([
@@ -39,12 +40,15 @@ const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: PATHS.TURFS, element: <Turf /> },
           { path: PATHS.TURF_DETAILS, element: <TurfDetails /> },
-          { path: PATHS.TOURNAMENTS, element: <TournamentList /> },
+          { path: PATHS.TOURNAMENTS, element: <Events /> },
           { path: PATHS.TOURNAMENT_DETAILS, element: <TournamentDetails /> },
+          { path: PATHS.COACHING_DETAILS, element: <CoachingDetails /> },
+          { path: PATHS.BECOME_OWNER, element: <BecomeOwner /> },
           // Allow login/signup with city prefix to preserve context
           { path: PATHS.LOGIN, element: <Login /> },
           { path: PATHS.SIGNUP, element: <SignUp /> },
           { path: PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
+          { path: PATHS.RESET_PASSWORD, element: <ResetPassword /> },
           { path: PATHS.CONTACT_US, element: <ContactUs /> },
         ],
       },
@@ -61,9 +65,10 @@ const router = createBrowserRouter([
       { path: PATHS.RESERVE, element: <Reservation /> },
       { path: PATHS.BECOME_OWNER, element: <BecomeOwner /> },
       { path: PATHS.BOOKING_HISTORY, element: <TurfBookingHistory /> },
-      { path: PATHS.TOURNAMENTS, element: <TournamentList /> },
+      { path: PATHS.TOURNAMENTS, element: <Events /> },
       { path: PATHS.TOURNAMENT_REGISTER, element: <TournamentRegistration /> },
       { path: PATHS.TOURNAMENT_DETAILS, element: <TournamentDetails /> },
+      { path: PATHS.COACHING_DETAILS, element: <CoachingDetails /> },
     ],
   },
 ]);

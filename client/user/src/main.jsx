@@ -13,6 +13,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { Toaster } from "react-hot-toast";
+import { HelmetProvider } from "react-helmet-async";
 
 import { setupListeners } from "@reduxjs/toolkit/query";
 
@@ -20,11 +21,13 @@ setupListeners(store.dispatch);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <RouterProvider router={router} />
-        <Toaster position="bottom-center" duration={500} />
-      </PersistGate>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <RouterProvider router={router} />
+          <Toaster position="bottom-center" duration={500} />
+        </PersistGate>
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );

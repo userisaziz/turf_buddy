@@ -4,11 +4,13 @@ import Carousel from "../components/common/Carousel";
 import Footer from "../components/layout/Footer";
 import useTurfData from "../hooks/useTurfData";
 import useTournamentData from "../hooks/useTournamentData";
+import useCoachingData from "../hooks/useCoachingData";
 import TournamentCard from "../components/tournament/TournamentCard";
+import CoachingCard from "../components/tournament/CoachingCard";
 import TurfCard from "../components/turf/TurfCard";
 import TurfCardSkeleton from "../components/ui/TurfCardSkeleton";
 import { useSelector } from "react-redux";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import Button from "../components/common/Button";
 import { PATHS } from "../constants/constants";
 
@@ -18,6 +20,7 @@ const Home = () => {
   const citySlug = city?.toLowerCase() || "";
   const { turfs, loading: turfLoading } = useTurfData();
   const { tournaments, loading: tournamentLoading } = useTournamentData();
+  const { coachings, loading: coachingLoading } = useCoachingData();
   const navigate = useNavigate();
 
   const handleNavigateMoreTurfs = () => {
@@ -108,9 +111,7 @@ const Home = () => {
                 tournament={tournament}
                 image="/banner3.jpg"
                 onClick={() =>
-                  navigate(getAuthCityPath(`${PATHS.TOURNAMENTS}/${tournament._id}`), {
-                    state: { tournament },
-                  })
+                  navigate(getAuthCityPath(PATHS.TOURNAMENTS), { state: { tab: "tournaments" } })
                 }
               />
             ))
@@ -118,6 +119,33 @@ const Home = () => {
             <div className="col-span-full flex flex-col items-center justify-center py-12 text-base-content/50">
               <CalendarX className="w-16 h-16 mb-4" />
               <p className="text-xl font-medium">No ongoing events in {city || 'this area'}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="container mx-auto p-4 py-12">
+        <h2 className="text-3xl font-bold mb-6">Coaching Classes</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {coachingLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <TurfCardSkeleton key={`skeleton-coaching-${index}`} />
+            ))
+          ) : coachings.length > 0 ? (
+            coachings.map((coaching) => (
+              <CoachingCard
+                key={coaching._id}
+                coaching={coaching}
+                onClick={() =>
+                  navigate(getAuthCityPath(PATHS.TOURNAMENTS), { state: { tab: "coaching" } })
+                }
+              />
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12 text-base-content/50 bg-base-200/20 rounded-2xl border border-dashed border-base-300">
+              <CalendarX className="w-16 h-16 mb-4" />
+              <p className="text-xl font-medium">No coaching classes scheduled in {city || 'this area'}</p>
             </div>
           )}
         </div>

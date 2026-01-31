@@ -13,6 +13,41 @@ import { format, parseISO } from "date-fns";
 import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
 import mongoose from "mongoose";
+import Coaching from "../../models/coaching.model.js";
+
+// Helper function to check if a time slot conflicts with any coaching
+const checkCoachingConflict = async (turfId, date, startTime, endTime) => {
+  const dayName = format(parseISO(date), "EEEE"); // e.g., "Monday"
+  const requestedStart = parseISO(startTime);
+  const requestedEnd = parseISO(endTime);
+
+  const coachings = await Coaching.find({
+    turf: turfId,
+    status: "active",
+    startDate: { $lte: parseISO(date) },
+    endDate: { $gte: parseISO(date) },
+    daysOfWeek: dayName,
+  });
+
+  for (const coaching of coachings) {
+    // coaching.startTime/endTime are strings like "16:00"
+    // We need to compare them with the requested times
+    const [cStartHour, cStartMin] = coaching.startTime.split(":").map(Number);
+    const [cEndHour, cEndMin] = coaching.endTime.split(":").map(Number);
+
+    const cStart = new Date(requestedStart);
+    cStart.setHours(cStartHour, cStartMin, 0, 0);
+
+    const cEnd = new Date(requestedStart);
+    cEnd.setHours(cEndHour, cEndMin, 0, 0);
+
+    // Conflict if: requestedStart < coachingEnd AND requestedEnd > coachingStart
+    if (requestedStart < cEnd && requestedEnd > cStart) {
+      return coaching;
+    }
+  }
+  return null;
+};
 
 export const verifyTimeSlotAvailability = async (req, res) => {
   const userId = req.user.user;
@@ -23,7 +58,16 @@ export const verifyTimeSlotAvailability = async (req, res) => {
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
 
-    // Check if the time slot is already booked
+    // 1. Check for coaching conflicts
+    const conflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (conflict) {
+      return res.status(400).json({
+        success: false,
+        message: `This slot is reserved for coaching: ${conflict.name} (${conflict.startTime} - ${conflict.endTime})`,
+      });
+    }
+
+    // 2. Check if the time slot is already booked
     const existingTimeSlot = await TimeSlot.findOne({
       turf: turfId,
       startTime: adjustedStartTime,
@@ -129,6 +173,23 @@ export const verifyPayment = async (req, res) => {
     const adjustedStartTime = adjustTime(startTime, selectedTurfDate);
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
 
+    // 1. Check for coaching conflicts
+    const conflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (conflict) {
+      logger.error("Coaching conflict during payment session", { turfId, conflict: conflict.name });
+      // Initiating refund
+      await razorpay.payments.refund(paymentId, {
+        amount: totalPrice * 100,
+      });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        message: `This slot is now reserved for coaching. Payment has been refunded.`,
+      });
+    }
+
+    // 2. Check for existing time slot
     const existingTimeSlot = await TimeSlot.findOne({
       turf: turfId,
       startTime: adjustedStartTime,

@@ -3,11 +3,40 @@ import FormField from "../../components/common/FormField";
 import Button from "../../components/common/Button";
 import useBecomeOwner from "../../hooks/useBecomeOwner";
 import TermsAndPrivacyModal from "../../components/common/TermsAndPrivacyModal";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { PATHS } from "../../constants/constants";
 
 const BecomeOwner = () => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { register, handleSubmit, errors, onSubmit, loading } =
     useBecomeOwner();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container mx-auto mt-20 p-4 text-center min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="max-w-md p-10 bg-base-100 rounded-3xl shadow-2xl border border-base-200">
+          <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6 mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <h1 className="text-3xl font-extrabold mb-4">Register as a User First</h1>
+          <p className="text-base-content/70 mb-8">
+            To become a turf owner on our platform, you first need to have a registered user account.
+            Join us to start managing your facility!
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link to={`/${PATHS.SIGNUP}`} className="btn btn-primary btn-lg rounded-2xl">
+              Create Account
+            </Link>
+            <Link to={`/${PATHS.LOGIN}`} className="btn btn-ghost">
+              Already have an account? Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto mt-20 p-4">

@@ -2,7 +2,17 @@ import { Clock2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import Button from "../common/Button";
+import {
+  Trophy,
+  Activity,
+  Dumbbell,
+  Target,
+  Medal,
+  Bike
+} from 'lucide-react';
+
 import { PATHS } from "../../constants/constants";
+import SportBadges from "../common/SportsBadges";
 
 const TurfCard = ({ turf }) => {
   const { city } = useParams();
@@ -12,6 +22,10 @@ const TurfCard = ({ turf }) => {
   const linkTo = isLoggedIn
     ? `/auth/${citySlug}/${PATHS.TURF_DETAILS.replace(":id", turf._id)}`
     : `/${citySlug}/${PATHS.TURF_DETAILS.replace(":id", turf._id)}`;
+
+
+
+
 
   return (
     <Link to={linkTo} className="block">
@@ -30,13 +44,7 @@ const TurfCard = ({ turf }) => {
               View Details
             </Button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {turf.sportTypes.map((sport, index) => (
-              <span key={index} className="badge badge-outline">
-                {sport}
-              </span>
-            ))}
-          </div>
+          <SportBadges turf={turf} />
           <p className="mt-2">
             <span className="flex gap-2 text-sm">
               <Clock2 className="w-4 h-4" />

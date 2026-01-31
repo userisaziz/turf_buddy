@@ -40,6 +40,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Tournament from "./components/admin/Tournments/index";
 import TournamentRequests from "./components/admin/Tournments/TournmentRequests";
+import Coaching from "./components/admin/Coaching";
 
 const router = createBrowserRouter([
   {
@@ -117,6 +118,7 @@ const router = createBrowserRouter([
       { path: "reviews", element: <OwnerReviews /> },
       { path: "bookings", element: <OwnerBookings /> },
       { path: "reservations", element: <Reservation /> },
+      { path: "coaching", element: <Coaching /> },
     ],
   },
 ]);

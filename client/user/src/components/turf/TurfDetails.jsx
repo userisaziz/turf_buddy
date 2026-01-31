@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 const TurfDetails = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const { id } = useParams();
+  const { city, id } = useParams();
   const navigate = useNavigate();
   const { loading, turfs } = useTurfData();
   const { averageRating } = useReviews(id);
@@ -45,10 +45,11 @@ const TurfDetails = () => {
   }
 
   const handleReservation = () => {
+    const citySlug = city?.toLowerCase() || "mumbai";
     if (isLoggedIn) {
-      navigate(`/auth/reserve/${id}`);
+      navigate(`/auth/${citySlug}/reserve/${id}`);
     } else {
-      navigate(`/login`);
+      navigate(`/${citySlug}/login`);
     }
   };
 

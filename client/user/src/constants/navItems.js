@@ -12,26 +12,30 @@ export const getNavItems = (citySlug, isAuth, handleLogout) => {
     const cityPrefix = citySlug ? `/${citySlug}` : "";
     const authPrefix = `/auth/${citySlug || "mumbai"}`; // mumbai is default fallback
 
+    const commonItems = [
+        { label: "Home", path: isAuth ? authPrefix : (cityPrefix || "/"), icon: Home },
+        { label: "Turfs", path: isAuth ? `${authPrefix}/${PATHS.TURFS}` : (citySlug ? `${cityPrefix}/${PATHS.TURFS}` : `/${PATHS.TURFS}`), icon: LayoutGrid },
+        {
+            label: "Events",
+            path: isAuth ? `${authPrefix}/${PATHS.TOURNAMENTS}` : (citySlug ? `${cityPrefix}/${PATHS.TOURNAMENTS}` : `/${PATHS.TOURNAMENTS}`),
+            icon: Trophy,
+            mobileLabel: "Events",
+        },
+        {
+            label: "Become an Owner",
+            path: isAuth ? `${authPrefix}/${PATHS.BECOME_OWNER}` : (citySlug ? `${cityPrefix}/${PATHS.BECOME_OWNER}` : `/${PATHS.BECOME_OWNER}`),
+            desktopOnly: true,
+        },
+    ];
+
     if (isAuth) {
         return [
-            { label: "Home", path: authPrefix, icon: Home },
-            { label: "Turfs", path: `${authPrefix}/${PATHS.TURFS}`, icon: LayoutGrid },
-            {
-                label: "Tournaments",
-                path: `${authPrefix}/${PATHS.TOURNAMENTS}`,
-                icon: Trophy,
-                mobileLabel: "Events",
-            },
+            ...commonItems,
             {
                 label: "My Bookings",
                 path: `${authPrefix}/${PATHS.BOOKING_HISTORY}`,
                 icon: CalendarCheck,
                 mobileLabel: "Bookings",
-            },
-            {
-                label: "Become an Owner",
-                path: `${authPrefix}/${PATHS.BECOME_OWNER}`,
-                desktopOnly: true,
             },
             {
                 label: "Logout",
@@ -43,8 +47,7 @@ export const getNavItems = (citySlug, isAuth, handleLogout) => {
     }
 
     return [
-        { label: "Home", path: cityPrefix || "/", icon: Home },
-        { label: "Turfs", path: citySlug ? `${cityPrefix}/${PATHS.TURFS}` : `/${PATHS.TURFS}`, icon: LayoutGrid },
+        ...commonItems,
         {
             label: "Contact Us",
             path: `/${PATHS.CONTACT_US}`,

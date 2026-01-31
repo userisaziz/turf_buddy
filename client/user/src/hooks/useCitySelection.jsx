@@ -49,13 +49,27 @@ export const useCitySelection = () => {
       });
 
       // Update URL while maintaining current sub-path
-      let currentSubPath = location.pathname;
-      if (urlCity) {
-        // Replace old city slug in path
-        currentSubPath = currentSubPath.replace(`/${urlCity.toLowerCase()}`, "");
+      const isAuthPath = location.pathname.includes("/auth/");
+      let newPath = "";
+
+      if (isAuthPath) {
+        // Path is /auth/:city/... or /auth/...
+        if (urlCity) {
+          newPath = location.pathname.replace(`/auth/${urlCity.toLowerCase()}`, `/auth/${citySlug}`);
+        } else {
+          // If for some reason we are in /auth but no city in URL params (unlikely with current router)
+          newPath = `/auth/${citySlug}`;
+        }
+      } else {
+        // Path is /:city/... or /...
+        if (urlCity) {
+          newPath = location.pathname.replace(`/${urlCity.toLowerCase()}`, `/${citySlug}`);
+        } else {
+          newPath = `/${citySlug}${location.pathname === "/" ? "" : location.pathname}`;
+        }
       }
 
-      navigate(`/${citySlug}${currentSubPath === "/" ? "" : currentSubPath}`, { replace: true });
+      navigate(newPath, { replace: true });
       setSelectedCity(city);
     } catch (error) {
       console.error("Error saving city:", error);

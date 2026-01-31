@@ -14,7 +14,7 @@ export const apiSlice = createApi({
             return headers;
         },
     }),
-    tagTypes: ["Turf", "Tournament"],
+    tagTypes: ["Turf", "Tournament", "Coaching"],
     // Global settings for the slice
     keepUnusedDataFor: 300, // Keep data in memory for 5 minutes
     refetchOnFocus: false,   // Prevents refetching when app returns from background (useful for mobile)
@@ -30,7 +30,11 @@ export const apiSlice = createApi({
             query: (city) => `/api/user/tournaments/all/${city.toLowerCase()}`,
             providesTags: (result, error, city) => [{ type: "Tournament", id: city.toLowerCase() }],
         }),
+        getCoachings: builder.query({
+            query: (city) => `/api/user/coaching/all/${city.toLowerCase()}`,
+            providesTags: (result, error, city) => [{ type: "Coaching", id: city.toLowerCase() }],
+        }),
     }),
 });
 
-export const { useGetTurfsQuery, useGetTournamentsQuery } = apiSlice;
+export const { useGetTurfsQuery, useGetTournamentsQuery, useGetCoachingsQuery } = apiSlice;
