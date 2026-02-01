@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import axiosInstance from "../../../hooks/useAxiosInstance";
 import useTurfManagement from "@hooks/owner/useTurfManagement";
 import { useEffect } from "react";
+import SportsTypeSelector from "../../common/SportsTypeSelector";
 
 const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-const SPORTS_TYPES = ["Football", "Cricket", "Badminton", "Tennis", "Basketball", "Hockey", "Swimming", "Other"];
 
 const CreateCoaching = () => {
     const [coachingData, setCoachingData] = useState({
@@ -208,23 +207,13 @@ const CreateCoaching = () => {
                 </div>
 
                 {/* Sports Type */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                        Sports Type
-                    </label>
-                    <select
-                        name="sportsType"
-                        value={coachingData.sportsType}
-                        className="select select-bordered w-full focus:ring-2 focus:ring-blue-500"
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Sport</option>
-                        {SPORTS_TYPES.map((sport) => (
-                            <option key={sport} value={sport}>{sport}</option>
-                        ))}
-                    </select>
-                </div>
+                <SportsTypeSelector
+                  value={coachingData.sportsType}
+                  onChange={(value) =>
+                    setCoachingData({ ...coachingData, sportsType: value })
+                  }
+                  name="sportsType"
+                />
 
                 {/* Time Slot */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -11,6 +11,7 @@ export const useEditTurfForm = (initialValues) => {
       .required("Price per hour is required")
       .positive("Price per hour must be a positive number"),
     location: Yup.string().required("Location is required"),
+    city: Yup.string().required("City is required"),
     sportsType: Yup.string().required("Sports type is required"),
     openTime: Yup.string().required("Open time is required"),
     closeTime: Yup.string()

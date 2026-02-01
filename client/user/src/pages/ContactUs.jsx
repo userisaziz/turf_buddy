@@ -91,7 +91,7 @@ const ContactUs = () => {
             {/* Message */}
             <label className="form-control">
               <span className="label-text mb-1">Message</span>
-              <div className="textarea textarea-bordered flex gap-2">
+              <div className="textarea flex gap-2">
                 <MessageSquare size={18} className="opacity-60 mt-1" />
                 <textarea
                   name="message"
@@ -99,7 +99,7 @@ const ContactUs = () => {
                   value={form.message}
                   onChange={handleChange}
                   required
-                  className="grow resize-none"
+                  className="text-area textarea-primary grow resize-none"
                   rows={4}
                 />
               </div>

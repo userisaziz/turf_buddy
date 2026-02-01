@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parse } from 'date-fns';
+import SportsTypeSelector from '../../common/SportsTypeSelector';
+import CitySelector from '../../common/CitySelector';
 
 const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
  const validationSchema = Yup.object().shape({
@@ -15,6 +17,7 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
      .min(500, "Price per Hour must be greater than 500")
      .max(10000, "Price per Hour must be less than 10000"),
    location: Yup.string().required("Location is required"),
+   city: Yup.string().required("City is required"),
     openTime: Yup.date().required("Open Time is required"),
    closeTime: Yup.date()
      .required("Close Time is required")
@@ -84,18 +87,35 @@ const EditTurfForm = ({ turf, onSave, onCancel, turfId }) => {
           className={`input input-bordered w-full mt-2 text-sm ${errors.pricePerHour ? 'input-error' : ''}`}
         />
         {errors.pricePerHour && <p className="text-error text-sm">{errors.pricePerHour.message}</p>}
+         <Controller
+          name="city"
+          control={control}
+          render={({ field }) => (
+            <CitySelector
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              error={errors.city?.message}
+              name={field.name}
+              label="City"
+              required
+            />
+          )}
+        />
         <input
           type="text"
           {...register('location')}
-          placeholder="Location"
+          placeholder="Location (Google Maps address)"
           className={`input input-bordered w-full mt-2 text-sm ${errors.location ? 'input-error' : ''}`}
         />
         {errors.location && <p className="text-error text-sm">{errors.location.message}</p>}
-        <input
-          type="text"
-          {...register('sportsType')}
-          placeholder="Sports Type"
-          className={`input input-bordered w-full mt-2 text-sm `}
+      
+        <SportsTypeSelector
+          value={register('sportsType').value}
+          onChange={(value) => setValue('sportsType', value)}
+          onBlur={register('sportsType').onBlur}
+          error={errors.sportsType?.message}
+          name="sportsType"
         />
  
       <div className="flex flex-col sm:flex-row gap-4 mt-2">

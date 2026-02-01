@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../hooks/useAxiosInstance";
 import useTurfData from "@hooks/admin/useTurf";
+import SportsTypeSelector from "../../common/SportsTypeSelector";
 
 const CreateTournament = () => {
   const [tournamentData, setTournamentData] = useState({
@@ -136,18 +137,14 @@ const CreateTournament = () => {
               required
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Sports Type
-            </label>
-            <input
-              type="text"
-              name="sportsType"
-              placeholder="Enter sports type"
-              className="input input-bordered w-full focus:ring-2 focus:ring-blue-500"
-              onChange={handleChange}
-            />
-          </div>
+        {/* Sports Type */}
+        <SportsTypeSelector
+          value={tournamentData.sportsType}
+          onChange={(value) =>
+            setTournamentData({ ...tournamentData, sportsType: value })
+          }
+          name="sportsType"
+        />
         </div>
 
         {/* Date and Timings */}
