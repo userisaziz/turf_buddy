@@ -5,6 +5,7 @@ import bookingRouter from "./booking.routes.js";
 import reviewRouter from "./review.routes.js";
 import contactRouter from "./contact.routes.js";
 import tournamentRouter from "./tournment.routes.js";
+import coachingRouter from "./coaching.routes.js";
 
 const userRouter = Router();
 
@@ -14,5 +15,6 @@ userRouter.use("/booking", bookingRouter);
 userRouter.use("/review", reviewRouter);
 userRouter.use("/contact", contactRouter);
 userRouter.use("/tournaments", tournamentRouter);
+userRouter.use("/coaching", coachingRouter);
 
 export default userRouter;

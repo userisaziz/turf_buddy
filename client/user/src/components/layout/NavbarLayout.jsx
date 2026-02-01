@@ -44,7 +44,7 @@ export default function NavbarLayout({ homePath, items, endContent }) {
                 </div>
                 <div className="navbar-end gap-2">
                     {endContent}
-                    <ThemeSwitcher />
+                    {/* <ThemeSwitcher /> */}
                 </div>
             </div>
 
@@ -63,9 +63,9 @@ export default function NavbarLayout({ homePath, items, endContent }) {
                         TurfBuddy
                     </Link>
                 </div>
-                <div className="navbar-end gap-1">
+                <div className="navbar-end flex items-center gap-1">
                     {endContent}
-                    <ThemeSwitcher />
+                    {/* <ThemeSwitcher className="ml-1" /> */}
                 </div>
             </div>
 

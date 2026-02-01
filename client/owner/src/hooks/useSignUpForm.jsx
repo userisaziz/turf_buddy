@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/authSlice";
- 
+
 const registerSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   email: yup
@@ -32,6 +32,9 @@ const registerSchema = yup.object().shape({
     .string()
     .required("Enter your password")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
+  termsAccepted: yup
+    .boolean()
+    .oneOf([true], "You must accept the terms and conditions"),
 });
 
 const useSignUpForm = () => {
@@ -50,22 +53,22 @@ const useSignUpForm = () => {
   });
 
   const onSubmit = async (data) => {
-     setLoading(true);
+    setLoading(true);
     try {
       const response = await axiosInstance.post(
         "/api/owner/auth/register",
         data
       );
       const result = await response.data;
-        dispatch(login({ token: result.token, role: result.role }));
-        if (result.role === "owner") {
-          navigate("/owner");
-        } else if (result.role === "admin") {
-          navigate("/admin");
-        }
-        
-    } catch (error){
-       if (error.response) {
+      dispatch(login({ token: result.token, role: result.role }));
+      if (result.role === "owner") {
+        navigate("/owner");
+      } else if (result.role === "admin") {
+        navigate("/admin");
+      }
+
+    } catch (error) {
+      if (error.response) {
         // Server responded with a status other than 200 range
         toast.error(
           `${error.response.data.message || "Registration failed"}`
@@ -78,7 +81,7 @@ const useSignUpForm = () => {
         toast.error(`Error: ${error.message}`);
       }
     }
-     finally {
+    finally {
       setLoading(false);
     }
   };

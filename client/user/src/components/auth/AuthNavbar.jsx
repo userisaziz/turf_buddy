@@ -1,70 +1,50 @@
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { logout } from "../../redux/slices/authSlice.js";
 import { useDispatch } from "react-redux";
-import {
-  Home as HomeIcon,
-  LayoutGrid,
-  Trophy,
-  CalendarCheck,
-  LogOut,
-} from "lucide-react";
 import NavbarLayout from "../layout/NavbarLayout.jsx";
-import { PATHS } from "../../constants/constants.js";
+import { getNavItems } from "../../constants/navItems.js";
+import { useCitySelection } from "../../hooks/useCitySelection.jsx";
+import CityButton from "../common/CityButton.jsx";
+import CitySelectionPopup from "../common/CitySelectionPopup.jsx";
+import { useState } from "react";
 
 export default function AuthNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { city } = useParams();
-  const citySlug = city?.toLowerCase() || "";
+  const { selectedCity, updateCity } = useCitySelection();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const citySlug = city?.toLowerCase() || selectedCity?.toLowerCase() || "";
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/", { replace: true });
   };
 
-  const items = [
-    { label: "Home", path: `/auth/${citySlug}`, icon: HomeIcon },
-    { label: "Turfs", path: `/auth/${citySlug}/${PATHS.TURFS}`, icon: LayoutGrid },
-    {
-      label: "Tournaments",
-      path: `/auth/${citySlug}/${PATHS.TOURNAMENTS}`,
-      icon: Trophy,
-      mobileLabel: "Events",
-    },
-    {
-      label: "My Bookings",
-      path: `/auth/${citySlug}/${PATHS.BOOKING_HISTORY}`,
-      icon: CalendarCheck,
-      mobileLabel: "Bookings",
-    },
-    {
-      label: "Become an Owner",
-      path: `/auth/${citySlug}/${PATHS.BECOME_OWNER}`,
-      desktopOnly: true,
-      render: (active) => (
-        <NavLink
-          to={`/auth/${citySlug}/${PATHS.BECOME_OWNER}`}
-          className={active ? "text-accent active" : ""}
-        >
-          Become an Owner
-        </NavLink>
-      ),
-    },
-    {
-      label: "Logout",
-      icon: LogOut,
-      onClick: handleLogout,
-      mobileOnly: true,
-    },
-  ];
+  const handleCityChange = (newCity) => {
+    updateCity(newCity);
+    setIsModalOpen(false);
+  };
+
+  const items = getNavItems(citySlug, true, handleLogout);
 
   const endContent = (
-    <button className="btn btn-ghost ml-2" onClick={handleLogout}>
-      Logout
-    </button>
+    <div className="flex items-center gap-2">
+      <CityButton
+        selectedCity={selectedCity}
+        onClick={() => setIsModalOpen(true)}
+      />
+    </div>
   );
 
   return (
-    <NavbarLayout homePath={`/auth/${citySlug}`} items={items} endContent={endContent} />
+    <>
+      <NavbarLayout homePath={`/auth/${citySlug}`} items={items} endContent={endContent} />
+      <CitySelectionPopup
+        isOpen={isModalOpen}
+        onClose={handleCityChange}
+      />
+    </>
   );
 }

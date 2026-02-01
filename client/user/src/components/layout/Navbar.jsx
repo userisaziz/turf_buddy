@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Home, LayoutGrid, MessageSquare, LogIn } from "lucide-react";
 import NavbarLayout from "./NavbarLayout";
 import CityButton from "../common/CityButton";
 import CitySelectionPopup from "../common/CitySelectionPopup";
 import { useCitySelection } from "../../hooks/useCitySelection";
 import { PATHS } from "../../constants/constants";
+import { getNavItems } from "../../constants/navItems";
+import ThemeSwitcher from "../common/ThemeSwitcher";
 
 const Navbar = () => {
   const { selectedCity, updateCity, isLoading } = useCitySelection();
@@ -21,17 +22,8 @@ const Navbar = () => {
 
   const citySlug = selectedCity?.toLowerCase() || "";
 
-  const items = [
-    { label: "Home", path: `/${citySlug}`, icon: Home },
-    { label: "Turfs", path: `/${citySlug}/${PATHS.TURFS}`, icon: LayoutGrid },
-    {
-      label: "Contact Us",
-      path: `/${citySlug}/${PATHS.CONTACT_US}`,
-      icon: MessageSquare,
-      mobileLabel: "Contact",
-    },
-    { label: "Login", path: `/${citySlug}/${PATHS.LOGIN}`, icon: LogIn, mobileOnly: true },
-  ];
+  // Using centralized nav items config
+  const items = getNavItems(citySlug, false);
 
   const handleCityChange = (city) => {
     updateCity(city);
@@ -39,17 +31,18 @@ const Navbar = () => {
   };
 
   const endContent = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <CityButton
         selectedCity={selectedCity}
         onClick={() => setIsModalOpen(true)}
-      />
-      <Link
-        to={`/${citySlug}/${PATHS.LOGIN}`}
-        className="btn btn-primary btn-sm lg:btn-md ml-2 hidden lg:flex"
+        />
+        <ThemeSwitcher/>
+      {/* <Link
+        to={citySlug ? `/${citySlug}/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`}
+        className="btn btn-primary btn-sm lg:btn-md"
       >
         Login
-      </Link>
+      </Link> */}
     </div>
   );
 

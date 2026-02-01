@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { login } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { Preferences } from "@capacitor/preferences";
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -27,7 +28,6 @@ const useLoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const citySlug = city?.toLowerCase() || "";
 
   const {
     register,
@@ -44,6 +44,14 @@ const useLoginForm = () => {
       const result = await response.data;
       toast.success(result.message);
       dispatch(login(result.token));
+
+      // Get city from URL or fallback to storage
+      let citySlug = city?.toLowerCase();
+
+      if (!citySlug) {
+        const { value } = await Preferences.get({ key: "selectedCity" });
+        citySlug = value?.toLowerCase() || "mumbai"; // Default fallback
+      }
 
       // Redirect to the city-aware auth route
       navigate(`/auth/${citySlug}`, { replace: true });

@@ -25,6 +25,8 @@ const PATHS = {
     TOURNAMENTS: "tournaments",
     TOURNAMENT_REGISTER: "tournaments/register/:tournamentId",
     TOURNAMENT_DETAILS: "tournaments/:tournamentId",
+    COACHINGS: "coachings",
+    COACHING_DETAILS: "coachings/:coachingId",
 };
 
 export { CITIES, PATHS };
