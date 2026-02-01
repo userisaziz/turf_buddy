@@ -6,6 +6,7 @@ import CitySelectionPopup from "../common/CitySelectionPopup";
 import { useCitySelection } from "../../hooks/useCitySelection";
 import { PATHS } from "../../constants/constants";
 import { getNavItems } from "../../constants/navItems";
+import ThemeSwitcher from "../common/ThemeSwitcher";
 
 const Navbar = () => {
   const { selectedCity, updateCity, isLoading } = useCitySelection();
@@ -30,17 +31,18 @@ const Navbar = () => {
   };
 
   const endContent = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <CityButton
         selectedCity={selectedCity}
         onClick={() => setIsModalOpen(true)}
-      />
-      <Link
+        />
+        <ThemeSwitcher/>
+      {/* <Link
         to={citySlug ? `/${citySlug}/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`}
-        className="btn btn-primary btn-sm lg:btn-md ml-2 hidden lg:flex"
+        className="btn btn-primary btn-sm lg:btn-md"
       >
         Login
-      </Link>
+      </Link> */}
     </div>
   );
 
