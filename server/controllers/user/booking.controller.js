@@ -3,13 +3,14 @@ import razorpay from "../../config/razorpay.js";
 import crypto from "crypto";
 import Booking from "../../models/booking.model.js";
 import TimeSlot from "../../models/timeSlot.model.js";
+import FixedSchedule from "../../models/fixedSchedule.model.js";
 import generateQRCode from "../../utils/generateQRCode.js";
 import Turf from "../../models/turf.model.js";
 import generateEmail, {
   generateHTMLContent,
 } from "../../utils/generateEmail.js";
 import User from "../../models/user.model.js";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, getDay } from "date-fns";
 import nodemailer from "nodemailer";
 import logger from "../../config/logging.js";
 import mongoose from "mongoose";
@@ -49,6 +50,28 @@ const checkCoachingConflict = async (turfId, date, startTime, endTime) => {
   return null;
 };
 
+// Helper function to check if a time slot conflicts with fixed schedules
+const checkFixedScheduleConflict = async (turfId, date, startTime, endTime) => {
+  const selectedDate = new Date(date);
+  const dayOfWeek = getDay(selectedDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+  const conflictingSchedule = await FixedSchedule.findOne({
+    turf: turfId,
+    dayOfWeek: dayOfWeek,
+    isActive: true,
+    $or: [
+      {
+        $and: [
+          { startTime: { $lt: endTime } },
+          { endTime: { $gt: startTime } },
+        ],
+      },
+    ],
+  });
+
+  return conflictingSchedule;
+};
+
 export const verifyTimeSlotAvailability = async (req, res) => {
   const userId = req.user.user;
   const { turfId, startTime, endTime, selectedTurfDate } = req.body;
@@ -59,15 +82,24 @@ export const verifyTimeSlotAvailability = async (req, res) => {
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
 
     // 1. Check for coaching conflicts
-    const conflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
-    if (conflict) {
+    const coachingConflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (coachingConflict) {
       return res.status(400).json({
         success: false,
-        message: `This slot is reserved for coaching: ${conflict.name} (${conflict.startTime} - ${conflict.endTime})`,
+        message: `This slot is reserved for coaching: ${coachingConflict.name} (${coachingConflict.startTime} - ${coachingConflict.endTime})`,
       });
     }
 
-    // 2. Check if the time slot is already booked
+    // 2. Check for fixed schedule conflicts
+    const fixedScheduleConflict = await checkFixedScheduleConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (fixedScheduleConflict) {
+      return res.status(400).json({
+        success: false,
+        message: `This slot is reserved by a fixed schedule: ${fixedScheduleConflict.description || 'Fixed Schedule'} (${fixedScheduleConflict.startTime} - ${fixedScheduleConflict.endTime})`,
+      });
+    }
+
+    // 3. Check if the time slot is already booked
     const existingTimeSlot = await TimeSlot.findOne({
       turf: turfId,
       startTime: adjustedStartTime,
@@ -174,9 +206,9 @@ export const verifyPayment = async (req, res) => {
     const adjustedEndTime = adjustTime(endTime, selectedTurfDate);
 
     // 1. Check for coaching conflicts
-    const conflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
-    if (conflict) {
-      logger.error("Coaching conflict during payment session", { turfId, conflict: conflict.name });
+    const coachingConflict = await checkCoachingConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (coachingConflict) {
+      logger.error("Coaching conflict during payment session", { turfId, conflict: coachingConflict.name });
       // Initiating refund
       await razorpay.payments.refund(paymentId, {
         amount: totalPrice * 100,
@@ -189,7 +221,23 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
-    // 2. Check for existing time slot
+    // 2. Check for fixed schedule conflicts
+    const fixedScheduleConflict = await checkFixedScheduleConflict(turfId, selectedTurfDate, startTime, endTime);
+    if (fixedScheduleConflict) {
+      logger.error("Fixed schedule conflict during payment session", { turfId, conflict: fixedScheduleConflict.description });
+      // Initiating refund
+      await razorpay.payments.refund(paymentId, {
+        amount: totalPrice * 100,
+      });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        message: `This slot is now reserved by a fixed schedule. Payment has been refunded.`,
+      });
+    }
+
+    // 3. Check for existing time slot
     const existingTimeSlot = await TimeSlot.findOne({
       turf: turfId,
       startTime: adjustedStartTime,

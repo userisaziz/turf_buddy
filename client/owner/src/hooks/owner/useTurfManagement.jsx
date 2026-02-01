@@ -11,8 +11,8 @@ const useTurfManagement = () => {
     try {
       // Replace this with your actual API call
       const response = await axiosInstance.get("/api/owner/turf/all");
-      const result = await response.data;
-      setTurfs(result);
+      setTurfs(response.data);
+      setError(null); // Clear error on successful fetch
     } catch (err) {
       setError("Failed to fetch turfs");
     } finally {

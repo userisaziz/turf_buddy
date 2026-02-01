@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Edit2, Trash2, Clock, MapPin, Tag, Star } from "lucide-react";
 
 const TurfCard = ({ turf, onEdit }) => {
@@ -43,12 +44,21 @@ const TurfCard = ({ turf, onEdit }) => {
             </div>
           ))}
         </div>
-        <div className="card-actions justify-end mt-4">
+        <div className="card-actions justify-end mt-4 gap-2">
           <button
             className="btn btn-primary btn-sm"
             onClick={() => onEdit(turf)}
           >
             <Edit2 size={14} className="mr-1" /> Edit
+          </button>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              // Navigate to fixed schedule management page
+              navigate(`/owner/turf/${turf._id}/fixed-schedules`);
+            }}
+          >
+            <Clock size={14} className="mr-1" /> Fixed Schedules
           </button>
         </div>
       </div>

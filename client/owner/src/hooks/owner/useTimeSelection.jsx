@@ -8,6 +8,7 @@ import {
   addMinutes,
   addDays,
   isEqual,
+  getDay,
 } from "date-fns";
 import axiosInstance from "../useAxiosInstance";
 
@@ -24,6 +25,7 @@ const useTimeSelection = (
   setAdvanceAmount
 ) => {
   const [priceAtMorning, setPriceAtMorning] = useState(0);
+  const [fixedSchedules, setFixedSchedules] = useState([]);
 
   const availableTimes = useMemo(() => {
     if (!timeSlots.openTime || !timeSlots.closeTime) return [];
@@ -83,7 +85,8 @@ const useTimeSelection = (
   const isTimeSlotBooked = (time) => {
     const timeToCheck = parse(time, "hh:mm a", new Date());
 
-    return bookedTime.some((booking) => {
+    // Check for regular bookings
+    const isRegularBooking = bookedTime.some((booking) => {
       const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
       let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
 
@@ -97,6 +100,26 @@ const useTimeSelection = (
         isBefore(timeToCheck, bookingEnd)
       );
     });
+    
+    // Check for fixed schedule conflicts
+    const dayOfWeek = getDay(selectedDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const isFixedScheduleConflict = fixedSchedules.some((schedule) => {
+      const scheduleStart = parse(schedule.startTime, "HH:mm", new Date());
+      let scheduleEnd = parse(schedule.endTime, "HH:mm", new Date());
+      
+      // If end time is before start time, it means it's overnight
+      if (isBefore(scheduleEnd, scheduleStart)) {
+        scheduleEnd = addDays(scheduleEnd, 1);
+      }
+      
+      return (
+        (isAfter(timeToCheck, scheduleStart) ||
+          isEqual(timeToCheck, scheduleStart)) &&
+        isBefore(timeToCheck, scheduleEnd)
+      );
+    });
+    
+    return isRegularBooking || isFixedScheduleConflict;
   };
 
   const isSameTime = (time1, time2) => {
@@ -110,10 +133,17 @@ const useTimeSelection = (
     const date = format(currentSelectedDate, "yyyy-MM-dd");
 
     try {
-      const response = await axiosInstance.get(
-        `/api/user/turf/timeslot?date=${date}&turfId=${turfId}`
-      );
-      const result = await response.data;
+      // Fetch both time slots and fixed schedules
+      const [turfResponse, fixedScheduleResponse] = await Promise.all([
+        axiosInstance.get(`/api/user/turf/timeslot?date=${date}&turfId=${turfId}`),
+        axiosInstance.post('/api/user/booking/get-fixed-schedules-by-date-range', {
+          turfId,
+          startDate: date,
+          endDate: date
+        })
+      ]);
+      
+      const result = await turfResponse.data;
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
       setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
@@ -139,6 +169,13 @@ const useTimeSelection = (
         ),
       }));
       setBookedTime(formattedBookedTime);
+      
+      // Set fixed schedules if available
+      if (fixedScheduleResponse.data.success) {
+        setFixedSchedules(fixedScheduleResponse.data.fixedSchedules);
+      } else {
+        setFixedSchedules([]);
+      }
     } catch (error) {
       console.log("Error in fetchByDate", error.message);
     }

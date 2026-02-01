@@ -1,13 +1,13 @@
 import Booking from "../../models/booking.model.js";
 import Turf from "../../models/turf.model.js";
+import FixedSchedule from "../../models/fixedSchedule.model.js";
 import crypto from "crypto";
 import User from "../../models/user.model.js";
 import TimeSlot from "../../models/timeSlot.model.js";
 import razorpay from "../../config/razorpay.js";
 import generateQRCode from "../../utils/generateQRCode.js";
-import { startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay, format as formatDate, parseISO, getDay } from "date-fns";
 import { v4 as uuidv4 } from "uuid"; // Import the uuid library
-import { format, parseISO } from "date-fns";
 import generateEmail, {
   generateHTMLContent,
 } from "../../utils/generateEmail.js";
@@ -56,6 +56,37 @@ export const verifyTimeSlotAvailability = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Time slot already booked. Please choose another time.",
+      });
+    }
+
+    // Check if the time slot conflicts with fixed schedules
+    const selectedDate = new Date(selectedTurfDate);
+    const dayOfWeek = getDay(selectedDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    const conflictingSchedule = await FixedSchedule.findOne({
+      turf: turfId,
+      dayOfWeek: dayOfWeek,
+      isActive: true,
+      $or: [
+        {
+          $and: [
+            { startTime: { $lt: endTime } },
+            { endTime: { $gt: startTime } },
+          ],
+        },
+      ],
+    });
+
+    if (conflictingSchedule) {
+      logger.info("Time slot conflicts with fixed schedule", {
+        turfId,
+        adjustedStartTime,
+        adjustedEndTime,
+        conflictingScheduleId: conflictingSchedule._id,
+      });
+      return res.status(400).json({
+        success: false,
+        message: "Time slot conflicts with a fixed schedule. Please choose another time.",
       });
     }
 

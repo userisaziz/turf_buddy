@@ -18,6 +18,9 @@ import {
   OwnerBookings,
 } from "@components/owner";
 
+// Fixed Schedule Manager
+import FixedScheduleManager from "@components/owner/FixedSchedule/FixedScheduleManager";
+
 //  all the components that are used in the admin dashboard
 import {
   UserManagement,
@@ -119,6 +122,7 @@ const router = createBrowserRouter([
       { path: "bookings", element: <OwnerBookings /> },
       { path: "reservations", element: <Reservation /> },
       { path: "coaching", element: <Coaching /> },
+      { path: "turf/:turfId/fixed-schedules", element: <FixedScheduleManager /> },
     ],
   },
 ]);
