@@ -7,7 +7,7 @@ import { format, parseISO, startOfDay } from "date-fns";
 export const getAllTurfs = async (req, res) => {
   const { city } = req.params;
   try {
-    const query = city ? { city: city.toLowerCase() } : {};
+    const query = city ? { city: { $regex: new RegExp(`^${city}$`, "i") } } : {};
     const turfs = await Turf.find(query);
     return res.status(200).json({ turfs });
   } catch (err) {

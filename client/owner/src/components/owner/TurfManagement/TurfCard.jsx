@@ -51,15 +51,7 @@ const TurfCard = ({ turf, onEdit }) => {
           >
             <Edit2 size={14} className="mr-1" /> Edit
           </button>
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={() => {
-              // Navigate to fixed schedule management page
-              navigate(`/owner/turf/${turf._id}/fixed-schedules`);
-            }}
-          >
-            <Clock size={14} className="mr-1" /> Fixed Schedules
-          </button>
+       
         </div>
       </div>
     </div>

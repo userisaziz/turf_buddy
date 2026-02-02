@@ -22,11 +22,6 @@ const CreateCoaching = () => {
       fetchTurfs();
     }, []);
 
-    // Debug logging
-    useEffect(() => {
-      console.log('Turfs:', turfs);
-      console.log('Turf Error:', turfError);
-    }, [turfs, turfError]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
