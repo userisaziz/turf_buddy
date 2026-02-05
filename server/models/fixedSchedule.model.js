@@ -7,6 +7,7 @@ const fixedScheduleSchema = new mongoose.Schema({
   endTime: { type: String, required: true },   // Format: "HH:MM" in 24-hour format
   isActive: { type: Boolean, default: true },
   recurring: { type: Boolean, default: true }, // Whether this schedule repeats weekly
+  date: { type: Date }, // Optional: only used if recurring is false
   description: { type: String },
 }, { timestamps: true });
 

@@ -1,7 +1,8 @@
 import chalk from "chalk";
 import Turf from "../../models/turf.model.js";
 import TimeSlot from "../../models/timeSlot.model.js";
-import { format, parseISO, startOfDay } from "date-fns";
+import FixedSchedule from "../../models/fixedSchedule.model.js";
+import { format, parseISO, startOfDay, getDay } from "date-fns";
 
 // get all turfs
 export const getAllTurfs = async (req, res) => {
@@ -37,21 +38,57 @@ export const getTurfById = async (req, res) => {
 export const getTimeSlotByTurfId = async (req, res) => {
   const { date, turfId } = req.query;
 
+  if (!date || !turfId) {
+    return res.status(400).json({ message: "Date and turfId are required" });
+  }
+
   const selectedDate = new Date(date);
   const startOfSelectedDate = startOfDay(selectedDate);
   const endOfSelectedDate = new Date(startOfSelectedDate);
-
   endOfSelectedDate.setDate(endOfSelectedDate.getDate() + 1);
 
-  const query = {
-    turf: turfId,
-    startTime: { $gte: startOfSelectedDate },
-    endTime: { $lte: endOfSelectedDate },
-  };
-
   try {
-    // get all time slot when there is no turfid  in Timeslot db
-    const bookedTime = await TimeSlot.find(query);
+    // 1. Get actual bookings from TimeSlot
+    const bookedTime = await TimeSlot.find({
+      turf: turfId,
+      startTime: { $lt: endOfSelectedDate },
+      endTime: { $gt: startOfSelectedDate },
+    });
+
+    // 2. Get Fixed Schedules (recurring or for this specific date)
+    const dayOfWeek = getDay(selectedDate);
+    const fixedSchedules = await FixedSchedule.find({
+      turf: turfId,
+      isActive: true,
+      $or: [
+        { recurring: true, dayOfWeek: dayOfWeek },
+        { recurring: false, date: startOfSelectedDate },
+      ],
+    });
+
+    // 3. Convert Fixed Schedules to "bookedTime" format
+    const fixedBookedTimes = fixedSchedules.map((schedule) => {
+      const [startH, startM] = schedule.startTime.split(":");
+      const [endH, endM] = schedule.endTime.split(":");
+
+      const startTime = new Date(startOfSelectedDate);
+      startTime.setHours(parseInt(startH), parseInt(startM), 0, 0);
+
+      const endTime = new Date(startOfSelectedDate);
+      endTime.setHours(parseInt(endH), parseInt(endM), 0, 0);
+
+      return {
+        _id: schedule._id,
+        turf: schedule.turf,
+        startTime,
+        endTime,
+        isFixed: true, // Optional flag for frontend
+      };
+    });
+
+    // Merge both
+    const allBookedTimes = [...bookedTime, ...fixedBookedTimes];
+
     const timeSlots = await Turf.findById(turfId).select([
       "openTime",
       "closeTime",
@@ -59,7 +96,8 @@ export const getTimeSlotByTurfId = async (req, res) => {
       "priceAtMorning",
       "advancePayment",
     ]);
-    return res.status(200).json({ timeSlots, bookedTime });
+
+    return res.status(200).json({ timeSlots, bookedTime: allBookedTimes });
   } catch (error) {
     console.log(chalk.red("Error in getTimeSlotByTurfId"), error);
     return res.status(500).json({ message: error.message });

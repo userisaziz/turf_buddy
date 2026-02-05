@@ -98,7 +98,8 @@ const Reservation = () => {
           startTime: selectedTimeSlot.start,
           endTime: selectedTimeSlot.end,
           description: reason || 'Blocked by owner',
-          recurring: false
+          recurring: false,
+          date: selectedDate
         });
 
         if (response.data.success) {
@@ -111,7 +112,7 @@ const Reservation = () => {
       } else {
         // Block recurring time slots for selected days
         const selectedDays = blockingDays.map((isSelected, index) => isSelected ? index : null).filter(day => day !== null);
-        
+
         for (const day of selectedDays) {
           const response = await axiosInstance.post('/api/owner/fixed-schedule', {
             turfId: formData.turfId,
@@ -121,12 +122,12 @@ const Reservation = () => {
             description: reason || 'Recurring block',
             recurring: true
           });
-          
+
           if (!response.data.success) {
             throw new Error(`Failed to block for ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]}`);
           }
         }
-        
+
         alert('Time slots blocked successfully!');
         setBlockModalOpen(false);
         setReason('');
@@ -152,7 +153,7 @@ const Reservation = () => {
     <div className="container mx-auto px-2 py-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Manage Reservations</h2>
-        <button 
+        <button
           className="btn btn-accent"
           onClick={() => setBlockModalOpen(true)}
         >
@@ -185,7 +186,7 @@ const Reservation = () => {
             <div className="modal modal-open">
               <div className="modal-box max-w-2xl">
                 <h3 className="font-bold text-lg mb-4">Block Time Slot</h3>
-                
+
                 <form onSubmit={handleBlockTimeSlot}>
                   <div className="mb-4">
                     <label className="label">
@@ -242,7 +243,7 @@ const Reservation = () => {
                       </label>
                       <select
                         value={selectedTimeSlot.start}
-                        onChange={(e) => setSelectedTimeSlot({...selectedTimeSlot, start: e.target.value})}
+                        onChange={(e) => setSelectedTimeSlot({ ...selectedTimeSlot, start: e.target.value })}
                         className="input input-bordered w-full"
                       >
                         {timeOptions.map(time => (
@@ -256,7 +257,7 @@ const Reservation = () => {
                       </label>
                       <select
                         value={selectedTimeSlot.end}
-                        onChange={(e) => setSelectedTimeSlot({...selectedTimeSlot, end: e.target.value})}
+                        onChange={(e) => setSelectedTimeSlot({ ...selectedTimeSlot, end: e.target.value })}
                         className="input input-bordered w-full"
                       >
                         {timeOptions.filter(time => time > selectedTimeSlot.start).map(time => (

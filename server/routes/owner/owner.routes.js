@@ -6,6 +6,7 @@ import bookingsRouter from "./bookings.routes.js"
 import dashboardRouter from "./dashboard.routes.js"
 import coachingRouter from "./coaching.routes.js"
 import fixedScheduleRouter from "./fixedSchedule.routes.js"
+import tournamentRouter from "./tournment.routes.js"
 
 const ownerRouter = Router()
 
@@ -17,5 +18,6 @@ ownerRouter.use("/bookings", bookingsRouter);
 ownerRouter.use("/dashboard", dashboardRouter);
 ownerRouter.use("/coaching", coachingRouter);
 ownerRouter.use("/fixed-schedule", fixedScheduleRouter);
+ownerRouter.use("/tournaments", tournamentRouter);
 
 export default ownerRouter;

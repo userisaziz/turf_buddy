@@ -5,7 +5,7 @@ import logger from "../../config/logging.js";
 // Create a new fixed schedule
 export const createFixedSchedule = async (req, res) => {
   const ownerId = req.owner.id;
-  const { turfId, dayOfWeek, startTime, endTime, description, recurring } = req.body;
+  const { turfId, dayOfWeek, startTime, endTime, description, recurring, date } = req.body;
 
   try {
     // Validate required fields
@@ -26,9 +26,8 @@ export const createFixedSchedule = async (req, res) => {
     }
 
     // Check for overlapping schedules on the same day
-    const existingSchedule = await FixedSchedule.findOne({
+    const query = {
       turf: turfId,
-      dayOfWeek: dayOfWeek,
       isActive: true,
       $or: [
         {
@@ -38,7 +37,27 @@ export const createFixedSchedule = async (req, res) => {
           ],
         },
       ],
-    });
+    };
+
+    if (recurring === false && date) {
+      // For single date blocks, check if there's a recurring block on that day OR a specific block for that date
+      const specificDate = new Date(date);
+      specificDate.setHours(0, 0, 0, 0);
+
+      query.$and = [
+        {
+          $or: [
+            { recurring: true, dayOfWeek: dayOfWeek },
+            { recurring: false, date: specificDate }
+          ]
+        }
+      ];
+    } else {
+      // For recurring blocks, check if there's any recurring block on that day OR any specific date block on that day
+      query.dayOfWeek = dayOfWeek;
+    }
+
+    const existingSchedule = await FixedSchedule.findOne(query);
 
     if (existingSchedule) {
       return res.status(400).json({
@@ -48,14 +67,22 @@ export const createFixedSchedule = async (req, res) => {
     }
 
     // Create the fixed schedule
-    const fixedSchedule = await FixedSchedule.create({
+    const scheduleData = {
       turf: turfId,
       dayOfWeek,
       startTime,
       endTime,
       description: description || "",
       recurring: recurring !== undefined ? recurring : true,
-    });
+    };
+
+    if (recurring === false && date) {
+      const specificDate = new Date(date);
+      specificDate.setHours(0, 0, 0, 0);
+      scheduleData.date = specificDate;
+    }
+
+    const fixedSchedule = await FixedSchedule.create(scheduleData);
 
     logger.info("Fixed schedule created", {
       ownerId,
@@ -154,12 +181,12 @@ export const getAllFixedSchedules = async (req, res) => {
 export const updateFixedSchedule = async (req, res) => {
   const ownerId = req.owner.id;
   const { scheduleId } = req.params;
-  const { dayOfWeek, startTime, endTime, description, recurring, isActive } = req.body;
+  const { dayOfWeek, startTime, endTime, description, recurring, isActive, date } = req.body;
 
   try {
     // Find the fixed schedule and verify ownership
     const fixedSchedule = await FixedSchedule.findById(scheduleId).populate("turf");
-    
+
     if (!fixedSchedule) {
       return res.status(404).json({
         success: false,
@@ -208,6 +235,7 @@ export const updateFixedSchedule = async (req, res) => {
     if (description !== undefined) updateData.description = description;
     if (recurring !== undefined) updateData.recurring = recurring;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (date !== undefined) updateData.date = date;
 
     const updatedSchedule = await FixedSchedule.findByIdAndUpdate(
       scheduleId,
@@ -249,7 +277,7 @@ export const deleteFixedSchedule = async (req, res) => {
   try {
     // Find the fixed schedule and verify ownership
     const fixedSchedule = await FixedSchedule.findById(scheduleId).populate("turf");
-    
+
     if (!fixedSchedule) {
       return res.status(404).json({
         success: false,
@@ -321,13 +349,13 @@ export const getFixedSchedulesByDateRange = async (req, res) => {
     const allSchedules = [];
     for (const date of datesInRange) {
       const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      
+
       const dailySchedules = await FixedSchedule.find({
         turf: turfId,
         dayOfWeek: dayOfWeek,
         isActive: true,
       });
-      
+
       dailySchedules.forEach(schedule => {
         // Create a date-specific schedule with the actual date
         const scheduleWithDate = {
