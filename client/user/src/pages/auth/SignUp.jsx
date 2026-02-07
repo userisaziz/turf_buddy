@@ -10,11 +10,11 @@ const SignUp = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center min-h-screen p-2">
       <div className="card w-full md:w-96 bg-base-100 shadow-xl border">
         <div className="card-body">
           <h2 className="card-title justify-center text-2xl font-bold">Sign Up</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="">
             <FormField
               label="Name"
               name="name"

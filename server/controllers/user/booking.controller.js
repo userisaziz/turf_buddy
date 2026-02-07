@@ -51,9 +51,10 @@ const checkCoachingConflict = async (turfId, date, startTime, endTime) => {
 };
 
 // Helper function to check if a time slot conflicts with fixed schedules
+// Helper function to check if a time slot conflicts with fixed schedules
 const checkFixedScheduleConflict = async (turfId, date, startTime, endTime) => {
   const selectedDate = new Date(date);
-  const dayOfWeek = getDay(selectedDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const dayOfWeek = selectedDate.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
   const conflictingSchedule = await FixedSchedule.findOne({
     turf: turfId,

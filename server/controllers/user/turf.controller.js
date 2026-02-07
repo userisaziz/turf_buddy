@@ -4,13 +4,33 @@ import TimeSlot from "../../models/timeSlot.model.js";
 import FixedSchedule from "../../models/fixedSchedule.model.js";
 import { format, parseISO, startOfDay, getDay } from "date-fns";
 
+import Tournament from "../../models/tournament.model.js";
+import Coaching from "../../models/coaching.model.js";
+
 // get all turfs
 export const getAllTurfs = async (req, res) => {
   const { city } = req.params;
   try {
-    const query = city ? { city: { $regex: new RegExp(`^${city}$`, "i") } } : {};
+    const baseQuery = { $or: [{ isActive: true }, { isActive: { $exists: false } }] };
+    const query = city ? { ...baseQuery, city: { $regex: new RegExp(`^${city}$`, "i") } } : baseQuery;
     const turfs = await Turf.find(query);
-    return res.status(200).json({ turfs });
+
+    // Get IDs of all turfs in the city
+    const turfIds = turfs.map((turf) => turf._id);
+
+    // Find tournaments associated with these turfs
+    // Tournament 'turf' field is an array of ObjectIds
+    const tournaments = await Tournament.find({
+      turf: { $in: turfIds },
+    });
+
+    // Find coachings associated with these turfs
+    // Coaching 'turf' field is a single ObjectId
+    const coachings = await Coaching.find({
+      turf: { $in: turfIds },
+    });
+
+    return res.status(200).json({ turfs, tournaments, coachings });
   } catch (err) {
     console.log(chalk.red("Error in getAllTurfs"), err);
     return res.status(500).json({ message: err.message });
@@ -42,49 +62,51 @@ export const getTimeSlotByTurfId = async (req, res) => {
     return res.status(400).json({ message: "Date and turfId are required" });
   }
 
-  const selectedDate = new Date(date);
-  const startOfSelectedDate = startOfDay(selectedDate);
-  const endOfSelectedDate = new Date(startOfSelectedDate);
-  endOfSelectedDate.setDate(endOfSelectedDate.getDate() + 1);
-
   try {
+    // Use UTC date handling throughout to avoid timezone shifts
+    // Assuming date comes in YYYY-MM-DD
+    const selectedDate = new Date(date);
+
+    // Create start of day in UTC (00:00:00.000)
+    const startOfSelectedDate = new Date(selectedDate);
+    startOfSelectedDate.setUTCHours(0, 0, 0, 0);
+
+    // Create end of day in UTC (23:59:59.999)
+    const endOfSelectedDate = new Date(selectedDate);
+    endOfSelectedDate.setUTCHours(23, 59, 59, 999);
+
     // 1. Get actual bookings from TimeSlot
+    // Note: TimeSlot stores dates in UTC. We query based on overlaps with our day range.
     const bookedTime = await TimeSlot.find({
       turf: turfId,
       startTime: { $lt: endOfSelectedDate },
       endTime: { $gt: startOfSelectedDate },
-    });
+    }).lean();
 
     // 2. Get Fixed Schedules (recurring or for this specific date)
-    const dayOfWeek = getDay(selectedDate);
+    const dayOfWeek = startOfSelectedDate.getUTCDay(); // 0-6
+
     const fixedSchedules = await FixedSchedule.find({
       turf: turfId,
       isActive: true,
       $or: [
         { recurring: true, dayOfWeek: dayOfWeek },
-        { recurring: false, date: startOfSelectedDate },
+        { recurring: false, date: { $gte: startOfSelectedDate, $lte: endOfSelectedDate } }
       ],
-    });
+    }).lean();
 
     // 3. Convert Fixed Schedules to "bookedTime" format
-    const fixedBookedTimes = fixedSchedules.map((schedule) => {
-      const [startH, startM] = schedule.startTime.split(":");
-      const [endH, endM] = schedule.endTime.split(":");
-
-      const startTime = new Date(startOfSelectedDate);
-      startTime.setHours(parseInt(startH), parseInt(startM), 0, 0);
-
-      const endTime = new Date(startOfSelectedDate);
-      endTime.setHours(parseInt(endH), parseInt(endM), 0, 0);
-
-      return {
-        _id: schedule._id,
-        turf: schedule.turf,
-        startTime,
-        endTime,
-        isFixed: true, // Optional flag for frontend
-      };
-    });
+    const fixedBookedTimes = fixedSchedules.map((schedule) => ({
+      _id: schedule._id,
+      turf: schedule.turf,
+      // startTime and endTime are stored as "HH:mm" strings, which is what we want to return
+      // The frontend handles parsing these strings
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      dateISO: startOfSelectedDate.toISOString().split('T')[0],
+      isFixed: true,
+      description: schedule.description
+    }));
 
     // Merge both
     const allBookedTimes = [...bookedTime, ...fixedBookedTimes];

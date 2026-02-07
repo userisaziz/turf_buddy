@@ -85,40 +85,83 @@ const useTimeSelection = (
   const isTimeSlotBooked = (time) => {
     const timeToCheck = parse(time, "hh:mm a", new Date());
 
-    // Check for regular bookings
+    // Check for regular bookings and fixed schedules in bookedTime array
     const isRegularBooking = bookedTime.some((booking) => {
-      const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
-      let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
+      let bookingStartHour, bookingStartMin, bookingEndHour, bookingEndMin;
 
-      if (isBefore(bookingEnd, bookingStart)) {
-        bookingEnd = addDays(bookingEnd, 1);
+      // Check if this is a fixed schedule (has isFixed flag and HH:mm format)
+      if (booking.isFixed && booking.startTime && !booking.startTime.includes(' ')) {
+        // HH:mm format (24-hour) for fixed schedules
+        [bookingStartHour, bookingStartMin] = booking.startTime.split(':').map(Number);
+        [bookingEndHour, bookingEndMin] = booking.endTime.split(':').map(Number);
+      } else {
+        // Regular booking with "hh:mm AM/PM" format
+        const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
+        const bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
+        bookingStartHour = bookingStart.getHours();
+        bookingStartMin = bookingStart.getMinutes();
+        bookingEndHour = bookingEnd.getHours();
+        bookingEndMin = bookingEnd.getMinutes();
       }
 
-      return (
-        (isAfter(timeToCheck, bookingStart) ||
-          isEqual(timeToCheck, bookingStart)) &&
-        isBefore(timeToCheck, bookingEnd)
-      );
+      // Get timeToCheck's hours and minutes
+      const checkHour = timeToCheck.getHours();
+      const checkMin = timeToCheck.getMinutes();
+
+      // Convert all to minutes for easy comparison
+      const checkTimeInMins = checkHour * 60 + checkMin;
+      const bookingStartInMins = bookingStartHour * 60 + bookingStartMin;
+      const bookingEndInMins = bookingEndHour * 60 + bookingEndMin;
+
+      // Handle overnight bookings
+      if (bookingEndInMins <= bookingStartInMins) {
+        return checkTimeInMins >= bookingStartInMins || checkTimeInMins < bookingEndInMins;
+      } else {
+        return checkTimeInMins >= bookingStartInMins && checkTimeInMins < bookingEndInMins;
+      }
     });
-    
+
     // Check for fixed schedule conflicts
-    const dayOfWeek = getDay(selectedDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const isFixedScheduleConflict = fixedSchedules.some((schedule) => {
-      const scheduleStart = parse(schedule.startTime, "HH:mm", new Date());
-      let scheduleEnd = parse(schedule.endTime, "HH:mm", new Date());
-      
-      // If end time is before start time, it means it's overnight
-      if (isBefore(scheduleEnd, scheduleStart)) {
-        scheduleEnd = addDays(scheduleEnd, 1);
+      // API should return startTime/endTime as "HH:mm" 24-hour format strings
+      // But handle ISO date strings as fallback for backwards compatibility
+      let schedStartHour, schedStartMin, schedEndHour, schedEndMin;
+
+      // Check if startTime is an ISO string (contains 'T') or HH:mm format
+      if (schedule.startTime && schedule.startTime.includes('T')) {
+        // ISO format - parse the hours/minutes from the ISO string
+        const startDate = new Date(schedule.startTime);
+        const endDate = new Date(schedule.endTime);
+        schedStartHour = startDate.getUTCHours();
+        schedStartMin = startDate.getUTCMinutes();
+        schedEndHour = endDate.getUTCHours();
+        schedEndMin = endDate.getUTCMinutes();
+      } else {
+        // HH:mm format - split and parse
+        [schedStartHour, schedStartMin] = schedule.startTime.split(':').map(Number);
+        [schedEndHour, schedEndMin] = schedule.endTime.split(':').map(Number);
       }
-      
-      return (
-        (isAfter(timeToCheck, scheduleStart) ||
-          isEqual(timeToCheck, scheduleStart)) &&
-        isBefore(timeToCheck, scheduleEnd)
-      );
+
+      // Get timeToCheck's hours and minutes
+      const checkHour = timeToCheck.getHours();
+      const checkMin = timeToCheck.getMinutes();
+
+      // Convert all to minutes for easy comparison
+      const checkTimeInMins = checkHour * 60 + checkMin;
+      const schedStartInMins = schedStartHour * 60 + schedStartMin;
+      const schedEndInMins = schedEndHour * 60 + schedEndMin;
+
+      // Check if time falls within the blocked range
+      // For overnight blocks (end < start), handle separately
+      if (schedEndInMins <= schedStartInMins) {
+        // Overnight: blocked if time >= start OR time < end
+        return checkTimeInMins >= schedStartInMins || checkTimeInMins < schedEndInMins;
+      } else {
+        // Normal: blocked if start <= time < end
+        return checkTimeInMins >= schedStartInMins && checkTimeInMins < schedEndInMins;
+      }
     });
-    
+
     return isRegularBooking || isFixedScheduleConflict;
   };
 
@@ -136,40 +179,48 @@ const useTimeSelection = (
       // Fetch both time slots and fixed schedules
       const [turfResponse, fixedScheduleResponse] = await Promise.all([
         axiosInstance.get(`/api/user/turf/timeslot?date=${date}&turfId=${turfId}`),
-        axiosInstance.post('/api/user/booking/get-fixed-schedules-by-date-range', {
+        axiosInstance.post('/api/owner/fixed-schedule/by-date-range', {
           turfId,
           startDate: date,
           endDate: date
         })
       ]);
-      
+
       const result = await turfResponse.data;
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
       setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
       // setAdvanceAmount(result.timeSlots.advancePayment);
       setAdvanceAmount(0);
-      const formattedBookedTime = result.bookedTime.map((booking) => ({
-        ...booking,
-        startTime: format(
-          addMinutes(
-            parseISO(booking.startTime),
-            parseISO(booking.startTime).getTimezoneOffset()
+      const formattedBookedTime = result.bookedTime.map((booking) => {
+        // If it's a fixed schedule (has isFixed flag and HH:mm format), keep as-is
+        if (booking.isFixed) {
+          return booking; // Already in correct format with HH:mm strings
+        }
+
+        // Regular booking - convert ISO string to 12-hour format
+        return {
+          ...booking,
+          startTime: format(
+            addMinutes(
+              parseISO(booking.startTime),
+              parseISO(booking.startTime).getTimezoneOffset()
+            ),
+            "hh:mm a",
+            { timeZone: "UTC" }
           ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-        endTime: format(
-          addMinutes(
-            parseISO(booking.endTime),
-            parseISO(booking.endTime).getTimezoneOffset()
+          endTime: format(
+            addMinutes(
+              parseISO(booking.endTime),
+              parseISO(booking.endTime).getTimezoneOffset()
+            ),
+            "hh:mm a",
+            { timeZone: "UTC" }
           ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-      }));
+        };
+      });
       setBookedTime(formattedBookedTime);
-      
+
       // Set fixed schedules if available
       if (fixedScheduleResponse.data.success) {
         setFixedSchedules(fixedScheduleResponse.data.fixedSchedules);

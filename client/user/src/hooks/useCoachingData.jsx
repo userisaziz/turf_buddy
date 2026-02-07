@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useGetCoachingsQuery } from "../redux/api/apiSlice";
+import { useGetTurfsQuery } from "../redux/api/apiSlice";
 
 const useCoachingData = () => {
     const { city } = useParams();
@@ -7,13 +7,14 @@ const useCoachingData = () => {
     // Normalize the city name to ensure consistent cache keys regardless of URL casing.
     const normalizedCity = city?.toLowerCase() || "";
 
-    const { data, isLoading, isError, error, isFetching } = useGetCoachingsQuery(normalizedCity, {
+    // Use the unified query that returns turfs, tournaments, and coachings
+    const { data, isLoading, isError, error, isFetching } = useGetTurfsQuery(normalizedCity, {
         skip: !normalizedCity,
         refetchOnMountOrArgChange: false,
     });
 
     return {
-        coachings: data || [],
+        coachings: data?.coachings || [],
         loading: isLoading,
         fetching: isFetching,
         error: isError ? error : null

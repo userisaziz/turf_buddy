@@ -2,7 +2,8 @@ import logger from "../../config/logging.js";
 import FixedSchedule from "../../models/fixedSchedule.model.js";
 import Turf from "../../models/turf.model.js";
 
-import { getDay } from "date-fns";
+// Removed unused date-fns import as we'll use native Date UTC methods
+// import { getDay } from "date-fns";
 
 export const checkFixedScheduleConflict = async (req, res) => {
   const { turfId, date, startTime, endTime } = req.body;
@@ -16,9 +17,9 @@ export const checkFixedScheduleConflict = async (req, res) => {
       });
     }
 
-    // Parse the date to get the day of week
+    // Parse the date to get the day of week (use UTC to match "YYYY-MM-DD" parsing)
     const dateObj = new Date(date);
-    const dayOfWeek = getDay(dateObj); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const dayOfWeek = dateObj.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
     // Check if there's a fixed schedule for this day and time
     const conflictingSchedule = await FixedSchedule.findOne({
@@ -68,40 +69,56 @@ export const getFixedSchedulesByDateRange = async (req, res) => {
   const { turfId, startDate, endDate } = req.body;
 
   try {
-    // Parse dates
+    // Parse dates (assumed "YYYY-MM-DD" -> UTC midnight)
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Get all days in the range
+    // Get all days in the range using UTC
     const datesInRange = [];
     const current = new Date(start);
     while (current <= end) {
       datesInRange.push(new Date(current));
-      current.setDate(current.getDate() + 1);
+      current.setUTCDate(current.getUTCDate() + 1);
     }
 
     // Get fixed schedules for each day in the range
     const allSchedules = [];
     for (const date of datesInRange) {
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      
+      const dayOfWeek = date.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+      // Normalize date for comparison (set to midnight UTC)
+      const dateStart = new Date(date);
+      dateStart.setUTCHours(0, 0, 0, 0);
+      const dateEnd = new Date(date);
+      dateEnd.setUTCHours(23, 59, 59, 999);
+
+      // Find recurring schedules for this day of week OR single-date blocks for this specific date
       const dailySchedules = await FixedSchedule.find({
         turf: turfId,
-        dayOfWeek: dayOfWeek,
         isActive: true,
+        $or: [
+          { recurring: true, dayOfWeek: dayOfWeek },
+          { recurring: false, date: { $gte: dateStart, $lte: dateEnd } }
+        ]
       });
-      
+
       dailySchedules.forEach(schedule => {
         // Create a date-specific schedule with the actual date
+        // Keep startTime/endTime as HH:mm strings - the client will combine with date
         const scheduleWithDate = {
           ...schedule.toObject(),
-          date: new Date(date),
-          startTime: new Date(date.toDateString() + ' ' + schedule.startTime),
-          endTime: new Date(date.toDateString() + ' ' + schedule.endTime),
+          dateISO: date.toISOString().split('T')[0], // "yyyy-MM-dd" format
+          // startTime and endTime remain as "HH:mm" strings from the model
         };
         allSchedules.push(scheduleWithDate);
       });
     }
+
+    console.log('[DEBUG] Returning fixedSchedules:', allSchedules.map(s => ({
+      startTime: s.startTime,
+      endTime: s.endTime,
+      dateISO: s.dateISO
+    })));
 
     return res.status(200).json({
       success: true,

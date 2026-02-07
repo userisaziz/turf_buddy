@@ -9,10 +9,10 @@ const SignUp = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen p-2 bg-gray-50">
       <div className="card w-full max-w-4xl bg-base-100 shadow-xl border">
         <div className="card-body max-md:p-4">
-          <h2 className="card-title justify-center text-3xl font-bold mb-8">Create Owner Account</h2>
+          <h2 className="card-title justify-center text-3xl font-bold mb-4">Create Owner Account</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="lg:grid grid-cols-2 gap-6">
               <FormField

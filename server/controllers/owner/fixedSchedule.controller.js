@@ -350,19 +350,29 @@ export const getFixedSchedulesByDateRange = async (req, res) => {
     for (const date of datesInRange) {
       const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
+      // Normalize date for comparison (set to midnight)
+      const dateStart = new Date(date);
+      dateStart.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(date);
+      dateEnd.setHours(23, 59, 59, 999);
+
+      // Find recurring schedules for this day of week OR single-date blocks for this specific date
       const dailySchedules = await FixedSchedule.find({
         turf: turfId,
-        dayOfWeek: dayOfWeek,
         isActive: true,
+        $or: [
+          { recurring: true, dayOfWeek: dayOfWeek },
+          { recurring: false, date: { $gte: dateStart, $lte: dateEnd } }
+        ]
       });
 
       dailySchedules.forEach(schedule => {
         // Create a date-specific schedule with the actual date
+        // Keep startTime/endTime as HH:mm strings - the client will combine with date
         const scheduleWithDate = {
           ...schedule.toObject(),
-          date: new Date(date),
-          startTime: new Date(date.toDateString() + ' ' + schedule.startTime),
-          endTime: new Date(date.toDateString() + ' ' + schedule.endTime),
+          dateISO: date.toISOString().split('T')[0], // "yyyy-MM-dd" format
+          // startTime and endTime remain as "HH:mm" strings from the model
         };
         allSchedules.push(scheduleWithDate);
       });

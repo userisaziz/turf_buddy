@@ -8,12 +8,12 @@ const turfSchema = new mongoose.Schema(
     image: { type: String, required: true },
     sportTypes: [{ type: String, required: true }],
     pricePerHour: { type: Number, required: true },
-    priceAtMorning: { type: Number,  },
-    advancePayment: { type: Number,  },
-    city: { 
-      type: String, 
-      required: true, 
-  },
+    priceAtMorning: { type: Number, },
+    advancePayment: { type: Number, },
+    city: {
+      type: String,
+      required: true,
+    },
     openTime: { type: String, required: true },
     ownerEmail: { type: String, },
     ownerPhoneNumber: { type: Number, },
@@ -23,6 +23,10 @@ const turfSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Owner",
       required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

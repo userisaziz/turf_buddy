@@ -2,11 +2,11 @@ import PropTypes from "prop-types";
 import { Link, useLocation } from "react-router-dom";
 import ThemeSwitcher from "../common/ThemeSwitcher";
 import { Capacitor } from "@capacitor/core";
+import { PATHS } from "../../constants/constants";
 
-export default function NavbarLayout({ homePath, items, endContent }) {
+export default function NavbarLayout({ homePath, items, endContent, citySlug }) {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
-    const isNativeMobile = Capacitor.isNativePlatform();
 
     return (
         <>
@@ -44,7 +44,13 @@ export default function NavbarLayout({ homePath, items, endContent }) {
                 </div>
                 <div className="navbar-end gap-2">
                     {endContent}
-                    {/* <ThemeSwitcher /> */}
+                    <Link
+                        to={citySlug ? `/${citySlug}/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`}
+                        className="btn btn-primary btn-sm lg:btn-md"
+                    >
+                        Login
+                    </Link>
+                    <ThemeSwitcher />
                 </div>
             </div>
 

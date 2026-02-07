@@ -1,70 +1,86 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Trophy, Calendar, Users } from "lucide-react";
+import { MapPin, Trophy, Calendar, Users, ArrowRight, Zap } from "lucide-react";
 
 const TournamentCard = ({ tournament, image, onClick }) => {
-  const navigate = useNavigate();
   const turf = tournament?.turf && tournament?.turf[0];
+  const dateObj = new Date(tournament.date);
+  const month = dateObj.toLocaleString('default', { month: 'short' });
+  const day = dateObj.getDate();
 
   return (
     <div
-      className="card bg-base-100 w-full shadow-xl hover:shadow-2xl transition-all cursor-pointer overflow-hidden border border-base-200 animate-fade-in"
+      className="group relative w-full h-[380px] bg-gray-900 rounded-3xl overflow-hidden shadow-xl cursor-pointer hover:shadow-primary/50 transition-all duration-500 border border-gray-800"
       onClick={onClick}
     >
-      <figure className="relative h-48">
+      {/* Background Image with Zoom Effect */}
+      <div className="absolute inset-0 overflow-hidden">
         <img
           src={image || "/banner3.jpg"}
           alt={tournament.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1"
         />
-        {tournament.registrationFees === 0 ? (
-          <div className="absolute top-2 left-2 bg-success text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-            Free Entry
-          </div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent opacity-90" />
+      </div>
+
+      {/* Floating Date Badge (Top Left) */}
+      <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2 text-center text-white min-w-[60px] group-hover:bg-primary group-hover:border-primary transition-colors">
+        <span className="block text-xs font-bold uppercase tracking-wider">{month}</span>
+        <span className="block text-2xl font-black leading-none">{day}</span>
+      </div>
+
+      {/* Status Badge (Top Right) */}
+      <div className="absolute top-4 right-4">
+        {tournament.status === 'open' ? (
+          <span className="flex items-center gap-1 bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-green-400"></span> Open
+          </span>
         ) : (
-          <div className="absolute top-2 left-2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-            ₹{tournament.registrationFees}
-          </div>
+          <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-bold uppercase">Closed</span>
         )}
-        {tournament.status === 'open' && (
-          <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-            Registration Open
-          </div>
-        )}
-      </figure>
+      </div>
 
-      <div className="card-body p-5">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="card-title text-xl font-bold text-gray-800 line-clamp-1">
-            {tournament.name}
-          </h3>
+      {/* Content Body */}
+      <div className="absolute bottom-0 w-full p-6 flex flex-col h-full justify-end">
+        
+        {/* Entry Fee Tag */}
+        <div className="mb-2 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75 ease-out">
+            <span className="inline-block bg-primary text-primary-content text-xs font-extrabold px-2 py-0.5 rounded transform -skew-x-12">
+                {tournament.registrationFees === 0 ? "FREE ENTRY" : `ENTRY: ₹${tournament.registrationFees}`}
+            </span>
         </div>
 
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-600 text-sm">
-            <MapPin className="w-4 h-4 mr-2 text-primary shrink-0" />
-            <span className="line-clamp-1">{turf?.name || "Location TBD"}</span>
-          </div>
+        {/* Title */}
+        <h3 className="text-2xl font-black text-white italic tracking-wide mb-1 leading-tight group-hover:text-primary transition-colors">
+          {tournament.name}
+        </h3>
 
-          <div className="flex items-center text-gray-600 text-sm">
-            <Calendar className="w-4 h-4 mr-2 text-primary shrink-0" />
-            <span>{new Date(tournament.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
-          </div>
-
-          <div className="flex items-center text-gray-600 text-sm">
-            <Users className="w-4 h-4 mr-2 text-primary shrink-0" />
-            <span>Max Teams: {tournament.maxNumTeams}</span>
-          </div>
+        {/* Info Grid */}
+        <div className="grid grid-cols-2 gap-y-2 text-gray-400 text-xs font-medium mb-4 mt-2">
+            <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                <span className="truncate">{turf?.name || "TBD"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary" />
+                <span>{tournament.maxNumTeams} Teams Max</span>
+            </div>
+            <div className="flex items-center gap-2 col-span-2">
+                 <Trophy className="w-4 h-4 text-yellow-500" />
+                 <span className="text-yellow-500 font-bold">Tournament Mode</span>
+            </div>
         </div>
 
-        <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-1">
-            <Trophy className="w-4 h-4 text-warning" />
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Tournament</span>
-          </div>
-          <button className="btn btn-primary btn-sm px-4">
-            Details
-          </button>
+        {/* Interactive Button Area */}
+        <div className="w-full pt-4 border-t border-gray-700/50 flex justify-between items-center group-hover:border-primary/50 transition-colors">
+            <div className="flex items-center gap-2 text-white text-sm font-bold">
+               <Zap className="w-4 h-4 fill-white" />
+               <span>Ready?</span>
+            </div>
+            <button className="bg-white text-gray-900 hover:bg-primary hover:text-white p-2 rounded-full transition-all duration-300 transform group-hover:rotate-45">
+                <ArrowRight className="w-5 h-5" />
+            </button>
         </div>
       </div>
     </div>
