@@ -32,11 +32,10 @@ const addTurfSchema = yup.object().shape({
   advancePayment: yup
     .number()
     .required("Enter the advance payment")
-    .min(25, "Advance payment must be at least 100 rupees"),
-  region: yup
+  .min(25, "Advance payment must be at least 25 rupees"),
+  city: yup
     .string()
-    .required("Select a region")
-    .oneOf(["Hagarga", "Saidapuri", "Nagnahalli", "Kbn", "Other"], "Invalid region"),
+    .required("Select a city"),
   image: yup
     .mixed()
     .test(
@@ -64,6 +63,10 @@ const addTurfSchema = yup.object().shape({
 export default function useAddTurf() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [sportTypes, setSportTypes] = useState([]);
+  const [newSportType, setNewSportType] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -77,26 +80,27 @@ export default function useAddTurf() {
       sportTypes: [],
       openTime: null,
       closeTime: null,
+      city: "", // Set to empty initially to prevent geolocation override
     },
   });
 
-  const [sportTypes, setSportTypes] = useState([]);
-  const [newSportType, setNewSportType] = useState("");
   const openTime = watch("openTime");
+
+
 
   useEffect(() => {
     setValue("sportTypes", sportTypes);
   }, [sportTypes, setValue]);
 
-  const addSportType = () => {
-    if (newSportType && !sportTypes.includes(newSportType)) {
-      setSportTypes([...sportTypes, newSportType]);
+  const addSportType = (sportToAdd) => {
+    if (sportToAdd && !sportTypes.includes(sportToAdd)) {
+      setSportTypes([...sportTypes, sportToAdd]);
       setNewSportType("");
     }
   };
 
-  const removeSportType = (type) => {
-    setSportTypes(sportTypes.filter((sport) => sport !== type));
+  const removeSportType = (typeToRemove) => {
+    setSportTypes(sportTypes.filter((sport) => sport !== typeToRemove));
   };
 
   const onSubmit = async (data) => {

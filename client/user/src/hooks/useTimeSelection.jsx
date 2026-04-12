@@ -8,6 +8,7 @@ import {
   addMinutes,
   addDays,
   isEqual,
+  getDay,
 } from "date-fns";
 import axiosInstance from "./useAxiosInstance";
 
@@ -63,39 +64,43 @@ const useTimeSelection = (
     }
   };
 
-  // const isTimeSlotBooked = (time) => {
-  //   const timeToCheck = parse(time, "hh:mm a", new Date());
-  //   return bookedTime.some((booking) => {
-  //     const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
-  //     let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
-
-  //     if (isBefore(bookingEnd, bookingStart)) {
-  //       bookingEnd = addDays(bookingEnd, 1);
-  //     }
-
-  //     return (
-  //       (isAfter(timeToCheck, bookingStart) ||
-  //         isSameTime(timeToCheck, bookingStart)) &&
-  //       isBefore(timeToCheck, bookingEnd)
-  //     );
-  //   });
-  // };
   const isTimeSlotBooked = (time) => {
     const timeToCheck = parse(time, "hh:mm a", new Date());
 
+    // Check for regular bookings and fixed schedules in bookedTime array
     return bookedTime.some((booking) => {
-      const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
-      let bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
+      let bookingStartHour, bookingStartMin, bookingEndHour, bookingEndMin;
 
-      if (isBefore(bookingEnd, bookingStart)) {
-        bookingEnd = addDays(bookingEnd, 1);
+      // Check if this is a fixed schedule (has isFixed flag and HH:mm format)
+      if (booking.isFixed && booking.startTime && !booking.startTime.includes(' ')) {
+        // HH:mm format (24-hour) for fixed schedules
+        [bookingStartHour, bookingStartMin] = booking.startTime.split(':').map(Number);
+        [bookingEndHour, bookingEndMin] = booking.endTime.split(':').map(Number);
+      } else {
+        // Regular booking with "hh:mm AM/PM" format
+        const bookingStart = parse(booking.startTime, "hh:mm a", new Date());
+        const bookingEnd = parse(booking.endTime, "hh:mm a", new Date());
+        bookingStartHour = bookingStart.getHours();
+        bookingStartMin = bookingStart.getMinutes();
+        bookingEndHour = bookingEnd.getHours();
+        bookingEndMin = bookingEnd.getMinutes();
       }
 
-      return (
-        (isAfter(timeToCheck, bookingStart) ||
-          isEqual(timeToCheck, bookingStart)) &&
-        isBefore(timeToCheck, bookingEnd)
-      );
+      // Get timeToCheck's hours and minutes
+      const checkHour = timeToCheck.getHours();
+      const checkMin = timeToCheck.getMinutes();
+
+      // Convert all to minutes for easy comparison
+      const checkTimeInMins = checkHour * 60 + checkMin;
+      const bookingStartInMins = bookingStartHour * 60 + bookingStartMin;
+      const bookingEndInMins = bookingEndHour * 60 + bookingEndMin;
+
+      // Handle overnight bookings
+      if (bookingEndInMins <= bookingStartInMins) {
+        return checkTimeInMins >= bookingStartInMins || checkTimeInMins < bookingEndInMins;
+      } else {
+        return checkTimeInMins >= bookingStartInMins && checkTimeInMins < bookingEndInMins;
+      }
     });
   };
 
@@ -110,34 +115,49 @@ const useTimeSelection = (
     const date = format(currentSelectedDate, "yyyy-MM-dd");
 
     try {
-      const response = await axiosInstance.get(
-        `/api/user/turf/timeslot?date=${date}&turfId=${turfId}`
-      );
-      const result = await response.data;
+      // Fetch time slots (now includes fixed schedules in bookedTime)
+      const turfResponse = await axiosInstance.get(`/api/user/turf/timeslot?date=${date}&turfId=${turfId}`);
+
+      const result = await turfResponse.data;
       setTimeSlots(result.timeSlots);
       setPricePerHour(result.timeSlots.pricePerHour);
       setPriceAtMorning(result.timeSlots.priceAtMorning); // Set morning price from API
       setAdvanceAmount(result.timeSlots.advancePayment);
-      const formattedBookedTime = result.bookedTime.map((booking) => ({
-        ...booking,
-        startTime: format(
-          addMinutes(
-            parseISO(booking.startTime),
-            parseISO(booking.startTime).getTimezoneOffset()
+
+      const formattedBookedTime = result.bookedTime.map((booking) => {
+        // If it's a fixed schedule (has isFixed flag), it's already in the correct "HH:mm" format or similar
+        // Ideally the API sends HH:mm string. Let's ensure consistency.
+        if (booking.isFixed) {
+          // If the backend sends startTime/endTime as "HH:mm", we can use them directly or format them if needed.
+          // The current frontend logic for isTimeSlotBooked checks strictly for HH:mm strings for fixed schedules.
+          return booking;
+        }
+
+        // Regular booking - convert ISO string to 12-hour format
+        return {
+          ...booking,
+          startTime: format(
+            addMinutes(
+              parseISO(booking.startTime),
+              parseISO(booking.startTime).getTimezoneOffset()
+            ),
+            "hh:mm a",
+            { timeZone: "UTC" }
           ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-        endTime: format(
-          addMinutes(
-            parseISO(booking.endTime),
-            parseISO(booking.endTime).getTimezoneOffset()
+          endTime: format(
+            addMinutes(
+              parseISO(booking.endTime),
+              parseISO(booking.endTime).getTimezoneOffset()
+            ),
+            "hh:mm a",
+            { timeZone: "UTC" }
           ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-      }));
+        };
+      });
       setBookedTime(formattedBookedTime);
+
+
+
     } catch (error) {
       console.log("Error in fetchByDate", error.message);
     }

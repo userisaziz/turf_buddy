@@ -140,7 +140,7 @@ const Home = () => {
                 onClick={() =>
                   navigate(getAuthCityPath(PATHS.TOURNAMENTS), { state: { tab: "coaching" } })
                 }
-              />
+            />
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-12 text-base-content/50 bg-base-200/20 rounded-2xl border border-dashed border-base-300">
@@ -151,7 +151,7 @@ const Home = () => {
         </div>
       </div>
 
-      <Footer />
+    {/* <Footer /> */}
     </div>
   );
 };

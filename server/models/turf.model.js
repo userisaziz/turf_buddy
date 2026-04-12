@@ -13,10 +13,7 @@ const turfSchema = new mongoose.Schema(
     city: {
       type: String,
       required: true,
-      lowercase: true,
-      index: true
     },
-
     openTime: { type: String, required: true },
     ownerEmail: { type: String, },
     ownerPhoneNumber: { type: Number, },
@@ -26,6 +23,10 @@ const turfSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Owner",
       required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

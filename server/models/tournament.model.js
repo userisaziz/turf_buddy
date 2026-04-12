@@ -20,11 +20,16 @@ const tournamentSchema = new mongoose.Schema(
     maxPlayersInTeam: { type: Number, required: true },
     teams: [{ type: mongoose.Schema.Types.ObjectId, ref: "Team" }],
     // registeredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    // createdBy: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Owner",
+      required: false, // Optional if admin creates it
+    },
+    createdBy: {
+      type: String,
+      enum: ["admin", "owner"],
+      default: "admin",
+    },
     lastRegistrationDate: {
       type: Date, // Field for the last date of registration
       required: true,

@@ -5,8 +5,7 @@ import Turf from "../../models/turf.model.js";
 // Create a new coaching class
 export const createCoaching = async (req, res) => {
     try {
-        const ownerId = req.owner.owner;
-
+         const ownerId = req.owner.id;
         // Verify the turf belongs to this owner
         const turf = await Turf.findOne({ _id: req.body.turf, owner: ownerId });
         if (!turf) {
@@ -41,7 +40,7 @@ export const createCoaching = async (req, res) => {
 // Get all coaching classes for the owner
 export const getOwnerCoachings = async (req, res) => {
     try {
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         const coachings = await Coaching.find({ owner: ownerId })
             .populate("turf", "name image city location")
@@ -57,7 +56,7 @@ export const getOwnerCoachings = async (req, res) => {
 export const getCoachingById = async (req, res) => {
     try {
         const { coachingId } = req.params;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         const coaching = await Coaching.findOne({ _id: coachingId, owner: ownerId })
             .populate("turf", "name image city location");
@@ -76,7 +75,7 @@ export const getCoachingById = async (req, res) => {
 export const updateCoaching = async (req, res) => {
     try {
         const { coachingId } = req.params;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         const coaching = await Coaching.findOneAndUpdate(
             { _id: coachingId, owner: ownerId },
@@ -102,7 +101,7 @@ export const updateCoaching = async (req, res) => {
 export const toggleCoachingStatus = async (req, res) => {
     try {
         const { coachingId } = req.params;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         const coaching = await Coaching.findOne({ _id: coachingId, owner: ownerId });
 
@@ -127,7 +126,7 @@ export const toggleCoachingStatus = async (req, res) => {
 export const deleteCoaching = async (req, res) => {
     try {
         const { coachingId } = req.params;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         const coaching = await Coaching.findOneAndDelete({ _id: coachingId, owner: ownerId });
 
@@ -150,7 +149,7 @@ export const deleteCoaching = async (req, res) => {
 // Get all enquiries for owner's coaching classes
 export const getCoachingEnquiries = async (req, res) => {
     try {
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         // First get all coaching IDs for this owner
         const coachings = await Coaching.find({ owner: ownerId }).select("_id");
@@ -171,7 +170,7 @@ export const getCoachingEnquiries = async (req, res) => {
 export const getEnquiriesByCoaching = async (req, res) => {
     try {
         const { coachingId } = req.params;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         // Verify coaching belongs to owner
         const coaching = await Coaching.findOne({ _id: coachingId, owner: ownerId });
@@ -194,7 +193,7 @@ export const updateEnquiryStatus = async (req, res) => {
     try {
         const { enquiryId } = req.params;
         const { status, ownerNotes } = req.body;
-        const ownerId = req.owner.owner;
+        const ownerId = req.owner.id;
 
         // Get the enquiry and verify it belongs to owner's coaching
         const enquiry = await CoachingEnquiry.findById(enquiryId).populate("coaching");

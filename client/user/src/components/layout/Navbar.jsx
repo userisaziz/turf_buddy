@@ -35,8 +35,8 @@ const Navbar = () => {
       <CityButton
         selectedCity={selectedCity}
         onClick={() => setIsModalOpen(true)}
-        />
-        <ThemeSwitcher/>
+      />
+      {/* <ThemeSwitcher /> */}
       {/* <Link
         to={citySlug ? `/${citySlug}/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`}
         className="btn btn-primary btn-sm lg:btn-md"
@@ -48,7 +48,7 @@ const Navbar = () => {
 
   return (
     <>
-      <NavbarLayout homePath="/" items={items} endContent={endContent} />
+      <NavbarLayout homePath="/" items={items} endContent={endContent} citySlug={citySlug} />
       <CitySelectionPopup
         isOpen={isModalOpen}
         onClose={handleCityChange}

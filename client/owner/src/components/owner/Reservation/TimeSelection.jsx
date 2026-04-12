@@ -24,10 +24,14 @@ const TimeSelection = ({
     return current >= start && current < end;
   };
 
+  const isTimeSlotBookedOrBlocked = (time) => {
+    return isTimeSlotBooked(time);
+  };
+
   const isTimeSlotDisabled = (time) => {
     const closeTime = parse(timeSlots.closeTime, "hh:mm a", new Date());
     const currentTime = parse(time, "hh:mm a", new Date());
-    return isAfter(currentTime, closeTime) || isTimeSlotBooked(time);
+    return isAfter(currentTime, closeTime) || isTimeSlotBookedOrBlocked(time);
   };
   const isMorningTime = (time) => {
     const morningStart = parse("5:00 AM", "hh:mm a", new Date());
@@ -43,6 +47,10 @@ const TimeSelection = ({
 
     if (isTimeSlotSelected(time)) {
       return "bg-blue-500 hover:bg-blue-600 text-white";
+    }
+
+    if (isTimeSlotBookedOrBlocked(time)) {
+      return "btn-disabled bg-red-500 hover:bg-red-600 text-white opacity-70"; // Blocked/Booked slots with red color
     }
 
     if (isTimeSlotDisabled(time)) {

@@ -14,9 +14,8 @@ const OwnerLayout = () => {
         <OwnerSidebar
           isOpen={isOpen}
           toggleSidebar={toggleSidebar}
-          className={`${
-            isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-          }`}
+          className={`${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+            }`}
         />
         <main
           className={`

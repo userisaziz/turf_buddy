@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axiosInstance from "./useAxiosInstance";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const useWriteReview = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -10,6 +10,7 @@ const useWriteReview = () => {
   const [review, setReview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { city } = useParams();
 
   const openReviewModal = (bookingId) => {
     setTurfId(bookingId);

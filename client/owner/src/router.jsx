@@ -16,7 +16,12 @@ import {
   TurfManagement,
   OwnerReviews,
   OwnerBookings,
+  Tournament as OwnerTournament,
+  TournamentRequests as OwnerTournamentRequests,
 } from "@components/owner";
+
+// Fixed Schedule Manager
+import FixedScheduleManager from "@components/owner/FixedSchedule/FixedScheduleManager";
 
 //  all the components that are used in the admin dashboard
 import {
@@ -40,7 +45,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Tournament from "./components/admin/Tournments/index";
 import TournamentRequests from "./components/admin/Tournments/TournmentRequests";
-import Coaching from "./components/admin/Coaching";
+import Coaching from "./components/owner/Coaching";
 
 const router = createBrowserRouter([
   {
@@ -119,6 +124,9 @@ const router = createBrowserRouter([
       { path: "bookings", element: <OwnerBookings /> },
       { path: "reservations", element: <Reservation /> },
       { path: "coaching", element: <Coaching /> },
+      { path: "tournaments", element: <OwnerTournament /> },
+      { path: "tournaments/:tournamentId/requests", element: <OwnerTournamentRequests /> },
+      { path: "turf/:turfId/fixed-schedules", element: <FixedScheduleManager /> },
     ],
   },
 ]);

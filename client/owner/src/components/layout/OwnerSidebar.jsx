@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Clock2,
   Users,
+  Trophy,
 } from "lucide-react";
 
 const OwnerSidebar = ({ isOpen, toggleSidebar, className }) => {
@@ -21,6 +22,7 @@ const OwnerSidebar = ({ isOpen, toggleSidebar, className }) => {
     { to: "/owner/bookings", label: "Bookings", icon: Calendar },
     { to: "/owner/reservations", label: "Reservations", icon: Clock2 },
     { to: "/owner/coaching", label: "Coaching", icon: Users },
+    { to: "/owner/tournaments", label: "Tournaments", icon: Trophy },
   ];
 
   return (
@@ -40,8 +42,8 @@ const OwnerSidebar = ({ isOpen, toggleSidebar, className }) => {
             key={item.to}
             to={item.to}
             className={`flex items-center px-4 py-2 text-sm ${location.pathname === item.to
-                ? "bg-primary text-primary-content"
-                : "hover:bg-base-300"
+              ? "bg-primary text-primary-content"
+              : "hover:bg-base-300"
               }`}
             onClick={() => {
               if (window.innerWidth < 1024) {

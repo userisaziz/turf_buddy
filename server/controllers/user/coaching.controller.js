@@ -1,6 +1,7 @@
 import Coaching from "../../models/coaching.model.js";
 import CoachingEnquiry from "../../models/coachingEnquiry.model.js";
 import Turf from "../../models/turf.model.js";
+import User from "../../models/user.model.js";
 
 // Get all coaching classes (public - filtered by city)
 export const getCoachings = async (req, res) => {
@@ -10,8 +11,10 @@ export const getCoachings = async (req, res) => {
         let query = { status: "active" };
 
         if (city) {
-            // Find all turf IDs in the specified city
-            const turfsInCity = await Turf.find({ city: city.toLowerCase() }).select("_id");
+            // Find all turf IDs in the specified city (case-insensitive)
+            const turfsInCity = await Turf.find({
+                city: { $regex: new RegExp(`^${city}$`, "i") }
+            }).select("_id");
             const turfIds = turfsInCity.map((t) => t._id);
             query.turf = { $in: turfIds };
         }
@@ -77,6 +80,12 @@ export const sendEnquiry = async (req, res) => {
     const { name, email, phone, message, studentName, studentAge } = req.body;
 
     try {
+        // Fetch user details to ensure we have valid name/email
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         // Check if coaching exists and is active
         const coaching = await Coaching.findOne({
             _id: coachingId,
@@ -102,9 +111,9 @@ export const sendEnquiry = async (req, res) => {
         const enquiry = new CoachingEnquiry({
             coaching: coachingId,
             user: userId,
-            name,
-            email,
-            phone,
+            name: name || user.name,
+            email: email || user.email,
+            phone: phone || user.phone,
             message,
             studentName,
             studentAge

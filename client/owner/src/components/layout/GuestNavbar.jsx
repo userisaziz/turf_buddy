@@ -21,17 +21,22 @@ const GuestNavbar = () => {
           </Link>
         </div>
         <div className="navbar-center">
-          <ul className="menu menu-horizontal px-1">
+          <ul className="menu menu-horizontal px-2 gap-2">
             <li>
               <Link to="/" className={isActive("/") ? "active" : ""}>Home</Link>
+            </li>
+            
+            <li>
+              <Link to="/signup" className={isActive("/signup") ? "active" : ""}>Sign Up</Link>
+            </li>
+            <li>
+              <Link to="/login" className={isActive("/login") ? "active" : ""}>Login</Link>
             </li>
           </ul>
         </div>
         <div className="navbar-end">
           <ThemeSwitcher />
-          <Link to="/signup" className="btn btn-primary btn-outline ml-2">
-            Sign up
-          </Link>
+       
         </div>
       </div>
 
@@ -47,9 +52,15 @@ const GuestNavbar = () => {
             TurfBuddy
           </Link>
         </div>
+        
         <div className="navbar-end">
+       
+         <Link to="/signup" className="btn btn-primary btn-outline ml-2">
+            Sign up
+          </Link>
           <ThemeSwitcher />
         </div>
+       
       </div>
 
       {/* Mobile Bottom Navigation (Android-like) */}

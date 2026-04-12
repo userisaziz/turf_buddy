@@ -29,6 +29,7 @@ const becomeOwnerSchema = yup.object().shape({
 const useBecomeOwner = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { city } = useParams();
   const {
     register,
     handleSubmit,
@@ -44,7 +45,7 @@ const useBecomeOwner = () => {
       );
       const result = await response.data;
       toast.success(result.message);
-      navigate("/auth")
+      navigate(`/auth/${city || "mumbai"}`)
     } catch (error) {
       if (error.response) {
         toast.error(error.response?.data?.message);

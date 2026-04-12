@@ -6,7 +6,6 @@ import Tournments from "./Tournments"; // Assuming a Tournments module exists
 import Transactions from "./Transactions/TransactionSection";
 import Turf from "./Turf/TurfList"; // Assuming TurfList is the main export for Turf
 import Dashboard from "./Dashboard/AdminDashboard"; // Assuming AdminDashboard is the main export for Dashboard
-import Coaching from "./Coaching"; // New import for Coaching
 
 export {
     UserManagement,
@@ -16,7 +15,7 @@ export {
     Transactions,
     Turf,
     Dashboard,
-    Coaching
+
 };
 
 //  Owner Requests

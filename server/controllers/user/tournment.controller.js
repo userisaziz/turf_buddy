@@ -65,7 +65,9 @@ export const getTournaments = async (req, res) => {
     if (city) {
       // 1. Find all turf IDs in the specified city
       const Turf = (await import("../../models/turf.model.js")).default;
-      const turfsInCity = await Turf.find({ city: city.toLowerCase() }).select("_id");
+      const turfsInCity = await Turf.find({
+        city: { $regex: new RegExp(`^${city}$`, "i") }
+      }).select("_id");
       const turfIds = turfsInCity.map((t) => t._id);
       query = { turf: { $in: turfIds } };
     }

@@ -9,7 +9,7 @@ import Button from "../common/Button.jsx";
 const Turf = () => {
   const { turfs, loading, error } = useTurfData();
   const [filteredTurfs, setFilteredTurfs] = useState([]); // Initialize as empty array
-  const [regionFilter, setRegionFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
@@ -34,9 +34,9 @@ const Turf = () => {
     setFilteredTurfs(filtered);
   };
 
-  // Handle region filter
-  const handleRegionFilter = (region) => {
-    setRegionFilter(region);
+  // Handle city filter
+  const handleCityFilter = (city) => {
+    setCityFilter(city);
   };
 
   // Handle sorting by price
@@ -46,7 +46,7 @@ const Turf = () => {
 
   // Reset all filters
   const handleResetFilters = () => {
-    setRegionFilter("");
+    setCityFilter("");
     setSortBy("");
     setFilteredTurfs(turfs); // Reset to all turfs
     setAppliedFiltersCount(0);
@@ -56,10 +56,10 @@ const Turf = () => {
   const applyFilters = () => {
     let filtered = turfs;
 
-    // Apply region filter
-    if (regionFilter) {
+    // Apply city filter
+    if (cityFilter) {
       filtered = filtered.filter(
-        (turf) => turf.region.toLowerCase() === regionFilter.toLowerCase()
+        (turf) => turf.city?.toLowerCase() === cityFilter.toLowerCase()
       );
     }
 
@@ -75,7 +75,7 @@ const Turf = () => {
     }
 
     setFilteredTurfs(filtered);
-    setAppliedFiltersCount(regionFilter || sortBy ? 1 : 0); // Update badge count
+    setAppliedFiltersCount(cityFilter || sortBy ? 1 : 0); // Update badge count
     closeFiltersModal();
   };
 
@@ -108,20 +108,23 @@ const Turf = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
             <h2 className="text-xl font-bold mb-4">Filters</h2>
 
-            {/* Region Filter */}
+            {/* City Filter */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Region</label>
+              <label className="block text-sm font-medium mb-1">City</label>
               <select
-                value={regionFilter}
-                onChange={(e) => handleRegionFilter(e.target.value)}
+                value={cityFilter}
+                onChange={(e) => handleCityFilter(e.target.value)}
                 className="select select-bordered w-full"
               >
-                <option value="">All Regions</option>
-                <option value="Hagarga">Hagarga</option>
-                <option value="Saidapuri">Saidapuri</option>
-                <option value="Nagnahalli">Nagnahalli</option>
-                <option value="Kbn">Kbn</option>
-                <option value="Other">Other</option>
+                <option value="">All Cities</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Gulbarga">Gulbarga</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Pune">Pune</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Chennai">Chennai</option>
               </select>
             </div>
 

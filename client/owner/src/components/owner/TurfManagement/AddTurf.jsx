@@ -6,6 +6,8 @@ import { setHours, setMinutes } from "date-fns";
 import { FormField } from "@components/common";
 import useAddTurf from "@hooks/owner/useAddTurf";
 import { Button } from "@components/common";
+import SportsTypeSelector from "../../common/SportsTypeSelector";
+import CitySelector from "../../common/CitySelector";
 
 const AddTurf = () => {
   const {
@@ -54,8 +56,25 @@ const AddTurf = () => {
               </span>
             )}
           </div>
+            <div className="form-control">
+            <Controller
+              name="city"
+              control={control}
+              render={({ field }) => (
+                <CitySelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  error={errors.city?.message}
+                  name={field.name}
+                  label="City"
+                  required
+                />
+              )}
+            />
+          </div>
           <FormField
-            label="Location"
+            label="Location (Add Google Maps Address here)"
             name="location"
             type="text"
             register={register}
@@ -85,23 +104,7 @@ const AddTurf = () => {
             error={errors.advancePayment}
           />
           
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Region</span>
-            </label>
-            <select {...register("region")} className="select select-bordered w-full">
-              <option value="Hagarga">Hagarga</option>
-              <option value="Saidapuri">Saidapuri</option>
-              <option value="Nagnahalli">Nagnahalli</option>
-              <option value="Kbn">Kbn</option>
-              <option value="Other">Other</option>
-            </select>
-            {errors.region && (
-              <span className="text-error text-xs">
-                {errors.region.message}
-              </span>
-            )}
-          </div>
+        
         </div>
 
         <div className="space-y-4">
@@ -186,41 +189,44 @@ const AddTurf = () => {
             <label className="label">
               <span className="label-text">Sport Types</span>
             </label>
-            <div className="md:flex md:space-x-2">
-              <input
-                type="text"
-                value={newSportType}
-                onChange={(e) => setNewSportType(e.target.value)}
-                className="input input-bordered md:flex-grow w-full "
-                placeholder="Add a sport type"
-              />
-              <button
-                type="button"
-                onClick={addSportType}
-                className="btn btn-outline btn-primary max-sm:mt-2"
-              >
-                Add
-              </button>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {sportTypes.map((type, index) => (
-                <span key={index} className="badge badge-lg">
-                  {type}
-                  <button
-                    type="button"
-                    onClick={() => removeSportType(type)}
-                    className="ml-2 text-error"
-                  >
-                    ×
-                  </button>
+            <div className="space-y-3">
+              <div className="flex flex-col gap-2">
+                <SportsTypeSelector
+                  value={""}
+                  onChange={(value) => {
+                    if (value) addSportType(value);
+                  }}
+                  error={errors.sportTypes?.message}
+                  label=""
+                  placeholder="Select or add a sport type"
+                />
+               
+              </div>
+              {sportTypes.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold mb-2">Selected Sports:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {sportTypes.map((type, index) => (
+                      <span key={index} className="badge badge-lg badge-primary gap-2">
+                        {type}
+                        <button
+                          type="button"
+                          onClick={() => removeSportType(type)}
+                          className="text-white hover:text-error cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {errors.sportTypes && (
+                <span className="text-error text-xs">
+                  {errors.sportTypes.message}
                 </span>
-              ))}
+              )}
             </div>
-            {errors.sportTypes && (
-              <span className="text-error text-xs">
-                {errors.sportTypes.message}
-              </span>
-            )}
           </div>
         </div>
 

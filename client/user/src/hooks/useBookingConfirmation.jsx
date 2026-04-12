@@ -3,8 +3,9 @@ import toast from "react-hot-toast";
 import axiosInstance from "./useAxiosInstance";
 import { createOrder, handlePayment } from "../config/razorpay";
 import "https://checkout.razorpay.com/v1/checkout.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { VERIFY_PAYMENT, VERIFY_TIMESLOT } from "../api/endpoint";
+import { useCitySelection } from "./useCitySelection";
 
 const useBookingConfirmation = (
   id,
@@ -17,6 +18,7 @@ const useBookingConfirmation = (
   fetchByDate
 ) => {
   const navigate = useNavigate();
+  const { selectedCity } = useCitySelection();
   const confirmReservation = async () => {
     const selectedTurfDate = format(selectedDate, "yyyy-MM-dd");
     const parsedStartTime = parse(selectedStartTime, "hh:mm a", new Date());
@@ -52,10 +54,10 @@ const useBookingConfirmation = (
 
         toast.error(timeslotResponse.data.message);
         setLoading(false);
-        window.location.reload(); 
+        window.location.reload();
         return;
       }
-      
+
       const order = await createOrder(advanceAmount);
       setLoading(false);
 
@@ -77,7 +79,7 @@ const useBookingConfirmation = (
       const response = await axiosInstance.post(VERIFY_PAYMENT, bookingData);
       const result = await response.data;
       toast.success(result.message);
-      navigate("/auth/booking-history");
+      navigate(`/auth/${selectedCity}/booking-history`);
     } catch (err) {
       if (err.response) {
         toast.error(err.response?.data?.message);
