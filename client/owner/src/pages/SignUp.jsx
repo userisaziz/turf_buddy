@@ -9,12 +9,12 @@ const SignUp = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-2 bg-gray-50">
-      <div className="card w-full max-w-4xl bg-base-100 shadow-xl border">
-        <div className="card-body max-md:p-4">
-          <h2 className="card-title justify-center text-3xl font-bold mb-4">Create Owner Account</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="lg:grid grid-cols-2 gap-6">
+    <div className="flex items-center justify-center p-5 bg-gray-50">
+      <div className="card w-full max-w-3xl bg-base-100 shadow-xl border">
+        <div className="card-body p-6">
+          <h2 className="card-title justify-center text-xl font-bold mb-3">Create Owner Account</h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 label="Full Name"
                 name="name"
@@ -37,7 +37,7 @@ const SignUp = () => {
               register={register}
               error={errors.email}
             />
-            <div className="lg:grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 label="Password"
                 name="password"
@@ -54,15 +54,14 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Terms and Privacy Checkbox */}
             <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+              <label className="label cursor-pointer justify-start gap-3 py-1">
                 <input
                   type="checkbox"
                   {...register("termsAccepted")}
-                  className={`checkbox checkbox-primary ${errors.termsAccepted ? 'checkbox-error' : ''}`}
+                  className={`checkbox checkbox-primary checkbox-sm ${errors.termsAccepted ? "checkbox-error" : ""}`}
                 />
-                <span className="label-text">
+                <span className="label-text text-sm">
                   I agree to the{" "}
                   <button
                     type="button"
@@ -74,25 +73,26 @@ const SignUp = () => {
                 </span>
               </label>
               {errors.termsAccepted && (
-                <span className="text-error text-xs mt-1 ml-10">
+                <span className="text-error text-xs ml-9">
                   {errors.termsAccepted.message}
                 </span>
               )}
             </div>
 
-            <div className="form-control mt-10">
+            <div className="form-control pt-1">
               <Button
                 type="submit"
-                className="btn-primary w-full shadow-lg"
+                className="btn-primary w-full shadow-md btn-sm h-10"
                 loading={loading}
               >
                 Sign Up & Continue
               </Button>
             </div>
           </form>
-          <div className="text-center mt-8">
+          <div className="text-center mt-3">
             <Link to="/login" className="text-sm text-gray-500 hover:text-primary transition-colors">
-              Already have an account? <span className="text-primary font-bold">Login</span>
+              Already have an account?{" "}
+              <span className="text-primary font-bold">Login</span>
             </Link>
           </div>
         </div>

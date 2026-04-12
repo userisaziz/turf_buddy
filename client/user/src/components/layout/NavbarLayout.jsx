@@ -71,7 +71,7 @@ export default function NavbarLayout({ homePath, items, endContent, citySlug }) 
                 </div>
                 <div className="navbar-end flex items-center gap-1">
                     {endContent}
-                    {/* <ThemeSwitcher className="ml-1" /> */}
+                    <ThemeSwitcher className="ml-1" />
                 </div>
             </div>
 

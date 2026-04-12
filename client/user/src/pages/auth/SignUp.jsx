@@ -10,11 +10,11 @@ const SignUp = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-2">
-      <div className="card w-full md:w-96 bg-base-100 shadow-xl border">
-        <div className="card-body">
-          <h2 className="card-title justify-center text-2xl font-bold">Sign Up</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="">
+    <div className="flex items-center justify-center p-3 bg-gray-50">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl border">
+        <div className="card-body p-5">
+          <h2 className="card-title justify-center text-lg font-bold mb-1">Sign Up</h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
             <FormField
               label="Name"
               name="name"
@@ -22,7 +22,6 @@ const SignUp = () => {
               register={register}
               error={errors.name}
             />
-
             <FormField
               label="Email"
               name="email"
@@ -52,13 +51,12 @@ const SignUp = () => {
               error={errors.confirmPassword}
             />
 
-            {/* Terms and Conditions Checkbox */}
-            <div className="form-control mt-4">
-              <label className="label cursor-pointer justify-start gap-3">
+            <div className="form-control pt-1">
+              <label className="label cursor-pointer justify-start gap-3 py-0">
                 <input
                   type="checkbox"
                   {...register("termsAccepted")}
-                  className={`checkbox checkbox-primary checkbox-sm ${errors.termsAccepted ? 'checkbox-error' : ''}`}
+                  className={`checkbox checkbox-primary checkbox-xs ${errors.termsAccepted ? "checkbox-error" : ""}`}
                 />
                 <span className="label-text text-xs">
                   I agree to the{" "}
@@ -72,21 +70,23 @@ const SignUp = () => {
                 </span>
               </label>
               {errors.termsAccepted && (
-                <span className="text-error text-[10px] mt-1 ml-9">
+                <span className="text-error text-[10px] ml-7">
                   {errors.termsAccepted.message}
                 </span>
               )}
             </div>
 
-            <div className="form-control mt-6">
-              <Button type="submit" className="bg-primary text-white" loading={loading}>
+            <div className="form-control pt-2">
+              <Button type="submit" className="bg-primary text-white btn-sm h-9" loading={loading}>
                 Create Account
               </Button>
             </div>
           </form>
-          <div className="text-center mt-4">
-            <Link to="/login" className="text-sm link link-hover text-base-content/60">
-              Already have an account? <span className="text-primary font-bold">Login</span>
+
+          <div className="text-center mt-2">
+            <Link to="/login" className="text-xs link link-hover text-base-content/60">
+              Already have an account?{" "}
+              <span className="text-primary font-bold">Login</span>
             </Link>
           </div>
         </div>

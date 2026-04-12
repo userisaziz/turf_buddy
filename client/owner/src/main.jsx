@@ -6,6 +6,17 @@ import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "react-hot-toast";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { SplashScreen } from "@capacitor/splash-screen";
+import { Capacitor } from "@capacitor/core";
+
+// Configure status bar for mobile
+if (Capacitor.isNativePlatform()) {
+  StatusBar.setBackgroundColor({ color: "#000000" }).catch(() => {});
+  StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+  SplashScreen.hide().catch(() => {});
+}
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -21,6 +32,7 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
